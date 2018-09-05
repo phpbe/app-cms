@@ -1,0 +1,52 @@
+
+
+.theme-center .user-menu-bar{ padding:20px 0 0 0; margin-bottom:30px;}
+.theme-center .user-menu-bar ul{ margin:0; padding:0;}
+.theme-center .user-menu-bar li{ list-style:none; display:inline-block;*display:inline;*zoom:1; color:#FFFFFF; padding:8px 20px; cursor:pointer;}
+
+
+.theme-center .article{ padding:15px; border-bottom:#ddd 1px dashed;}
+.theme-center .article .article-thumbnail{overflow:hidden; margin:0 10px 20px 0;float:left;}
+.theme-center .article .article-title{padding:0; margin:0}
+.theme-center .article .article-title a{ color:#333;}
+.theme-center .article .article-time{font-size:12px; color:#999; padding:6px 0 2px 0;}
+.theme-center .article .article-summary{color:#777;}
+
+.theme-center .comment{ padding:15px; border-bottom:#ddd 1px dashed;}
+.theme-center .comment .article-title{padding:0; margin:0}
+.theme-center .comment .article-title a{color:#333;}
+.theme-center .comment .comment-time{font-size:12px; color:#999; padding:6px 0 2px 0;}
+.theme-center .comment .comment-body{color:#777;}
+
+
+.theme-center .profile{}
+.theme-center .profile table,
+.theme-center .profile table td{ padding:0; margin:0; border:0;}
+.theme-center .profile .profile_item{
+	color:white; width:160px; height:28px; line-height:28px;padding-right:10px; text-align:right; margin-top:5px;
+
+	-moz-border-radius-topleft: 5px;
+	-khtml-border-top-left-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	border-top-left-radius: 5px; 
+	
+	-moz-border-radius-bottomleft: 5px;
+	-khtml-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	border-bottom-left-radius: 5px; 
+}
+
+.theme-center .profile .profile_item_value_border{
+	margin-top:5px;
+	
+	-moz-border-radius-topright: 5px;
+	-khtml-border-top-right-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	border-top-right-radius: 5px; 
+	
+	-moz-border-radius-bottomright: 5px;
+	-khtml-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 5px; 
+}
+.theme-center .profile .profile_item_value{min-width:200px;height:26px; line-height:26px; padding:0px 10px; }

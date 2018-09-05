@@ -1,0 +1,19 @@
+{
+    "name": "phpbe/app-cms",
+    "type": "phpbe-app",
+    "license": "MIT",
+    "description": "内容管理系统",
+    "authors": [
+        {
+            "name": "liu12",
+            "email": "i@liu12.com",
+            "homepage": "http://www.liu12.com/"
+        }
+    ],
+    "require": {
+        "phpbe/installer": "*"
+    },
+    "extra" : {
+        "install-dir-name" : "Content"
+    }
+}
