@@ -11,6 +11,8 @@
         }
     ],
     "require": {
+        "phpbe/system": "~2.0",
+        "phpbe/util": "~2.0",
         "phpbe/installer": "*"
     },
     "extra" : {

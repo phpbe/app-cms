@@ -170,18 +170,18 @@ class Article extends Controller
         $articleId = Request::get('articleId', 0, 'int');
         if ($articleId == 0) Response::end('参数(articleId)缺失！');
 
-        $rowArticle = Be::getRow('Cms', 'Article');
-        $rowArticle->load($articleId);
-        $rowArticle->increment('hits', 1); // 点击量加 1
+        $tupleArticle = Be::getTuple('Cms', 'Article');
+        $tupleArticle->load($articleId);
+        $tupleArticle->increment('hits', 1); // 点击量加 1
 
         $serviceArticleCache = Be::getService('Cms', 'Article')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
 
-        $similarArticles = $serviceArticleCache->getSimilarArticles($rowArticle, 10);
+        $similarArticles = $serviceArticleCache->getSimilarArticles($tupleArticle, 10);
 
         // 热门文章
         $hottestArticles = $serviceArticleCache->getArticles([
             'block' => 0,
-            'categoryId' => $rowArticle->category_id,
+            'categoryId' => $tupleArticle->category_id,
             'orderBy' => 'hits',
             'orderByDir' => 'DESC',
             'limit' => 10
@@ -190,7 +190,7 @@ class Article extends Controller
         // 推荐文章
         $topArticles = $serviceArticleCache->getArticles([
             'block' => 0,
-            'categoryId' => $rowArticle->category_id,
+            'categoryId' => $tupleArticle->category_id,
             'top' => 1,
             'orderBy' => 'top',
             'orderByDir' => 'DESC',
@@ -203,9 +203,9 @@ class Article extends Controller
             'articleId' => $articleId
         ]);
 
-        Response::setTitle($rowArticle->title);
-        Response::setMetaKeywords($rowArticle->metaKeywords);
-        Response::setMetaDescription($rowArticle->metaDescription);
+        Response::setTitle($tupleArticle->title);
+        Response::setMetaKeywords($tupleArticle->metaKeywords);
+        Response::setMetaDescription($tupleArticle->metaDescription);
 
         $northMenu = Be::getMenu('north');
         $northMenuTree = $northMenu->getMenuTree();
@@ -231,7 +231,7 @@ class Article extends Controller
                         isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
                         isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
                         isset($menu->params['action']) && $menu->params['action'] == 'listing' &&
-                        isset($menu->params['categoryId']) && $menu->params['categoryId'] == $rowArticle->categoryId
+                        isset($menu->params['categoryId']) && $menu->params['categoryId'] == $tupleArticle->categoryId
                     ) {
                         Response::set('menuId', $menu->id);
                         //$menuExist = true;
@@ -241,7 +241,7 @@ class Article extends Controller
             }
         }
 
-        Response::set('article', $rowArticle);
+        Response::set('article', $tupleArticle);
         Response::set('similarArticles', $similarArticles);
         Response::set('hottestArticles', $hottestArticles);
         Response::set('topArticles', $topArticles);

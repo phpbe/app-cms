@@ -119,25 +119,25 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \Phpbe\System\Db\Row | mixed $rowArticle 当前文章
+     * @param \Phpbe\System\Db\Row | mixed $tupleArticle 当前文章
      * @param int $n 查询出最多多少条记录
      * @return array
      */
-    public function getSimilarArticles($rowArticle, $n)
+    public function getSimilarArticles($tupleArticle, $n)
     {
         $similarArticles = [];
 
         // 按关键词查找类似文章
-        if ($rowArticle->metaKeywords != '') {
-            $keywords = explode(' ', $rowArticle->metaKeywords);
-            $similarArticles = $this->_getSimilarArticles($rowArticle, $keywords, $n);
+        if ($tupleArticle->metaKeywords != '') {
+            $keywords = explode(' ', $tupleArticle->metaKeywords);
+            $similarArticles = $this->_getSimilarArticles($tupleArticle, $keywords, $n);
         }
 
         if (count($similarArticles) > 0) return $similarArticles;
 
-        if ($rowArticle->title != '') {
+        if ($tupleArticle->title != '') {
             $libScws = Be::getLib('Pscws');
-            $libScws->sendText($rowArticle->title);
+            $libScws->sendText($tupleArticle->title);
             $scwsKeywords = $libScws->getTops(3);
             $keywords = [];
             if ($scwsKeywords !== false) {
@@ -146,7 +146,7 @@ class Article extends Service
                 }
             }
 
-            $similarArticles = $this->_getSimilarArticles($rowArticle, $keywords, $n);
+            $similarArticles = $this->_getSimilarArticles($tupleArticle, $keywords, $n);
         }
 
         return $similarArticles;
@@ -155,19 +155,19 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \Phpbe\System\Db\Row | mixed $rowArticle 当前文章
+     * @param \Phpbe\System\Db\Row | mixed $tupleArticle 当前文章
      * @param array $keywords 关键词
      * @param int $n 查询出最多多少条记录
      * @return array
      */
-    private function _getSimilarArticles($rowArticle, $keywords, $n)
+    private function _getSimilarArticles($tupleArticle, $keywords, $n)
     {
         $similarArticles = [];
 
         $keywordsCount = count($keywords);
         if ($keywordsCount > 0) {
             $tableArticle = Be::getTable('Cms', 'Article');
-            $tableArticle->where('id', '!=', $rowArticle->id);
+            $tableArticle->where('id', '!=', $tupleArticle->id);
             $tableArticle->where('(');
             for ($i = 0; $i < $keywordsCount; $i++) {
                 $tableArticle->where('title', 'like', '%' . $keywords[$i] . '%');
@@ -181,7 +181,7 @@ class Article extends Service
 
             if (count($similarArticles) == 0) {
                 $tableArticle->init();
-                $tableArticle->where('id', '!=', $rowArticle->id);
+                $tableArticle->where('id', '!=', $tupleArticle->id);
                 $tableArticle->where('(');
                 for ($i = 0; $i < $keywordsCount; $i++) {
                     $tableArticle->where('body', 'like', '%' . $keywords[$i] . '%');
@@ -242,14 +242,14 @@ class Article extends Service
                     Be::getTable('Cms', 'ArticleComment')->where('article_id', $id)->delete();
                 }
 
-                $rowArticle = Be::getRow('Cms', 'Article');
-                $rowArticle->load($id);
+                $tupleArticle = Be::getTuple('Cms', 'Article');
+                $tupleArticle->load($id);
 
-                if ($rowArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_l;
-                if ($rowArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_m;
-                if ($rowArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $rowArticle->thumbnail_s;
+                if ($tupleArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $tupleArticle->thumbnail_l;
+                if ($tupleArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $tupleArticle->thumbnail_m;
+                if ($tupleArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $tupleArticle->thumbnail_s;
 
-                $rowArticle->delete();
+                $tupleArticle->delete();
             }
 
             foreach ($files as $file) {
@@ -276,15 +276,15 @@ class Article extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticle = Be::getRow('Cms', 'Article');
-        $rowArticle->load($articleId);
-        if ($rowArticle->id == 0 || $rowArticle->block == 1) {
+        $tupleArticle = Be::getTuple('Cms', 'Article');
+        $tupleArticle->load($articleId);
+        if ($tupleArticle->id == 0 || $tupleArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
-        $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
-        if ($rowArticleVoteLog->id > 0) {
+        $tupleArticleVoteLog = Be::getTuple('Cms', 'ArticleVoteLog');
+        $tupleArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
+        if ($tupleArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
         }
 
@@ -292,11 +292,11 @@ class Article extends Service
         $db->beginTransaction();
         try {
 
-            $rowArticleVoteLog->article_id = $articleId;
-            $rowArticleVoteLog->user_id = $my->id;
-            $rowArticleVoteLog->save();
+            $tupleArticleVoteLog->article_id = $articleId;
+            $tupleArticleVoteLog->user_id = $my->id;
+            $tupleArticleVoteLog->save();
 
-            $rowArticle->increment('like', 1);
+            $tupleArticle->increment('like', 1);
 
             $db->commit();
         } catch (\Exception $e) {
@@ -319,15 +319,15 @@ class Article extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticle = Be::getRow('Cms', 'Article');
-        $rowArticle->load($articleId);
-        if ($rowArticle->id == 0 || $rowArticle->block == 1) {
+        $tupleArticle = Be::getTuple('Cms', 'Article');
+        $tupleArticle->load($articleId);
+        if ($tupleArticle->id == 0 || $tupleArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
-        $rowArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
-        if ($rowArticleVoteLog->id > 0) {
+        $tupleArticleVoteLog = Be::getTuple('Cms', 'ArticleVoteLog');
+        $tupleArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
+        if ($tupleArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
         }
 
@@ -335,11 +335,11 @@ class Article extends Service
         $db->beginTransaction();
         try {
 
-            $rowArticleVoteLog->article_id = $articleId;
-            $rowArticleVoteLog->user_id = $my->id;
-            $rowArticleVoteLog->save();
+            $tupleArticleVoteLog->article_id = $articleId;
+            $tupleArticleVoteLog->user_id = $my->id;
+            $tupleArticleVoteLog->save();
 
-            $rowArticle->increment('dislike', 1);
+            $tupleArticle->increment('dislike', 1);
 
             $db->commit();
         } catch (\Exception $e) {

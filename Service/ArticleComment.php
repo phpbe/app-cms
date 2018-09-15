@@ -92,9 +92,9 @@ class ArticleComment extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticle = Be::getRow('Cms', 'article');
-        $rowArticle->load($articleId);
-        if ($rowArticle->id == 0 || $rowArticle->block == 1) {
+        $tupleArticle = Be::getTuple('Cms', 'article');
+        $tupleArticle->load($articleId);
+        if ($tupleArticle->id == 0 || $tupleArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
@@ -108,18 +108,18 @@ class ArticleComment extends Service
             throw new \Exception('评论内容过长！');
         }
 
-        $rowArticleComment = Be::getRow('Cms', 'ArticleComment');
-        $rowArticleComment->article_id = $articleId;
-        $rowArticleComment->user_id = $my->id;
-        $rowArticleComment->user_name = $my->name;
-        $rowArticleComment->body = $commentBody;
-        $rowArticleComment->ip = $_SERVER['REMOTE_ADDR'];
-        $rowArticleComment->create_time = time();
+        $tupleArticleComment = Be::getTuple('Cms', 'ArticleComment');
+        $tupleArticleComment->article_id = $articleId;
+        $tupleArticleComment->user_id = $my->id;
+        $tupleArticleComment->user_name = $my->name;
+        $tupleArticleComment->body = $commentBody;
+        $tupleArticleComment->ip = $_SERVER['REMOTE_ADDR'];
+        $tupleArticleComment->create_time = time();
 
         $configArticle = Be::getConfig('Cms', 'Article');
-        $rowArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
+        $tupleArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
 
-        $rowArticleComment->save();
+        $tupleArticleComment->save();
     }
 
     /**
@@ -136,15 +136,15 @@ class ArticleComment extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticleComment = Be::getRow('Cms', 'ArticleComment');
-        $rowArticleComment->load($commentId);
-        if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
+        $tupleArticleComment = Be::getTuple('Cms', 'ArticleComment');
+        $tupleArticleComment->load($commentId);
+        if ($tupleArticleComment->id == 0 || $tupleArticleComment->block == 1) {
             throw new \Exception('评论不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
-        $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
-        if ($rowArticleVoteLog->id > 0) {
+        $tupleArticleVoteLog = Be::getTuple('Cms', 'ArticleVoteLog');
+        $tupleArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
+        if ($tupleArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
         }
 
@@ -152,11 +152,11 @@ class ArticleComment extends Service
         $db->beginTransaction();
         try {
 
-            $rowArticleVoteLog->comment_id = $commentId;
-            $rowArticleVoteLog->userId = $my->id;
-            $rowArticleVoteLog->save();
+            $tupleArticleVoteLog->comment_id = $commentId;
+            $tupleArticleVoteLog->userId = $my->id;
+            $tupleArticleVoteLog->save();
 
-            $rowArticleComment->increment('like', 1);
+            $tupleArticleComment->increment('like', 1);
 
             $db->commit();
         } catch (\Exception $e) {
@@ -179,15 +179,15 @@ class ArticleComment extends Service
             throw new \Exception('请先登陆！');
         }
 
-        $rowArticleComment = Be::getRow('Cms', 'ArticleComment');
-        $rowArticleComment->load($commentId);
-        if ($rowArticleComment->id == 0 || $rowArticleComment->block == 1) {
+        $tupleArticleComment = Be::getTuple('Cms', 'ArticleComment');
+        $tupleArticleComment->load($commentId);
+        if ($tupleArticleComment->id == 0 || $tupleArticleComment->block == 1) {
             throw new \Exception('评论不存在！');
         }
 
-        $rowArticleVoteLog = Be::getRow('Cms', 'ArticleVoteLog');
-        $rowArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
-        if ($rowArticleVoteLog->id > 0) {
+        $tupleArticleVoteLog = Be::getTuple('Cms', 'ArticleVoteLog');
+        $tupleArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
+        if ($tupleArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
         }
 
@@ -195,11 +195,11 @@ class ArticleComment extends Service
         $db->beginTransaction();
         try {
 
-            $rowArticleVoteLog->comment_id = $commentId;
-            $rowArticleVoteLog->userId = $my->id;
-            $rowArticleVoteLog->save();
+            $tupleArticleVoteLog->comment_id = $commentId;
+            $tupleArticleVoteLog->userId = $my->id;
+            $tupleArticleVoteLog->save();
 
-            $rowArticleComment->increment('dislike', 1);
+            $tupleArticleComment->increment('dislike', 1);
 
             $db->commit();
         } catch (\Exception $e) {

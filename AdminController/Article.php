@@ -66,15 +66,15 @@ class Article extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $rowArticle = Be::getRow('Cms', 'Article');
-        $rowArticle->load($id);
+        $tupleArticle = Be::getTuple('Cms', 'Article');
+        $tupleArticle->load($id);
 
         if ($id == 0) {
             Response::setTitle('添加文章');
         } else {
             Response::setTitle('编辑文章');
         }
-        Response::set('article', $rowArticle);
+        Response::set('article', $tupleArticle);
 
         $serviceCategory = Be::getService('Cms', 'Category');
         $categories = $serviceCategory->getCategories();
@@ -89,11 +89,11 @@ class Article extends AdminController
 
         $my = Be::getAdminUser();
 
-        $rowArticle = Be::getRow('Cms', 'Article');
-        if ($id != 0) $rowArticle->load($id);
-        $rowArticle->bind(Request::post());
+        $tupleArticle = Be::getTuple('Cms', 'Article');
+        if ($id != 0) $tupleArticle->load($id);
+        $tupleArticle->bind(Request::post());
 
-        $rowArticle->createTime = strtotime($rowArticle->createTime);
+        $tupleArticle->createTime = strtotime($tupleArticle->createTime);
 
         $body = Request::post('body', '', 'html');
 
@@ -156,7 +156,7 @@ class Article extends AdminController
                 }
             }
         }
-        $rowArticle->body = $body;
+        $tupleArticle->body = $body;
 
         $configArticle = Be::getConfig('Cms', 'Article');
 
@@ -186,17 +186,17 @@ class Article extends AdminController
                             $thumbnailLName = $t . '_l.' . $libImage->getType();
                             $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
                             $libImage->save($dir . '/' . $thumbnailLName);
-                            $rowArticle->thumbnail_l = $thumbnailLName;
+                            $tupleArticle->thumbnail_l = $thumbnailLName;
 
                             $thumbnailMName = $t . '_m.' . $libImage->getType();
                             $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
                             $libImage->save($dir . '/' . $thumbnailMName);
-                            $rowArticle->thumbnail_m = $thumbnailMName;
+                            $tupleArticle->thumbnail_m = $thumbnailMName;
 
                             $thumbnailSName = $t . '_s.' . $libImage->getType();
                             $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
                             $libImage->save($dir . '/' . $thumbnailSName);
-                            $rowArticle->thumbnail_s = $thumbnailSName;
+                            $tupleArticle->thumbnail_s = $thumbnailSName;
                         }
 
                         @unlink($tmpImage);
@@ -221,17 +221,17 @@ class Article extends AdminController
                         $thumbnailLName = $t . '_l.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
                         $libImage->save($dir . '/' . $thumbnailLName);
-                        $rowArticle->thumbnail_l = $thumbnailLName;
+                        $tupleArticle->thumbnail_l = $thumbnailLName;
 
                         $thumbnailMName = $t . '_m.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
                         $libImage->save($dir . '/' . $thumbnailMName);
-                        $rowArticle->thumbnail_m = $thumbnailMName;
+                        $tupleArticle->thumbnail_m = $thumbnailMName;
 
                         $thumbnailSName = $t . '_s.' . $libImage->getType();
                         $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
                         $libImage->save($dir . '/' . $thumbnailSName);
-                        $rowArticle->thumbnail_s = $thumbnailSName;
+                        $tupleArticle->thumbnail_s = $thumbnailSName;
                     }
                 }
             } elseif ($thumbnailSource == 'url') { // 从指定网址获取缩图片
@@ -260,17 +260,17 @@ class Article extends AdminController
                                 $thumbnailLName = $t . '_l.' . $libImage->getType();
                                 $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
                                 $libImage->save($dir . '/' . $thumbnailLName);
-                                $rowArticle->thumbnail_l = $thumbnailLName;
+                                $tupleArticle->thumbnail_l = $thumbnailLName;
 
                                 $thumbnailMName = $t . '_m.' . $libImage->getType();
                                 $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
                                 $libImage->save($dir . '/' . $thumbnailMName);
-                                $rowArticle->thumbnail_m = $thumbnailMName;
+                                $tupleArticle->thumbnail_m = $thumbnailMName;
 
                                 $thumbnailSName = $t . '_s.' . $libImage->getType();
                                 $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
                                 $libImage->save($dir . '/' . $thumbnailSName);
-                                $rowArticle->thumbnail_s = $thumbnailSName;
+                                $tupleArticle->thumbnail_s = $thumbnailSName;
                             }
 
                             @unlink($tmpImage);
@@ -283,22 +283,22 @@ class Article extends AdminController
 
 
         if ($id == 0) {
-            $rowArticle->create_by_id = $my->id;
+            $tupleArticle->create_by_id = $my->id;
         } else {
-            $rowArticle->modify_time = time();
-            $rowArticle->modify_by_id = $my->id;
+            $tupleArticle->modify_time = time();
+            $tupleArticle->modify_by_id = $my->id;
         }
 
-        if ($rowArticle->save()) {
+        if ($tupleArticle->save()) {
             if ($id == 0) {
                 Response::setMessage('添加文章成功！');
-                systemLog('添加文章：#' . $rowArticle->id . ': ' . $rowArticle->title);
+                systemLog('添加文章：#' . $tupleArticle->id . ': ' . $tupleArticle->title);
             } else {
                 Response::setMessage('修改文章成功！');
-                systemLog('编辑文章：#' . $id . ': ' . $rowArticle->title);
+                systemLog('编辑文章：#' . $id . ': ' . $tupleArticle->title);
             }
         } else {
-            Response::setMessage($rowArticle->getError(), 'error');
+            Response::setMessage($tupleArticle->getError(), 'error');
         }
 
         $libHistory = Be::getLib('History');
@@ -459,9 +459,9 @@ class Article extends AdminController
         $comments = $adminServiceArticle->getComments($option);
         foreach ($comments as $comment) {
             if (!array_key_exists($comment->articleId, $articles)) {
-                $rowArticle = Be::getRow('Cms', 'article');
-                $rowArticle->load($comment->articleId);
-                $articles[$comment->articleId] = $rowArticle;
+                $tupleArticle = Be::getTuple('Cms', 'article');
+                $tupleArticle->load($comment->articleId);
+                $articles[$comment->articleId] = $tupleArticle;
             }
 
             $comment->article = $articles[$comment->articleId];

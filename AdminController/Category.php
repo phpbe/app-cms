@@ -31,18 +31,18 @@ class Category extends AdminController
         $db->startTransaction();
 
         try {
-            $rowUser = Be::getRow('System', 'User');
-            $rowUser->load(1);
+            $tupleUser = Be::getTuple('System', 'User');
+            $tupleUser->load(1);
             if (count($ids)) {
                 for ($i = 0, $n = count($ids); $i < $n; $i++) {
                     if (!$ids[$i] && !$names[$i]) continue;
 
-                    $rowCategory = Be::getRow('Cms', 'Category');
-                    $rowCategory->id = $ids[$i];
-                    $rowCategory->parent_id = $parentIds[$i];
-                    $rowCategory->name = $names[$i];
-                    $rowCategory->ordering = $i;
-                    $rowCategory->save();
+                    $tupleCategory = Be::getTuple('Cms', 'Category');
+                    $tupleCategory->id = $ids[$i];
+                    $tupleCategory->parent_id = $parentIds[$i];
+                    $tupleCategory->name = $names[$i];
+                    $tupleCategory->ordering = $i;
+                    $tupleCategory->save();
                 }
             }
             $db->commit();
@@ -69,8 +69,8 @@ class Category extends AdminController
         } else {
 
             try {
-                $rowCategory = Be::getRow('Cms', 'Category');
-                $rowCategory->load($categoryId);
+                $tupleCategory = Be::getTuple('Cms', 'Category');
+                $tupleCategory->load($categoryId);
 
                 $serviceCategory = Be::getService('Cms', 'Category');
                 $serviceCategory->deleteCategory($categoryId);
@@ -78,7 +78,7 @@ class Category extends AdminController
                 Response::set('success', true);
                 Response::set('message', '分类删除成功！');
 
-                systemLog('删除文章分类：#' . $categoryId . ': ' . $rowCategory->title);
+                systemLog('删除文章分类：#' . $categoryId . ': ' . $tupleCategory->title);
 
             } catch (\Exception $e) {
                 Response::set('success', false);

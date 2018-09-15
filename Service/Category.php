@@ -138,9 +138,9 @@ class Category extends Service
      * @return \Phpbe\System\Db\Row
      */
     public function getCategory($categoryId) {
-        $rowCategory = Be::getRow('Cms', 'Category');
-        $rowCategory->load($categoryId);
-        return $rowCategory;
+        $tupleCategory = Be::getTuple('Cms', 'Category');
+        $tupleCategory->load($categoryId);
+        return $tupleCategory;
     }
 
     /**
@@ -149,14 +149,14 @@ class Category extends Service
      * @return mixed | null | \Phpbe\System\Db\Row
      */
     public function getTopParentCategory($categoryId) {
-        $rowCategory = Be::getRow('Cms', 'Category');
-        $rowCategory->load($categoryId);
+        $tupleCategory = Be::getTuple('Cms', 'Category');
+        $tupleCategory->load($categoryId);
 
         $parentCategory = null;
-        $tmpCategory = $rowCategory;
+        $tmpCategory = $tupleCategory;
         while ($tmpCategory->parentId > 0) {
             $parentId = $tmpCategory->parentId;
-            $tmpCategory = Be::getRow('Cms', 'Category');
+            $tmpCategory = Be::getTuple('Cms', 'Category');
             $tmpCategory->load($parentId);
         }
         $parentCategory = $tmpCategory;
@@ -178,7 +178,7 @@ class Category extends Service
 
             Be::getTable('Cms', 'Article')->where('category_id', $categoryId)->update(['category_id' => 0]);
             Be::getTable('Cms', 'Category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
-            Be::getRow('Cms', 'Category')->delete($categoryId);
+            Be::getTuple('Cms', 'Category')->delete($categoryId);
 
             $db->commit();
         } catch (\Exception $e) {
