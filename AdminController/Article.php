@@ -479,7 +479,7 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms', 'Article');
+            $serviceArticle = Be::getService('Cms.Article');
             $serviceArticle->commentsUnblock($ids);
             Response::setMessage('公开评论成功！');
             systemLog('公开文章评论：#' . $ids);
@@ -496,7 +496,7 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms', 'Article');
+            $serviceArticle = Be::getService('Cms.Article');
             $serviceArticle->commentsBlock($ids);
             Response::setMessage('屏蔽评论成功！');
             systemLog('屏蔽文章评论：#' . $ids);
@@ -513,7 +513,7 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms', 'Article');
+            $serviceArticle = Be::getService('Cms.Article');
             $serviceArticle->commentsDelete($ids);
             Response::setMessage('删除评论成功！');
             systemLog('删除文章评论：#' . $ids . ')');

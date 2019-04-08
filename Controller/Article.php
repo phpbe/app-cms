@@ -20,7 +20,7 @@ class Article extends Controller
      */
     public function home()
     {
-        $serviceArticleCache = Be::getService('Cms', 'Article')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
+        $serviceArticleCache = Be::getService('Cms.Article')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
 
         // 最新带图文章
         $latestThumbnailArticles = $serviceArticleCache->getArticles([
@@ -53,7 +53,7 @@ class Article extends Controller
 
         $topCategories = array();
 
-        $serviceCategoryCache = Be::getService('Cms', 'Category')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
+        $serviceCategoryCache = Be::getService('Cms.Category')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
         $categories = $serviceCategoryCache->getCategories();
         foreach ($categories as $category) {
             if ($category->parentId > 0) continue;
@@ -68,7 +68,7 @@ class Article extends Controller
             ]);
         }
 
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
         Response::setTitle($configSystem->homeTitle);
         Response::setMetaKeywords($configSystem->homeMetaKeywords);
@@ -92,7 +92,7 @@ class Article extends Controller
         $categoryId = Request::get('categoryId', 0, 'int');
         Response::set('categoryId', $categoryId);
 
-        $serviceCategoryCache = Be::getService('Cms', 'Category')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
+        $serviceCategoryCache = Be::getService('Cms.Category')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
         $category = $serviceCategoryCache->getCategory($categoryId);
 
         if ($category->id == 0) Response::end('文章分类不存在！');
@@ -124,7 +124,7 @@ class Article extends Controller
             Response::set('parentCategory', $category);
         }
 
-        $serviceArticleCache = Be::getService('Cms', 'Article')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
+        $serviceArticleCache = Be::getService('Cms.Article')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
 
         $option = array('categoryId' => $categoryId);
 
@@ -133,7 +133,7 @@ class Article extends Controller
         $pagination->setLimit($limit);
         $pagination->setTotal($serviceArticleCache->getArticleCount($option));
         $pagination->setPage(Request::get('page', 1, 'int'));
-        $pagination->seturl('Cms', 'Article', 'articles', ['categoryId' => $categoryId]);
+        $pagination->seturl(url('Cms.Article.articles', ['categoryId' => $categoryId]));
         Response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->getOffset();
@@ -168,11 +168,11 @@ class Article extends Controller
         $articleId = Request::get('articleId', 0, 'int');
         if ($articleId == 0) Response::end('参数(articleId)缺失！');
 
-        $tupleArticle = Be::getTuple('Cms', 'Article');
+        $tupleArticle = Be::getTuple('Cms.Article');
         $tupleArticle->load($articleId);
         $tupleArticle->increment('hits', 1); // 点击量加 1
 
-        $serviceArticleCache = Be::getService('Cms', 'Article')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
+        $serviceArticleCache = Be::getService('Cms.Article')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
 
         $similarArticles = $serviceArticleCache->getSimilarArticles($tupleArticle, 10);
 
@@ -196,7 +196,7 @@ class Article extends Controller
         ]);
 
 
-        $serviceArticleCommentCache = Be::getService('Cms', 'ArticleComment')->withCache(Be::getConfig('Cms', 'Article')->cacheExpire);
+        $serviceArticleCommentCache = Be::getService('Cms.ArticleComment')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
         $comments = $serviceArticleCommentCache->getComments([
             'articleId' => $articleId
         ]);
