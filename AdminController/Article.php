@@ -164,8 +164,8 @@ class Article extends AdminController
         if ($thumbnailPickUp == 1) {
             if (count($images) > 0) {
 
-                $libHttp = Be::getLib('\GuzzleHttp\Client');
-                $response = $libHttp->request('GET', $images[0]);
+                $httpClient = new \GuzzleHttp\Client();
+                $response = $httpClient->request('GET', $images[0]);
                 if ($response->getStatusCode() == 200) {
                     $data = $response->getBody();
                     if ($data) {
@@ -238,8 +238,8 @@ class Article extends AdminController
                 $thumbnailUrl = Request::post('thumbnailUrl', '');
                 if ($thumbnailUrl != '' && substr($thumbnailUrl, 0, 7) == 'http://') {
 
-                    $libHttp = Be::getLib('\GuzzleHttp\Client');
-                    $response = $libHttp->request('GET', $thumbnailUrl);
+                    $httpClient = new \GuzzleHttp\Client();
+                    $response = $httpClient->request('GET', $thumbnailUrl);
                     if ($response->getStatusCode() == 200) {
                         $data = $response->getBody();
                         if ($data) {

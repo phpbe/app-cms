@@ -2,8 +2,7 @@
 use Phpbe\System\Be;
 ?>
 
-<!--{theme:admin}-->
-<!--{template:cms.article.detail}-->
+<!--{extends:\App\Cms\Article\detail}-->
 
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/articles.css">

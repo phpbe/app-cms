@@ -1,15 +1,6 @@
 <?php
 use Phpbe\System\Be;
-
 ?>
-
-<!--{head}-->
-<?php
-$uiGrid = Be::getUi('grid');
-$uiGrid->head();
-?>
-<!--{/head}-->
-
 <!--{center}-->
 <?php
 $articles = $this->get('articles');

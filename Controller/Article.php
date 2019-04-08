@@ -7,10 +7,7 @@ use Phpbe\System\Response;
 use Phpbe\System\Controller;
 
 /**
- *
- *
- * @router article
- * @permission 文章
+ * @be-controller-name 文章
  */
 class Article extends Controller
 {
@@ -18,7 +15,8 @@ class Article extends Controller
     /**
      *
      *
-     * @permission 首页
+     * @be-action-name 首页
+     * @be-action-permission 首页
      */
     public function home()
     {

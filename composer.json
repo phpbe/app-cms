@@ -11,11 +11,21 @@
         }
     ],
     "require": {
-        "phpbe/system": "~2.0",
-        "phpbe/util": "~2.0",
-        "phpbe/installer": "*"
+        "phpbe/installer": "2.1.*",
+        "phpbe/system": "2.1.*",
+        "phpbe/util": "2.1.*",
+
+        "phpbe/lib-ip": "2.1.*",
+        "phpbe/lib-image": "2.1.*",
+        "phpbe/lib-history": "2.1.*",
+        "phpbe/lib-captcha": "2.1.*",
+        "phpbe/lib-css": "2.1.*",
+        "phpbe/lib-fso": "2.1.*",
+        "phpbe/lib-pscws": "2.1.*",
+
+        "guzzlehttp/guzzle" : "~6.0"
     },
     "extra" : {
-        "install-dir-name" : "Content"
+        "install-dir-name" : "Cms"
     }
 }
