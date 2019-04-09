@@ -16,7 +16,7 @@ class Category extends Service
      */
     public function getCategories()
     {
-        return Be::getTable('Cms', 'Category')->orderBy('ordering', 'ASC')->getObjects();
+        return Be::getTable('Cms.Category')->orderBy('ordering', 'ASC')->getObjects();
     }
 
     /**
@@ -39,7 +39,7 @@ class Category extends Service
      */
     public function getCategoryCount()
     {
-        return Be::getTable('Cms', 'ArticleCategory')->count();
+        return Be::getTable('Cms.ArticleCategory')->count();
     }
 
     /**
@@ -50,7 +50,7 @@ class Category extends Service
     public function getCategoryTree()
     {
         if ($this->categoryTree === null) {
-            $categories = Be::getTable('Cms', 'ArticleCategory')->getObjects();
+            $categories = Be::getTable('Cms.ArticleCategory')->getObjects();
             $this->categoryTree = $this->_createCategoryTree($categories);
         }
         return $this->categoryTree;
@@ -135,10 +135,10 @@ class Category extends Service
      * 获取分类
      *
      * @param $categoryId
-     * @return \Phpbe\System\Db\Row
+     * @return \Phpbe\System\Db\Tuple
      */
     public function getCategory($categoryId) {
-        $tupleCategory = Be::getTuple('Cms', 'Category');
+        $tupleCategory = Be::getTuple('Cms.Category');
         $tupleCategory->load($categoryId);
         return $tupleCategory;
     }
@@ -146,17 +146,17 @@ class Category extends Service
     /**
      * 获取指定分类的最高父级分类
      * @param $categoryId
-     * @return mixed | null | \Phpbe\System\Db\Row
+     * @return mixed | null | \Phpbe\System\Db\Tuple
      */
     public function getTopParentCategory($categoryId) {
-        $tupleCategory = Be::getTuple('Cms', 'Category');
+        $tupleCategory = Be::getTuple('Cms.Category');
         $tupleCategory->load($categoryId);
 
         $parentCategory = null;
         $tmpCategory = $tupleCategory;
         while ($tmpCategory->parentId > 0) {
             $parentId = $tmpCategory->parentId;
-            $tmpCategory = Be::getTuple('Cms', 'Category');
+            $tmpCategory = Be::getTuple('Cms.Category');
             $tmpCategory->load($parentId);
         }
         $parentCategory = $tmpCategory;
@@ -176,9 +176,9 @@ class Category extends Service
         $db->beginTransaction();
         try {
 
-            Be::getTable('Cms', 'Article')->where('category_id', $categoryId)->update(['category_id' => 0]);
-            Be::getTable('Cms', 'Category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
-            Be::getTuple('Cms', 'Category')->delete($categoryId);
+            Be::getTable('Cms.Article')->where('category_id', $categoryId)->update(['category_id' => 0]);
+            Be::getTable('Cms.Category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
+            Be::getTuple('Cms.Category')->delete($categoryId);
 
             $db->commit();
         } catch (\Exception $e) {

@@ -5,8 +5,8 @@ use Phpbe\System\Be;
 
 <!--{head}-->
 <?php
-$config = Be::getConfig('System', 'System');
-$configArticle = Be::getConfig('Cms', 'Article');
+$config = Be::getConfig('System.System');
+$configArticle = Be::getConfig('Cms.Article');
 ?>
 <link type="text/css" rel="stylesheet" href="<?php echo url(); ?>/app/Cms/Template/Article/css/bjqs.css">
 <script type="text/javascript" language="javascript" src="<?php echo url(); ?>/app/Cms/Template/Article/js/bjqs-1.3.min.js"></script>
@@ -56,7 +56,7 @@ $categories = $this->categories;
                 foreach ($latestThumbnailArticles as $article) {
                     ?>
                     <li>
-                        <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                        <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                            title="<?php echo $article->title; ?>">
                             <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/' . $article->thumbnailL; ?>"
                                  alt="<?php echo $article->title; ?>" title="<?php echo $article->title; ?>"
@@ -77,17 +77,17 @@ $categories = $this->categories;
             if (count($topArticles)) {
                 $article = $topArticles[0];
                 ?>
-                <h4><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                <h4><a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                        title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
                 <div class="summary"><?php echo $article->summary; ?><a
-                            href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                            href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                             title="<?php echo $article->title; ?>">详细 &gt;</a></div>
                 <ul>
                     <?php
                     foreach ($topArticles as $article) {
                         ?>
                         <li>
-                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                            <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a>
                         </li>
                         <?php
@@ -109,7 +109,7 @@ foreach ($categories as $category) {
     <div class="theme-box-container">
         <div class="theme-box">
             <div class="theme-box-title"><?php echo $category->name; ?><a
-                        href="<?php echo url('Cms', 'Article', 'articles', ['categoryId' => $category->id]); ?>"
+                        href="<?php echo url('Cms.Article.articles', ['categoryId' => $category->id]); ?>"
                         class="more" style="float:right;">更多...</a></div>
             <div class="theme-box-body">
 
@@ -135,7 +135,7 @@ foreach ($categories as $category) {
                                         ?>
                                         <li>
                                             <span class="article-time"><?php echo date('m-d', $article->createTime); ?></span><a
-                                                    href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                                                    href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                                     title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a>
                                         </li>
                                         <?php
@@ -147,7 +147,7 @@ foreach ($categories as $category) {
                         } else {
                             ?>
                             <div class="col-5 text-center">
-                                <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $categoryThumbnailArticle->id]); ?>"
+                                <a href="<?php echo url('Cms.Article.detail', ['articleId' => $categoryThumbnailArticle->id]); ?>"
                                    title="<?php echo $categoryThumbnailArticle->title; ?>">
                                     <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/' . $categoryThumbnailArticle->thumbnailM; ?>"
                                          alt="<?php echo $categoryThumbnailArticle->title; ?>"/>
@@ -160,7 +160,7 @@ foreach ($categories as $category) {
                                         ?>
                                         <li>
                                             <span class="article-time"><?php echo date('m-d', $article->createTime); ?></span><a
-                                                    href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                                                    href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                                     title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a>
                                         </li>
                                         <?php
@@ -187,10 +187,10 @@ foreach ($categories as $category) {
 $activeUsers = $this->activeUsers;
 $monthHottestArticles = $this->monthHottestArticles;
 
-$configArticle = Be::getConfig('Cms', 'Article');
+$configArticle = Be::getConfig('Cms.Article');
 
 if (count($activeUsers)) {
-    $configUser = Be::getConfig('System', 'User');
+    $configUser = Be::getConfig('System.User');
     ?>
     <div class="theme-box-container">
         <div class="theme-box">
@@ -204,14 +204,14 @@ if (count($activeUsers)) {
                             ?>
                             <li style="width:<?php echo $configUser->avatarMW; ?>px;">
                                 <div class="active-user-avatar">
-                                    <a href="<?php echo url('Cms', 'Article', 'user', ['userId' => $activeUser->id]); ?>"
+                                    <a href="<?php echo url('Cms.Article.user', ['userId' => $activeUser->id]); ?>"
                                        title="查看 <?php echo $activeUser->name; ?> 的动态">
                                         <img src="<?php echo Be::getRuntime()->getDataUrl() . '/user/avatar/' . (isset($activeUser->avatarM) ? $activeUser->avatarM : ('default/' . $configUser->defaultAvatarM)); ?>"
                                              alt="<?php echo $activeUser->name; ?>"/>
                                     </a>
                                 </div>
                                 <div class="active-user-name">
-                                    <a href="<?php echo url('Cms', 'Article', 'user', ['userId' => $activeUser->id]); ?>"
+                                    <a href="<?php echo url('Cms.Article.user', ['userId' => $activeUser->id]); ?>"
                                        title="查看 <?php echo $activeUser->name; ?> 的动态">
                                         <?php echo $activeUser->name; ?>
                                     </a>
@@ -244,7 +244,7 @@ if (count($monthHottestArticles)) {
 
                         <div class="month-hottest-article-thumbnail"
                              style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                            <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                title="<?php echo $article->title; ?>">
                                 <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == '' ? ('default/' . $configArticle->defaultThumbnailS) : $article->thumbnailS; ?>"
                                      alt="<?php echo $article->title; ?>">
@@ -253,7 +253,7 @@ if (count($monthHottestArticles)) {
 
                         <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
                             <h5 class="month-hottest-article-title"><a
-                                        href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>"
+                                        href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                         title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
                             <div class="month-hottest-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                         </div>

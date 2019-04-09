@@ -9,7 +9,7 @@ class Article extends Router
 
     public function encodeUrl($app, $controller, $action, $params = [])
     {
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
         if ($action == 'articles') {
             if (isset($params['categoryId'])) {

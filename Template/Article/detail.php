@@ -1,7 +1,7 @@
 <?php
 use Phpbe\System\Be;
-$config = Be::getConfig('System', 'System');
-$configArticle = Be::getConfig('Cms', 'Article');
+$config = Be::getConfig('System.System');
+$configArticle = Be::getConfig('Cms.Article');
 ?>
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="<?php echo url(); ?>/app/Cms/Template/Article/css/listing.css">
@@ -18,8 +18,8 @@ $article = $this->article;
 $similarArticles = $this->similarArticles;
 $comments = $this->comments;
 
-$configArticle = Be::getConfig('Cms', 'Article');
-$configUser = Be::getConfig('System', 'User');
+$configArticle = Be::getConfig('Cms.Article');
+$configUser = Be::getConfig('System.User');
 
 $my = Be::getUser();
 ?>
@@ -69,7 +69,7 @@ if (count($similarArticles)>0) {
     foreach ($similarArticles as $similarArticle) {
     ?>
     <li class="similarArticle">
-        <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $similarArticle->id]); ?>">
+        <a href="<?php echo url('Cms.Article.detail', ['articleId' => $similarArticle->id]); ?>">
             <?php echo $similarArticle->title; ?>
         </a>
     </li>
