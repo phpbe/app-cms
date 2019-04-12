@@ -133,7 +133,7 @@ class Article extends Controller
         $pagination->setLimit($limit);
         $pagination->setTotal($serviceArticleCache->getArticleCount($option));
         $pagination->setPage(Request::get('page', 1, 'int'));
-        $pagination->seturl(url('Cms.Article.articles', ['categoryId' => $categoryId]));
+        $pagination->seturl('Cms.Article.articles', ['categoryId' => $categoryId]);
         Response::set('pagination', $pagination);
 
         $option['offset'] = $pagination->getOffset();
