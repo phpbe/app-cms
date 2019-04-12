@@ -84,7 +84,7 @@ use Phpbe\System\Be;
                 $hottestArticles = $this->hottestArticles;
                 $topArticles = $this->topArticles;
 
-                $configArticle = Be::getConfig('Cms', 'Article');
+                $configArticle = Be::getConfig('Cms.Article');
 
                 if (count($hottestArticles)) {
                     ?>
@@ -99,13 +99,13 @@ use Phpbe\System\Be;
                                     <div class="hottest-article">
 
                                         <div class="hottest-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo url().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
+                                            <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
+                                                <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                                             </a>
                                         </div>
 
                                         <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                                            <h5 class="hottest-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
+                                            <h5 class="hottest-article-title"><a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
                                             <div class="hottest-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                                         </div>
                                     </div>
@@ -136,13 +136,13 @@ use Phpbe\System\Be;
                                     <div class="top-article">
 
                                         <div class="top-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo url().'/'.DATA.'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
+                                            <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
+                                                <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                                             </a>
                                         </div>
 
                                         <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                                            <h5 class="top-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
+                                            <h5 class="top-article-title"><a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
                                             <div class="top-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                                         </div>
                                     </div>
