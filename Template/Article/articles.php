@@ -2,8 +2,6 @@
 use Phpbe\System\Be;
 ?>
 
-<!--{extends:\App\Cms\Article\detail}-->
-
 <!--{head}-->
 <link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/articles.css">
 <!--{/head}-->
