@@ -24,7 +24,7 @@ $configUser = Be::getConfig('System.User');
 $my = Be::getUser();
 ?>
 <h3 class="title"><?php echo $article->title; ?></h3>
-<div class="sub-title"><span>作者：<?php echo Be::getUser($article->createById)->name; ?></span><span>发布时间：<?php echo date('Y-m-d H:i:s', $article->createTime); ?></span><span>访问量：<?php echo $article->hits; ?></span></div>
+<div class="sub-title"><span>作者：<?php echo Be::getUser($article->create_by_id)->name; ?></span><span>发布时间：<?php echo date('Y-m-d H:i:s', $article->create_time); ?></span><span>访问量：<?php echo $article->hits; ?></span></div>
 <div class="body">
     <?php echo $article->body; ?>
 </div>

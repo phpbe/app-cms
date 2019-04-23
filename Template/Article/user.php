@@ -56,13 +56,13 @@ $configArticle = Be::getConfig('Cms.Article');
         ?>
             <div class="article">
                 <div class="article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                    <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $comment->article->title; ?>" target="Blank">
-                    <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $comment->article->title; ?>" />
+                    <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>" target="Blank">
+                    <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
                     </a>
                 </div>
 
                 <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                    <h4 class="article-title"><a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $comment->article->title; ?>" target="Blank"><?php echo $article->title; ?></a></h4>
+                    <h4 class="article-title"><a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>" target="Blank"><?php echo $article->title; ?></a></h4>
                     <div class="article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
                     <div class="article-summary"><?php echo $article->summary; ?></div>
                 </div>

@@ -58,7 +58,7 @@ $categories = $this->categories;
                     <li>
                         <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                            title="<?php echo $article->title; ?>">
-                            <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/' . $article->thumbnailL; ?>"
+                            <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/' . $article->thumbnail_l; ?>"
                                  alt="<?php echo $article->title; ?>" title="<?php echo $article->title; ?>"
                                  style="max-width:100%;">
                         </a>
@@ -134,7 +134,7 @@ foreach ($categories as $category) {
                                     foreach ($category->articles as $article) {
                                         ?>
                                         <li>
-                                            <span class="article-time"><?php echo date('m-d', $article->createTime); ?></span><a
+                                            <span class="article-time"><?php echo date('m-d', $article->create_time); ?></span><a
                                                     href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                                     title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a>
                                         </li>
@@ -149,7 +149,7 @@ foreach ($categories as $category) {
                             <div class="col-5 text-center">
                                 <a href="<?php echo url('Cms.Article.detail', ['articleId' => $categoryThumbnailArticle->id]); ?>"
                                    title="<?php echo $categoryThumbnailArticle->title; ?>">
-                                    <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/' . $categoryThumbnailArticle->thumbnailM; ?>"
+                                    <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/' . $categoryThumbnailArticle->thumbnail_m; ?>"
                                          alt="<?php echo $categoryThumbnailArticle->title; ?>"/>
                                 </a>
                             </div>
@@ -206,7 +206,7 @@ if (count($activeUsers)) {
                                 <div class="active-user-avatar">
                                     <a href="<?php echo url('Cms.Article.user', ['userId' => $activeUser->id]); ?>"
                                        title="查看 <?php echo $activeUser->name; ?> 的动态">
-                                        <img src="<?php echo Be::getRuntime()->getDataUrl() . '/user/avatar/' . (isset($activeUser->avatarM) ? $activeUser->avatarM : ('default/' . $configUser->defaultAvatarM)); ?>"
+                                        <img src="<?php echo Be::getRuntime()->getDataUrl() . '/user/avatar/' . (isset($activeUser->avatar_m) ? $activeUser->avatar_m : ('default/' . $configUser->defaultAvatarM)); ?>"
                                              alt="<?php echo $activeUser->name; ?>"/>
                                     </a>
                                 </div>
@@ -246,7 +246,7 @@ if (count($monthHottestArticles)) {
                              style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
                             <a href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                title="<?php echo $article->title; ?>">
-                                <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == '' ? ('default/' . $configArticle->defaultThumbnailS) : $article->thumbnailS; ?>"
+                                <img src="<?php echo Be::getRuntime()->getDataUrl() . '/Article/Thumbnail/'; ?><?php echo $article->thumbnail_s == '' ? ('default/' . $configArticle->defaultThumbnailS) : $article->thumbnail_s; ?>"
                                      alt="<?php echo $article->title; ?>">
                             </a>
                         </div>
@@ -255,7 +255,7 @@ if (count($monthHottestArticles)) {
                             <h5 class="month-hottest-article-title"><a
                                         href="<?php echo url('Cms.Article.detail', ['articleId' => $article->id]); ?>"
                                         title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
-                            <div class="month-hottest-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
+                            <div class="month-hottest-article-time"><?php echo date('Y-m-d H:i:s', $article->create_time); ?></div>
                         </div>
                     </div>
 
