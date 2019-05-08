@@ -66,7 +66,7 @@ class Article extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $tupleArticle = Be::getTuple('Cms.Article');
+        $tupleArticle = Be::newTuple('Cms.Article');
         $tupleArticle->load($id);
 
         if ($id == 0) {
@@ -89,7 +89,7 @@ class Article extends AdminController
 
         $my = Be::getAdminUser();
 
-        $tupleArticle = Be::getTuple('Cms.Article');
+        $tupleArticle = Be::newTuple('Cms.Article');
         if ($id != 0) $tupleArticle->load($id);
         $tupleArticle->bind(Request::post());
 
@@ -459,7 +459,7 @@ class Article extends AdminController
         $comments = $adminServiceArticle->getComments($option);
         foreach ($comments as $comment) {
             if (!array_key_exists($comment->articleId, $articles)) {
-                $tupleArticle = Be::getTuple('Cms.article');
+                $tupleArticle = Be::newTuple('Cms.article');
                 $tupleArticle->load($comment->articleId);
                 $articles[$comment->articleId] = $tupleArticle;
             }

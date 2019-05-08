@@ -30,13 +30,13 @@ class Category extends AdminController
         $db->startTransaction();
 
         try {
-            $tupleUser = Be::getTuple('System.User');
+            $tupleUser = Be::newTuple('System.User');
             $tupleUser->load(1);
             if (count($ids)) {
                 for ($i = 0, $n = count($ids); $i < $n; $i++) {
                     if (!$ids[$i] && !$names[$i]) continue;
 
-                    $tupleCategory = Be::getTuple('Cms.Category');
+                    $tupleCategory = Be::newTuple('Cms.Category');
                     $tupleCategory->id = $ids[$i];
                     $tupleCategory->parent_id = $parentIds[$i];
                     $tupleCategory->name = $names[$i];
@@ -63,7 +63,7 @@ class Category extends AdminController
         } else {
 
             try {
-                $tupleCategory = Be::getTuple('Cms.Category');
+                $tupleCategory = Be::newTuple('Cms.Category');
                 $tupleCategory->load($categoryId);
 
                 $serviceCategory = Be::getService('Cms.Category');
