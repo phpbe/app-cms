@@ -1,5 +1,5 @@
 <?php
-use Phpbe\System\Be;
+use Be\System\Be;
 ?>
 <!--{head}-->
 <script type="text/javascript" language="javascript" src="/app/Cms/Template/Article/js/user.js"></script>

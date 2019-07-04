@@ -1,6 +1,6 @@
 {
-    "name": "phpbe/app-cms",
-    "type": "phpbe-app",
+    "name": "be/app-cms",
+    "type": "be-app",
     "license": "MIT",
     "description": "内容管理系统",
     "authors": [
@@ -11,19 +11,19 @@
         }
     ],
     "require": {
-        "phpbe/installer": "2.1.*",
-        "phpbe/system": "2.1.*",
-        "phpbe/util": "2.1.*",
+        "be/installer": "2.2.*",
+        "be/system": "2.2.*",
+        "be/util": "2.2.*",
 
-        "phpbe/ui-pagination": "2.1.*",
+        "be/ui-pagination": "2.2.*",
 
-        "phpbe/lib-ip": "2.1.*",
-        "phpbe/lib-image": "2.1.*",
-        "phpbe/lib-history": "2.1.*",
-        "phpbe/lib-captcha": "2.1.*",
-        "phpbe/lib-css": "2.1.*",
-        "phpbe/lib-fso": "2.1.*",
-        "phpbe/lib-pscws": "2.1.*",
+        "be/lib-ip": "2.2.*",
+        "be/lib-image": "2.2.*",
+        "be/lib-history": "2.2.*",
+        "be/lib-captcha": "2.2.*",
+        "be/lib-css": "2.2.*",
+        "be/lib-fso": "2.2.*",
+        "be/lib-pscws": "2.2.*",
 
         "guzzlehttp/guzzle" : "~6.0"
     },

@@ -1,11 +1,11 @@
 <?php
 namespace App\Cms\AdminController;
 
-use Phpbe\System\Be;
-use Phpbe\System\Request;
-use Phpbe\System\Response;
-use Phpbe\System\AdminController;
-use Phpbe\Util\Str;
+use Be\System\Be;
+use Be\System\Request;
+use Be\System\Response;
+use Be\System\AdminController;
+use Be\Util\Str;
 
 class Article extends AdminController
 {

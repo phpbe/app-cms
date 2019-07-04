@@ -1,5 +1,5 @@
 <?php
-use Phpbe\System\Be;
+use Be\System\Be;
 ?>
 
 <!--{head}-->

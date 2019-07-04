@@ -1,11 +1,11 @@
 <?php
 namespace App\Cms\AdminController;
 
-use Phpbe\System\Be;
-use Phpbe\System\Log;
-use Phpbe\System\Request;
-use Phpbe\System\Response;
-use Phpbe\System\AdminController;
+use Be\System\Be;
+use Be\System\Log;
+use Be\System\Request;
+use Be\System\Response;
+use Be\System\AdminController;
 
 class Category extends AdminController
 {

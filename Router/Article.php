@@ -1,8 +1,8 @@
 <?php
 namespace App\Cms\Router;
 
-use Phpbe\System\Be;
-use Phpbe\System\Router;
+use Be\System\Be;
+use Be\System\Router;
 
 class Article extends Router
 {

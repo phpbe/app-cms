@@ -1,8 +1,8 @@
 <?php
 namespace App\Cms\Service;
 
-use Phpbe\System\Be;
-use Phpbe\System\Service;
+use Be\System\Be;
+use Be\System\Service;
 
 class Category extends Service
 {
@@ -135,7 +135,7 @@ class Category extends Service
      * 获取分类
      *
      * @param $categoryId
-     * @return \Phpbe\System\Db\Tuple
+     * @return \Be\System\Db\Tuple
      */
     public function getCategory($categoryId) {
         $tupleCategory = Be::newTuple('Cms.Category');
@@ -146,7 +146,7 @@ class Category extends Service
     /**
      * 获取指定分类的最高父级分类
      * @param $categoryId
-     * @return mixed | null | \Phpbe\System\Db\Tuple
+     * @return mixed | null | \Be\System\Db\Tuple
      */
     public function getTopParentCategory($categoryId) {
         $tupleCategory = Be::newTuple('Cms.Category');
