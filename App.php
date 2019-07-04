@@ -1,6 +1,6 @@
 <?php
 
-namespace App\System;
+namespace App\Cms;
 
 
 class App extends \Be\System\App\App
