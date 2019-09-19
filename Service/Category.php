@@ -16,7 +16,7 @@ class Category extends Service
      */
     public function getCategories()
     {
-        return Be::newTable('Cms.Category')->orderBy('ordering', 'ASC')->getObjects();
+        return Be::newTable('Cms', 'Category')->orderBy('ordering', 'ASC')->getObjects();
     }
 
     /**
@@ -39,7 +39,7 @@ class Category extends Service
      */
     public function getCategoryCount()
     {
-        return Be::newTable('Cms.ArticleCategory')->count();
+        return Be::newTable('Cms', 'ArticleCategory')->count();
     }
 
     /**
@@ -50,7 +50,7 @@ class Category extends Service
     public function getCategoryTree()
     {
         if ($this->categoryTree === null) {
-            $categories = Be::newTable('Cms.ArticleCategory')->getObjects();
+            $categories = Be::newTable('Cms', 'ArticleCategory')->getObjects();
             $this->categoryTree = $this->_createCategoryTree($categories);
         }
         return $this->categoryTree;
@@ -138,7 +138,7 @@ class Category extends Service
      * @return \Be\System\Db\Tuple
      */
     public function getCategory($categoryId) {
-        $tupleCategory = Be::newTuple('Cms.Category');
+        $tupleCategory = Be::newTuple('Cms', 'Category');
         $tupleCategory->load($categoryId);
         return $tupleCategory;
     }
@@ -149,14 +149,14 @@ class Category extends Service
      * @return mixed | null | \Be\System\Db\Tuple
      */
     public function getTopParentCategory($categoryId) {
-        $tupleCategory = Be::newTuple('Cms.Category');
+        $tupleCategory = Be::newTuple('Cms', 'Category');
         $tupleCategory->load($categoryId);
 
         $parentCategory = null;
         $tmpCategory = $tupleCategory;
         while ($tmpCategory->parentId > 0) {
             $parentId = $tmpCategory->parentId;
-            $tmpCategory = Be::newTuple('Cms.Category');
+            $tmpCategory = Be::newTuple('Cms', 'Category');
             $tmpCategory->load($parentId);
         }
         $parentCategory = $tmpCategory;
@@ -176,9 +176,9 @@ class Category extends Service
         $db->beginTransaction();
         try {
 
-            Be::newTable('Cms.Article')->where('category_id', $categoryId)->update(['category_id' => 0]);
-            Be::newTable('Cms.Category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
-            Be::newTuple('Cms.Category')->delete($categoryId);
+            Be::newTable('Cms', 'Article')->where('category_id', $categoryId)->update(['category_id' => 0]);
+            Be::newTable('Cms', 'Category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
+            Be::newTuple('Cms', 'Category')->delete($categoryId);
 
             $db->commit();
         } catch (\Exception $e) {

@@ -20,13 +20,13 @@ class Article extends AdminController
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.Admin');
+            $adminConfigSystem = Be::getConfig('System', 'Admin');
             $limit = $adminConfigSystem->limit;
         }
 
-        $serviceArticle = Be::getService('Cms。Article');
-        $serviceArticleComment = Be::getService('Cms。ArticleComment');
-        $serviceCategory = Be::getService('Cms。Category');
+        $serviceArticle = Be::getService('Cms', 'Article');
+        $serviceArticleComment = Be::getService('Cms', 'ArticleComment');
+        $serviceCategory = Be::getService('Cms', 'Category');
 
         Response::setTitle('文章列表');
 
@@ -66,7 +66,7 @@ class Article extends AdminController
     {
         $id = Request::post('id', 0, 'int');
 
-        $tupleArticle = Be::newTuple('Cms.Article');
+        $tupleArticle = Be::newTuple('Cms', 'Article');
         $tupleArticle->load($id);
 
         if ($id == 0) {
@@ -76,7 +76,7 @@ class Article extends AdminController
         }
         Response::set('article', $tupleArticle);
 
-        $serviceCategory = Be::getService('Cms。Category');
+        $serviceCategory = Be::getService('Cms', 'Category');
         $categories = $serviceCategory->getCategories();
         Response::set('categories', $categories);
         Response::display();
@@ -89,7 +89,7 @@ class Article extends AdminController
 
         $my = Be::getAdminUser();
 
-        $tupleArticle = Be::newTuple('Cms.Article');
+        $tupleArticle = Be::newTuple('Cms', 'Article');
         if ($id != 0) $tupleArticle->load($id);
         $tupleArticle->bind(Request::post());
 
@@ -97,7 +97,7 @@ class Article extends AdminController
 
         $body = Request::post('body', '', 'html');
 
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = Be::getConfig('System', 'System');
 
         // 找出内容中的所有图片
         $images = array();
@@ -147,7 +147,7 @@ class Article extends AdminController
 
                     // 下截远程图片添加水印
                     if ($downloadRemoteImageWatermark == 1) {
-                        $serviceSystem = Be::getService('System.Admin');
+                        $serviceSystem = Be::getService('System', 'Admin');
                         $serviceSystem->watermark($dirPath . '/' . $localImageName);
                     }
 
@@ -158,7 +158,7 @@ class Article extends AdminController
         }
         $tupleArticle->body = $body;
 
-        $configArticle = Be::getConfig('Cms.Article');
+        $configArticle = Be::getConfig('Cms', 'Article');
 
         // 提取第一张图作为缩略图
         if ($thumbnailPickUp == 1) {
@@ -292,10 +292,10 @@ class Article extends AdminController
         if ($tupleArticle->save()) {
             if ($id == 0) {
                 Response::success('添加文章成功！');
-                 Be::getService('System.AdminLog')->addLog('添加文章：#' . $tupleArticle->id . ': ' . $tupleArticle->title);
+                 Be::getService('System', 'AdminLog')->addLog('添加文章：#' . $tupleArticle->id . ': ' . $tupleArticle->title);
             } else {
                 Response::success('修改文章成功！');
-                 Be::getService('System.AdminLog')->addLog('编辑文章：#' . $id . ': ' . $tupleArticle->title);
+                 Be::getService('System', 'AdminLog')->addLog('编辑文章：#' . $id . ': ' . $tupleArticle->title);
             }
         } else {
             Response::error($tupleArticle->getError());
@@ -310,10 +310,10 @@ class Article extends AdminController
     {
         $ids = Request::post('id', '');
         try {
-            $serviceArticle = Be::getService('Cms。Article');
+            $serviceArticle = Be::getService('Cms', 'Article');
             $serviceArticle->unblock($ids);
             Response::success('公开文章成功！');
-             Be::getService('System.AdminLog')->addLog('公开文章：#' . $ids);
+             Be::getService('System', 'AdminLog')->addLog('公开文章：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -326,10 +326,10 @@ class Article extends AdminController
     {
         $ids = Request::post('id', '');
         try {
-            $serviceArticle = Be::getService('Cms。Article');
+            $serviceArticle = Be::getService('Cms', 'Article');
             $serviceArticle->block($ids);
             Response::success('屏蔽文章成功！');
-             Be::getService('System.AdminLog')->addLog('屏蔽文章：#' . $ids);
+             Be::getService('System', 'AdminLog')->addLog('屏蔽文章：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -343,10 +343,10 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms。Article');
+            $serviceArticle = Be::getService('Cms', 'Article');
             $serviceArticle->delete($ids);
             Response::success('删除文章成功！');
-             Be::getService('System.AdminLog')->addLog('删除文章：#' . $ids);
+             Be::getService('System', 'AdminLog')->addLog('删除文章：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -374,7 +374,7 @@ class Article extends AdminController
     {
         $body = $this->cleanHtml($_POST['body']);
 
-        $configArticle = Be::getConfig('Cms.Article');
+        $configArticle = Be::getConfig('Cms', 'Article');
 
         Response::set('error', 0);
         Response::set('summary', Str::limit($body, intval($configArticle->getSummary)));
@@ -387,7 +387,7 @@ class Article extends AdminController
     {
         $body = $this->cleanHtml($_POST['body']);
 
-        $configArticle = Be::getConfig('Cms.Article');
+        $configArticle = Be::getConfig('Cms', 'Article');
 
         $libPscws = Be::getLib('Pscws');
         $libPscws->sendText($body);
@@ -411,7 +411,7 @@ class Article extends AdminController
     {
         $body = $this->cleanHtml($_POST['body']);
 
-        $configArticle = Be::getConfig('Cms.Article');
+        $configArticle = Be::getConfig('Cms', 'Article');
 
         Response::set('error', 0);
         Response::set('metaDescription', Str::limit($body, intval($configArticle->getMetaDescription)));
@@ -428,11 +428,11 @@ class Article extends AdminController
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.admin');
+            $adminConfigSystem = Be::getConfig('System', 'admin');
             $limit = $adminConfigSystem->limit;
         }
 
-        $adminServiceArticle = Be::getService('Cms。Article');
+        $adminServiceArticle = Be::getService('Cms', 'Article');
         Response::setTitle('评论列表');
 
         $option = array('articleId' => $articleId, 'key' => $key, 'status' => $status);
@@ -459,7 +459,7 @@ class Article extends AdminController
         $comments = $adminServiceArticle->getComments($option);
         foreach ($comments as $comment) {
             if (!array_key_exists($comment->articleId, $articles)) {
-                $tupleArticle = Be::newTuple('Cms.article');
+                $tupleArticle = Be::newTuple('Cms', 'article');
                 $tupleArticle->load($comment->articleId);
                 $articles[$comment->articleId] = $tupleArticle;
             }
@@ -479,10 +479,10 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle = Be::getService('Cms', 'Article');
             $serviceArticle->commentsUnblock($ids);
             Response::success('公开评论成功！');
-             Be::getService('System.AdminLog')->addLog('公开文章评论：#' . $ids);
+             Be::getService('System', 'AdminLog')->addLog('公开文章评论：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -496,10 +496,10 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle = Be::getService('Cms', 'Article');
             $serviceArticle->commentsBlock($ids);
             Response::success('屏蔽评论成功！');
-             Be::getService('System.AdminLog')->addLog('屏蔽文章评论：#' . $ids);
+             Be::getService('System', 'AdminLog')->addLog('屏蔽文章评论：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -513,10 +513,10 @@ class Article extends AdminController
         $ids = Request::post('id', '');
 
         try {
-            $serviceArticle = Be::getService('Cms.Article');
+            $serviceArticle = Be::getService('Cms', 'Article');
             $serviceArticle->commentsDelete($ids);
             Response::success('删除评论成功！');
-             Be::getService('System.AdminLog')->addLog('删除文章评论：#' . $ids . ')');
+             Be::getService('System', 'AdminLog')->addLog('删除文章评论：#' . $ids . ')');
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }

@@ -4,7 +4,7 @@ namespace App\Cms\Config;
 use Be\System\Be;
 
 /**
- * @be-config-name 文章
+ * @be-config-label 文章
  * @be-config-writeAble true
  */
 class Article
@@ -90,21 +90,21 @@ class Article
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemImage
      * @be-config-item-label 默认缩略图大图
-     * @be-config-item-path /Cms/Article/Thumbnail/Default/
+     * @be-config-item-option {"path": "/Cms/Article/Thumbnail/Default"}
      */
     public $defaultThumbnailL = '0_l.gif';
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemImage
      * @be-config-item-label 默认缩略图中图
-     * @be-config-item-path /Cms/Article/Thumbnail/Default/
+     * @be-config-item-option {"path": "/Cms/Article/Thumbnail/Default"}
      */
     public $defaultThumbnailM = '0_m.gif';
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemImage
      * @be-config-item-label 默认缩略图小图
-     * @be-config-item-path /Cms/Article/Thumbnail/Default/
+     * @be-config-item-option {"path": "/Cms/Article/Thumbnail/Default"}
      */
     public $defaultThumbnailS = '0_s.gif';
 
