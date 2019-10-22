@@ -11,7 +11,6 @@
         }
     ],
     "require": {
-        "be/installer": "2.2.*",
         "be/system": "2.2.*",
         "be/util": "2.2.*",
         "be/lib": "2.2.*",
