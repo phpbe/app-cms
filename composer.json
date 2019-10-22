@@ -14,17 +14,8 @@
         "be/installer": "2.2.*",
         "be/system": "2.2.*",
         "be/util": "2.2.*",
-
+        "be/lib": "2.2.*",
         "be/ui-pagination": "2.2.*",
-
-        "be/lib-ip": "2.2.*",
-        "be/lib-image": "2.2.*",
-        "be/lib-history": "2.2.*",
-        "be/lib-captcha": "2.2.*",
-        "be/lib-css": "2.2.*",
-        "be/lib-fso": "2.2.*",
-        "be/lib-pscws": "2.2.*",
-
         "guzzlehttp/guzzle" : "~6.0"
     },
     "extra" : {
