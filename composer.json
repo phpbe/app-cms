@@ -1,6 +1,6 @@
 {
     "name": "be/app-cms",
-    "type": "be-app",
+    "type": "library",
     "license": "MIT",
     "description": "内容管理系统",
     "authors": [
@@ -16,8 +16,5 @@
         "be/lib": "2.2.*",
         "be/ui-pagination": "2.2.*",
         "guzzlehttp/guzzle" : "~6.0"
-    },
-    "extra" : {
-        "install-dir-name" : "Cms"
     }
 }
