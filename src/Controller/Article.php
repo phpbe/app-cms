@@ -168,7 +168,7 @@ class Article extends Controller
         $articleId = Request::get('articleId', 0, 'int');
         if ($articleId == 0) Response::end('参数(articleId)缺失！');
 
-        $tupleArticle = Be::newTuple('Cms', 'Article');
+        $tupleArticle = Be::newTuple('cms_article');
         $tupleArticle->load($articleId);
         $tupleArticle->increment('hits', 1); // 点击量加 1
 
