@@ -1,5 +1,5 @@
 <?php
-namespace App\Cms\Service;
+namespace Be\App\Cms\Service;
 
 use Be\System\Be;
 use Be\System\Service;
@@ -70,7 +70,7 @@ class Article extends Service
             if ($conditions['categoryId'] == 0)
                 $where[] = ['category_id', 0];
             elseif ($conditions['categoryId'] > 0) {
-                $ids = Be::getService('Cms', 'Category')->getSubCategoryIds($conditions['categoryId']);
+                $ids = Be::getService('Cms.Category')->getSubCategoryIds($conditions['categoryId']);
                 if (count($ids) > 0) {
                     $ids[] = $conditions['categoryId'];
                     $where[] = ['category_id', 'in', $ids];

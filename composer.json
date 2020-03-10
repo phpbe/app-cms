@@ -11,15 +11,12 @@
         }
     ],
     "require": {
-        "be/system": "2.3.*",
-        "be/util": "2.3.*",
-        "be/lib": "2.3.*",
-        "be/ui-pagination": "2.2.*",
+        "be/framework": "dev-master",
         "guzzlehttp/guzzle" : "~6.0"
     },
     "autoload": {
         "psr-4": {
-            "App\\Cms\\": "src/"
+            "Be\\App\\Cms\\": "src/"
         }
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace App\Cms\Config;
+namespace Be\App\Cms\Config;
 
 use Be\System\Be;
 

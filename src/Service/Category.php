@@ -1,5 +1,5 @@
 <?php
-namespace App\Cms\Service;
+namespace Be\App\Cms\Service;
 
 use Be\System\Be;
 use Be\System\Service;

@@ -1,5 +1,5 @@
 <?php
-namespace App\Cms\Service;
+namespace Be\App\Cms\Service;
 
 use Be\System\Be;
 use Be\System\Service;
@@ -116,7 +116,7 @@ class ArticleComment extends Service
         $tupleArticleComment->ip = $_SERVER['REMOTE_ADDR'];
         $tupleArticleComment->create_time = time();
 
-        $configArticle = Be::getConfig('Cms', 'Article');
+        $configArticle = Be::getConfig('Cms.Article');
         $tupleArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
 
         $tupleArticleComment->save();

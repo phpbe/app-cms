@@ -1,5 +1,5 @@
 <?php
-namespace App\Cms\AdminController;
+namespace Be\App\Cms\AdminController;
 
 use Be\System\Be;
 use Be\System\Log;
@@ -13,7 +13,7 @@ class Category extends AdminController
 
     public function categories()
     {
-        $serviceCategory = Be::getService('Cms', 'Category');
+        $serviceCategory = Be::getService('Cms.Category');
 
         Response::setTitle('分类管理');
         Response::set('categories', $serviceCategory->getCategories());
@@ -46,12 +46,12 @@ class Category extends AdminController
             }
             $db->commit();
 
-            Be::getService('System', 'AdminLog')->addLog('修改文章分类信息');
-            Response::success('保存分类成功！', adminUrl('Cms', 'Article', 'categories'));
+            Be::getService('System.AdminLog')->addLog('修改文章分类信息');
+            Response::success('保存分类成功！', adminUrl('Cms.Article.categories'));
 
         } catch (\Exception $e) {
             $db->rollback();
-            Response::error('保存分类失败：'.$e->getMessage(), adminUrl('Cms', 'Article', 'categories'));
+            Response::error('保存分类失败：'.$e->getMessage(), adminUrl('Cms.Article.categories'));
         }
     }
 
@@ -66,10 +66,10 @@ class Category extends AdminController
                 $tupleCategory = Be::newTuple('cms_category');
                 $tupleCategory->load($categoryId);
 
-                $serviceCategory = Be::getService('Cms', 'Category');
+                $serviceCategory = Be::getService('Cms.Category');
                 $serviceCategory->deleteCategory($categoryId);
 
-                Be::getService('System', 'AdminLog')->addLog('删除文章分类：#' . $categoryId . ': ' . $tupleCategory->title);
+                Be::getService('System.AdminLog')->addLog('删除文章分类：#' . $categoryId . ': ' . $tupleCategory->title);
 
                 Response::success('分类删除成功！');
 

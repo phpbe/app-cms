@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Cms\Controller;
+namespace Be\App\Cms\AdminController;
 
 use Be\System\Be;
 use Be\System\Request;
@@ -13,13 +13,13 @@ class Setting extends AdminController
     public function setting()
     {
         Response::setTitle('设置文章系统参数');
-        Response::set('configArticle', Be::getConfig('Cms', 'Article'));
+        Response::set('configArticle', Be::getConfig('Cms.Article'));
         Response::display();
     }
 
     public function settingSave()
     {
-        $configArticle = Be::getConfig('Cms', 'Article');
+        $configArticle = Be::getConfig('Cms.Article');
 
         $configArticle->getSummary = Request::post('getSummary', 0, 'int');
         $configArticle->getMetaKeywords = Request::post('getMetaKeywords', 0, 'int');
@@ -80,12 +80,12 @@ class Setting extends AdminController
             }
         }
 
-        $serviceSystem = Be::getService('System', 'Admin');
+        $serviceSystem = Be::getService('System.Admin');
         $serviceSystem->updateConfig($configArticle, Be::getRuntime()->getRootPath() . '/Config/Article.php');
 
-        Be::getService('System', 'AdminLog')->addLog('设置文章系统参数');
+        Be::getService('System.AdminLog')->addLog('设置文章系统参数');
 
-        Response::success('设置成功！', adminUrl('Cms', 'Article', 'setting'));
+        Response::success('设置成功！', adminUrl('Cms.Article.setting'));
     }
 
 }
