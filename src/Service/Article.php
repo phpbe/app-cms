@@ -1,38 +1,83 @@
 <?php
+
 namespace Be\App\Cms\Service;
 
-use Be\System\Be;
-use Be\System\Service;
+use Be\App\ServiceException;
+use Be\Be;
 
-class Article extends Service
+class Article
 {
+
+    /**
+     * 获取文章伪静态页网址
+     *
+     * @param array $params
+     * @return string
+     * @throws ServiceException
+     */
+    public function getArticleUrl(array $params = []): string
+    {
+        $page = $this->getArticle($params['id']);
+        return '/article/' . $page->url;
+    }
+
+    /**
+     * 获取文章
+     *
+     * @param string $articleId 文章ID
+     * @return \stdClass 文章对象
+     * @throws ServiceException
+     */
+    public function getArticle(string $articleId): \stdClass
+    {
+        $cache = Be::getCache();
+
+        $key = 'Cms:Article:' . $articleId;
+        $article = $cache->get($key);
+        if (!$article) {
+            throw new ServiceException('文章不存在！');
+        }
+        return $article;
+    }
+
+
     /**
      * 获取符合条件的文章列表
      *
      * @param array $conditions 查询条件
      * @return array
      */
-    public function getArticles($conditions = [])
+    public function getArticles(array $conditions = []): array
     {
-        $tableArticle = Be::newTable('cms_article');
+        $configEs = Be::getConfig('App.Cms.Es');
 
-        $where = $this->createArticleWhere($conditions);
-        $tableArticle->where($where);
+        // 启用了 ES 搜索
+        if ($configEs->enable) {
 
-        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
-            $tableArticle->orderBy($conditions['orderByString']);
+            return [];
         } else {
-            $orderBy = 'ordering';
-            $orderByDir = 'DESC';
-            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
-            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
-            $tableArticle->orderBy($orderBy, $orderByDir);
+            // 数据库搜索
+
+            $tableArticle = Be::newTable('cms_article');
+
+            $where = $this->createArticleWhere($conditions);
+            $tableArticle->where($where);
+
+            if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+                $tableArticle->orderBy($conditions['orderByString']);
+            } else {
+                $orderBy = 'ordering';
+                $orderByDir = 'DESC';
+                if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+                if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+                $tableArticle->orderBy($orderBy, $orderByDir);
+            }
+
+            if (isset($conditions['offset']) && $conditions['offset']) $tableArticle->offset($conditions['offset']);
+            if (isset($conditions['limit']) && $conditions['limit']) $tableArticle->limit($conditions['limit']);
+
+            return $tableArticle->getObjects();
         }
-
-        if (isset($conditions['offset']) && $conditions['offset']) $tableArticle->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $tableArticle->limit($conditions['limit']);
-
-        return $tableArticle->getObjects();
     }
 
     /**
@@ -41,11 +86,18 @@ class Article extends Service
      * @param array $conditions 查询条件
      * @return int
      */
-    public function getArticleCount($conditions = [])
+    public function getArticleCount(array $conditions = []): int
     {
-        return Be::newTable('cms_article')
-            ->where($this->createArticleWhere($conditions))
-            ->count();
+        $configEs = Be::getConfig('App.Cms.Es');
+
+        // 启用了 ES 搜索
+        if ($configEs->enable) {
+            return 0;
+        } else {
+            return Be::newTable('cms_article')
+                ->where($this->createArticleWhere($conditions))
+                ->count();
+        }
     }
 
     /**
@@ -119,7 +171,7 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \Be\System\Db\Tuple | mixed $tupleArticle 当前文章
+     * @param \Be\Db\Tuple | mixed $tupleArticle 当前文章
      * @param int $n 查询出最多多少条记录
      * @return array
      */
@@ -155,7 +207,7 @@ class Article extends Service
     /**
      * 获取相似文章
      *
-     * @param \Be\System\Db\Tuple | mixed $tupleArticle 当前文章
+     * @param \Be\Db\Tuple | mixed $tupleArticle 当前文章
      * @param array $keywords 关键词
      * @param int $n 查询出最多多少条记录
      * @return array
@@ -198,27 +250,6 @@ class Article extends Service
         return $similarArticles;
     }
 
-    /**
-     * 屏蔽文章
-     *
-     * @param $ids
-     * @throws \Exception
-     */
-    public function unblock($ids)
-    {
-        Be::newTable('cms_article')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
-    }
-
-    /**
-     * 公开文章
-     *
-     * @param $ids
-     * @throws \Exception
-     */
-    public function block($ids)
-    {
-        Be::newTable('cms_article')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
-    }
 
     /**
      * 删除文章
@@ -245,9 +276,9 @@ class Article extends Service
                 $tupleArticle = Be::newTuple('cms_article');
                 $tupleArticle->load($id);
 
-                if ($tupleArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $tupleArticle->thumbnail_l;
-                if ($tupleArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $tupleArticle->thumbnail_m;
-                if ($tupleArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' .  $tupleArticle->thumbnail_s;
+                if ($tupleArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' . $tupleArticle->thumbnail_l;
+                if ($tupleArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' . $tupleArticle->thumbnail_m;
+                if ($tupleArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' . $tupleArticle->thumbnail_s;
 
                 $tupleArticle->delete();
             }
@@ -349,26 +380,4 @@ class Article extends Service
         }
     }
 
-
-    /**
-     * 活跃会员, 即参与评论最多的会员
-     *
-     * @param int $limit 获取多少个
-     * @return array 用户对象数组
-     */
-    public function getActiveUsers($limit = 10)
-    {
-        $userIds = Be::newTable('cms_article_comment')
-            ->groupBy('user_id')
-            ->orderBy('COUNT(*) DESC')
-            ->limit($limit)
-            ->getValues('user_id');
-
-        $activeUsers = [];
-        foreach ($userIds as $userId) {
-            $activeUsers[] = Be::getUser($userId);
-        }
-
-        return $activeUsers;
-    }
 }

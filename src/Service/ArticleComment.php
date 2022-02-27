@@ -1,8 +1,8 @@
 <?php
 namespace Be\App\Cms\Service;
 
-use Be\System\Be;
-use Be\System\Service;
+use Be\Be;
+use Be\Service;
 
 class ArticleComment extends Service
 {

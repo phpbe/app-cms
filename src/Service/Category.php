@@ -1,11 +1,26 @@
 <?php
 namespace Be\App\Cms\Service;
 
-use Be\System\Be;
-use Be\System\Service;
+use Be\App\ServiceException;
+use Be\Be;
 
-class Category extends Service
+class Category
 {
+
+
+    /**
+     * 获取页面伪静态页网址
+     *
+     * @param array $params
+     * @return string
+     * @throws ServiceException
+     */
+    public function getCategoryUrl(array $params = []): string
+    {
+        $category = $this->getCategory($params['id']);
+        return '/articles/' . $category->url;
+    }
+
 
 
     private $categories = null;
@@ -135,7 +150,7 @@ class Category extends Service
      * 获取分类
      *
      * @param $categoryId
-     * @return \Be\System\Db\Tuple
+     * @return \Be\Db\Tuple
      */
     public function getCategory($categoryId) {
         $tupleCategory = Be::newTuple('cms_category');
@@ -146,7 +161,7 @@ class Category extends Service
     /**
      * 获取指定分类的最高父级分类
      * @param $categoryId
-     * @return mixed | null | \Be\System\Db\Tuple
+     * @return mixed | null | \Be\Db\Tuple
      */
     public function getTopParentCategory($categoryId) {
         $tupleCategory = Be::newTuple('cms_category');

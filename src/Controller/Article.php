@@ -1,22 +1,20 @@
 <?php
 namespace Be\App\Cms\Controller;
 
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
-use Be\System\Controller;
+use Be\Be;
+use Be\Request;
+use Be\Response;
 
 /**
- * @be-controller-name 文章
+ * 文章
  */
-class Article extends Controller
+class Article
 {
 
     /**
+     * 首页
      *
-     *
-     * @be-action-name 首页
-     * @be-action-permission 首页
+     * @BeRoute("/article/home");
      */
     public function home()
     {
@@ -81,11 +79,9 @@ class Article extends Controller
         Response::display();
     }
 
-
     /**
-     *
-     *
-     * @permission 文章列表
+     * 文章列表
+     * @BeRoute("\Be\Be::getService('App.ShopFai.Product')->getProductUri($params)");
      */
     public function articles()
     {
@@ -161,7 +157,9 @@ class Article extends Controller
     }
 
     /**
-     * @permission 文章明细
+     * 文章明细
+     *
+     * @BeRoute("\Be\Be::getService('App.Cms.Article')->getArticlUrl($params)");
      */
     public function detail()
     {
@@ -205,39 +203,6 @@ class Article extends Controller
         Response::setMetaKeywords($tupleArticle->metaKeywords);
         Response::setMetaDescription($tupleArticle->metaDescription);
 
-        $northMenu = Be::getMenu('north');
-        $northMenuTree = $northMenu->getMenuTree();
-        if (count($northMenuTree)) {
-            $menuExist = false;
-            foreach ($northMenuTree as $menu) {
-                if (
-                    isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
-                    isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
-                    isset($menu->params['action']) && $menu->params['action'] == 'detail' &&
-                    isset($menu->params['articleId']) && $menu->params['articleId'] == $articleId
-                ) {
-                    Response::set('menuId', $menu->id);
-                    if ($menu->home == 1) Response::set('home', 1);
-                    $menuExist = true;
-                    break;
-                }
-            }
-
-            if (!$menuExist) {
-                foreach ($northMenuTree as $menu) {
-                    if (
-                        isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
-                        isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
-                        isset($menu->params['action']) && $menu->params['action'] == 'listing' &&
-                        isset($menu->params['categoryId']) && $menu->params['categoryId'] == $tupleArticle->categoryId
-                    ) {
-                        Response::set('menuId', $menu->id);
-                        //$menuExist = true;
-                        break;
-                    }
-                }
-            }
-        }
 
         Response::set('article', $tupleArticle);
         Response::set('similarArticles', $similarArticles);

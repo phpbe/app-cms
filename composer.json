@@ -1,22 +1,30 @@
 {
-    "name": "be/app-cms",
-    "type": "library",
-    "license": "MIT",
-    "description": "内容管理系统",
-    "authors": [
-        {
-            "name": "liu12",
-            "email": "i@liu12.com",
-            "homepage": "http://www.liu12.com/"
-        }
-    ],
-    "require": {
-        "be/framework": "dev-master",
-        "guzzlehttp/guzzle" : "~6.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Be\\App\\Cms\\": "src/"
-        }
+  "name": "be/app-cms",
+  "type": "library",
+  "description": "内容管理系统",
+  "keywords": [
+    "PHP",
+    "CMS",
+    "内容管理系统"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "liu12",
+      "email": "i@liu12.com",
+      "homepage": "http://www.liu12.com/"
     }
+  ],
+  "require": {
+    "be/be": "dev-master",
+    "guzzlehttp/guzzle": "~6.0",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Be\\App\\Cms\\": "src/"
+    }
+  }
 }
+
+
