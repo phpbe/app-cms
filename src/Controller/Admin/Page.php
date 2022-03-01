@@ -24,14 +24,9 @@ class Page extends Auth
      */
     public function pages()
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
         Be::getAdminPlugin('Curd')->setting([
-
             'label' => '自定义页面',
-            'db' => $configCms->db,
             'table' => 'cms_page',
-
             'grid' => [
                 'title' => '自定义页面',
 
@@ -321,7 +316,8 @@ class Page extends Auth
      *
      * @return void
      */
-    public function preview() {
+    public function preview()
+    {
         $request = Be::getRequest();
         $response = Be::getResponse();
 

@@ -2,8 +2,15 @@
 
 namespace Be\App\Cms\Service\Admin;
 
+use Be\AdminPlugin\Form\Item\FormItemSelect;
+use Be\AdminPlugin\Table\Item\TableItemImage;
+use Be\AdminPlugin\Table\Item\TableItemLink;
+use Be\AdminPlugin\Table\Item\TableItemSelection;
+use Be\AdminPlugin\Table\Item\TableItemSwitch;
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Db\DbException;
+use Be\Runtime\RuntimeException;
 
 class Article
 {
@@ -13,13 +20,12 @@ class Article
      *
      * @param array $data 文章数据
      * @return bool
-     * @throws \Throwable
+     * @throws ServiceException
+     * @throws DbException|RuntimeException
      */
-    public function edit($data)
+    public function edit(array $data): bool
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $db = Be::getDb($configCms->db);
+        $db = Be::getDb();
 
         $isNew = true;
         $articleId = null;
@@ -28,7 +34,7 @@ class Article
             $articleId = $data['id'];
         }
 
-        $tupleArticle = Be::newTuple('cms_article', $configCms->db);
+        $tupleArticle = Be::newTuple('cms_article');
         if (!$isNew) {
             try {
                 $tupleArticle->load($articleId);
@@ -63,11 +69,11 @@ class Article
         $urlExist = null;
         do {
             if ($isNew) {
-                $urlExist = Be::newTable('cms_article', $configCms->db)
+                $urlExist = Be::newTable('cms_article')
                         ->where('url', $urlUnique)
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $urlExist = Be::newTable('cms_article', $configCms->db)
+                $urlExist = Be::newTable('cms_article')
                         ->where('url', $urlUnique)
                         ->where('id', '!=', $articleId)
                         ->getValue('COUNT(*)') > 0;
@@ -93,7 +99,11 @@ class Article
         }
 
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
-            $data['seo_description'] = $data['description'];
+            if ($data['summary'] !== '') {
+                $data['seo_description'] = $data['summary'];
+            } else {
+                $data['seo_description'] = \Be\Util\Str\Html::clean($data['description']);
+            }
         }
 
         if (!isset($data['seo_keywords']) || !is_string($data['seo_keywords'])) {
@@ -129,13 +139,13 @@ class Article
             if (isset($data['category_ids']) && is_array($data['category_ids']) && count($data['category_ids']) > 0) {
                 if ($isNew) {
                     foreach ($data['category_ids'] as $category_id) {
-                        $tupleArticleCategory = Be::newTuple('cms_article_category', $configCms->db);
+                        $tupleArticleCategory = Be::newTuple('cms_article_category');
                         $tupleArticleCategory->article_id = $tupleArticle->id;
                         $tupleArticleCategory->category_id = $category_id;
                         $tupleArticleCategory->insert();
                     }
                 } else {
-                    $existCategoryIds = Be::newTable('cms_article_category', $configCms->db)
+                    $existCategoryIds = Be::newTable('cms_article_category')
                         ->where('article_id', $articleId)
                         ->getValues('category_id');
 
@@ -143,7 +153,7 @@ class Article
                     if (count($existCategoryIds) > 0) {
                         $removeCategoryIds = array_diff($existCategoryIds, $data['category_ids']);
                         if (count($removeCategoryIds) > 0) {
-                            Be::newTable('cms_article_category', $configCms->db)
+                            Be::newTable('cms_article_category')
                                 ->where('article_id', $articleId)
                                 ->where('category_id', 'NOT IN', $removeCategoryIds)
                                 ->delete();
@@ -159,7 +169,7 @@ class Article
                     }
                     if (count($newCategoryIds) > 0) {
                         foreach ($newCategoryIds as $category_id) {
-                            $tupleArticleCategory = Be::newTuple('cms_article_category', $configCms->db);
+                            $tupleArticleCategory = Be::newTuple('cms_article_category');
                             $tupleArticleCategory->article_id = $tupleArticle->id;
                             $tupleArticleCategory->category_id = $category_id;
                             $tupleArticleCategory->insert();
@@ -172,13 +182,13 @@ class Article
             if (isset($data['tags']) && is_array($data['tags']) && count($data['tags']) > 0) {
                 if ($isNew) {
                     foreach ($data['tags'] as $tag) {
-                        $tupleArticleTag = Be::newTuple('cms_article_tag', $configCms->db);
+                        $tupleArticleTag = Be::newTuple('cms_article_tag');
                         $tupleArticleTag->article_id = $tupleArticle->id;
                         $tupleArticleTag->tag = $tag;
                         $tupleArticleTag->insert();
                     }
                 } else {
-                    $existTags = Be::newTable('cms_article_tag', $configCms->db)
+                    $existTags = Be::newTable('cms_article_tag')
                         ->where('article_id', $articleId)
                         ->getValues('tag');
 
@@ -186,7 +196,7 @@ class Article
                     if (count($existTags) > 0) {
                         $removeTags = array_diff($existTags, $data['tags']);
                         if (count($removeTags) > 0) {
-                            Be::newTable('cms_article_tag', $configCms->db)
+                            Be::newTable('cms_article_tag')
                                 ->where('article_id', $articleId)
                                 ->where('tag', 'NOT IN', $removeTags)
                                 ->delete();
@@ -202,7 +212,7 @@ class Article
                     }
                     if (count($newTags) > 0) {
                         foreach ($newTags as $newTag) {
-                            $tupleArticleTag = Be::newTuple('cms_article_tag', $configCms->db);
+                            $tupleArticleTag = Be::newTuple('cms_article_tag');
                             $tupleArticleTag->article_id = $tupleArticle->id;
                             $tupleArticleTag->tag = $newTag;
                             $tupleArticleTag->insert();
@@ -228,15 +238,15 @@ class Article
     /**
      * 获取文章
      *
-     * @param $articleId
+     * @param string $articleId
      * @param array $with
-     * @return mixed
+     * @return object
+     * @throws ServiceException
+     * @throws DbException|RuntimeException
      */
-    public function getArticle($articleId, $with = [])
+    public function getArticle(string $articleId, array $with = []): object
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $db = Be::getDb($configCms->db);
+        $db = Be::getDb();
 
         $sql = 'SELECT * FROM `cms_article` WHERE id=?';
         $article = $db->getObject($sql, [$articleId]);
@@ -275,11 +285,12 @@ class Article
         return $article;
     }
 
-
     /**
      * 文章更新
      *
      * @param array $articleIds 文章ID列表
+     * @throws ServiceException
+     * @throws RuntimeException|DbException
      */
     public function onUpdate(array $articleIds)
     {
@@ -288,7 +299,10 @@ class Article
             $this->syncEs($articleIds);
         }
 
-        $this->syncRedis($articleIds);
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        if ($configRedis->enable) {
+            $this->syncRedis($articleIds);
+        }
     }
 
     /**
@@ -305,6 +319,8 @@ class Article
      * 文章同步到 Redis
      *
      * @param array $articleId
+     * @throws ServiceException
+     * @throws RuntimeException|DbException
      */
     public function syncRedis(array $articleIds)
     {
@@ -312,11 +328,112 @@ class Article
         foreach ($articleIds as $articleId) {
             $key = 'Cms:Article:' . $articleId;
             $article = $this->getArticle($articleId);
-            $keyValues[$key] = $article;
+            $keyValues[$key] = serialize($article);
         }
 
-        $cache = Be::getCache();
-        $cache->setMany($keyValues);
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        $redis = Be::getRedis($configRedis->db);
+        $redis->mset($keyValues);
+    }
+
+
+    /**
+     * 获取菜单参数选择器
+     *
+     * @return array
+     */
+    public function getMenuArticleParamPicker():array
+    {
+        $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
+        return [
+            'name' => 'id',
+            'value' => '指定文章：{title}',
+            'table' => 'cms_article',
+            'grid' => [
+                'title' => '选择一篇文章',
+
+                'filter' => [
+                    ['is_enable', '=', '1'],
+                    ['is_delete', '=', '0'],
+                ],
+
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'category_id',
+                            'label' => '分类',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => $categoryKeyValues,
+                            'buildSql' => function ($dbName, $formData) {
+                                if (isset($formData['category_id']) && $formData['category_id']) {
+                                    $articleIds = Be::newTable('cms_article_category', $dbName)
+                                        ->where('category_id', $formData['category_id'])
+                                        ->getValues('article_id');
+                                    if (count($articleIds) > 0) {
+                                        return ['id', 'IN', $articleIds];
+                                    } else {
+                                        return ['id', '=', ''];
+                                    }
+                                }
+                                return '';
+                            },
+                        ],
+                        [
+                            'name' => 'title',
+                            'label' => '标题',
+                        ],
+                    ],
+                ],
+
+                'table' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'driver' => TableItemSelection::class,
+                            'width' => '50',
+                        ],
+                        [
+                            'name' => 'image',
+                            'label' => '封面图片',
+                            'width' => '90',
+                            'driver' => TableItemImage::class,
+                            'ui' => [
+                                'style' => 'max-width: 60px; max-height: 60px'
+                            ],
+                            'value' => function ($row) {
+                                if ($row['image'] === '') {
+                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                }
+                                return $row['image'];
+                            },
+                        ],
+                        [
+                            'name' => 'title',
+                            'label' => '标题',
+                            'driver' => TableItemLink::class,
+                            'align' => 'left',
+                            'task' => 'detail',
+                            'drawer' => [
+                                'width' => '80%'
+                            ],
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '180',
+                            'sortable' => true,
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                            'width' => '180',
+                            'sortable' => true,
+                        ],
+                    ],
+                ],
+            ]
+        ];
     }
 
 }

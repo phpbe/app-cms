@@ -33,11 +33,9 @@ class Article
     public function articles()
     {
         $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
-        $configCms = Be::getConfig('App.Cms.Cms');
         Be::getAdminPlugin('Curd')->setting([
 
             'label' => '文章',
-            'db' => $configCms->db,
             'table' => 'cms_article',
 
             'grid' => [
@@ -328,12 +326,11 @@ class Article
                             'label' => '分类',
                             'driver' => DetailItemHtml::class,
                             'value' => function ($row) {
-                                $configCms = Be::getConfig('App.Cms.Cms');
-                                $categoryIds = Be::newTable('cms_article_category', $configCms->db)
+                                $categoryIds = Be::newTable('cms_article_category')
                                     ->where('article_id', $row['id'])
                                     ->getValues('category_id');
                                 if (count($categoryIds) > 0) {
-                                    $categoryNames = Be::newTable('cms_category', $configCms->db)
+                                    $categoryNames = Be::newTable('cms_category')
                                         ->where('id', 'IN', $categoryIds)
                                         ->getValues('name');
 
@@ -348,8 +345,7 @@ class Article
                             'label' => '标签',
                             'driver' => DetailItemHtml::class,
                             'value' => function ($row) {
-                                $configCms = Be::getConfig('App.Cms.Cms');
-                                $tags = Be::newTable('cms_article_tag', $configCms->db)
+                                $tags = Be::newTable('cms_article_tag')
                                     ->where('article_id', $row['id'])
                                     ->getValues('tag');
                                 if (count($tags) > 0) {
@@ -466,7 +462,7 @@ class Article
     /**
      * 编辑
      *
-     * @BeRoute("/admin/product/edit")
+     * @BePermission("编辑", ordering="1.12")
      */
     public function edit()
     {
@@ -511,7 +507,7 @@ class Article
     /**
      * 预览
      *
-     * @BeRoute("/admin/product/preview")
+     * @BePermission("*")
      */
     public function preview()
     {
@@ -524,309 +520,6 @@ class Article
 
 
 
-    public function editSave()
-    {
-        $id = Request::post('id', 0, 'int');
-
-        $my = Be::getAdminUser();
-
-        $tupleArticle = Be::newTuple('cms_article');
-        if ($id != 0) $tupleArticle->load($id);
-        $tupleArticle->bind(Request::post());
-
-        $tupleArticle->createTime = strtotime($tupleArticle->createTime);
-
-        $body = Request::post('body', '', 'html');
-
-        $configSystem = Be::getConfig('System.System');
-
-        // 找出内容中的所有图片
-        $images = array();
-
-        $imageTypes = implode('|', $configSystem->allowUploadImageTypes);
-        preg_match_all("/src=[\\\|\"|'|\s]{0,}(http:\/\/([^>]*)\.($imageTypes))/isU", $body, $images);
-        $images = array_unique($images[1]);
-
-        // 过滤掉本服务器上的图片
-        $remoteImages = array();
-        if (count($images) > 0) {
-            $beUrlLen = strlen(url());
-            foreach ($images as $image) {
-                if (substr($image, 0, $beUrlLen) != url()) {
-                    $remoteImages[] = $image;
-                }
-            }
-        }
-
-        $thumbnailSource = Request::post('thumbnailSource', ''); // upload：上传缩图图 / url：从指定网址获取缩图片
-        $thumbnailPickUp = Request::post('thumbnailPickUp', 0, 'int'); // 是否提取第一张图作为缩略图
-        $downloadRemoteImage = Request::post('downloadRemoteImage', 0, 'int'); // 是否下载远程图片
-        $downloadRemoteImageWatermark = Request::post('downloadRemoteImageWatermark', 0, 'int'); // 是否下截远程图片添加水印
-
-        // 下载远程图片
-        if ($downloadRemoteImage == 1) {
-            if (count($remoteImages) > 0) {
-                $libHttp = Be::getLib('Http');
-
-                // 下载到本地的文件夹
-                $dirName = date('Y-m-d');
-                $dirPath = Be::getRuntime()->getDataPath() . '/Cms/Article/' .  $dirName;
-
-                // 文件夹不存在时自动创建
-                if (!file_exists($dirPath)) {
-                    $libFso = Be::getLib('Fso');
-                    $libFso->mkDir($dirPath);
-                }
-
-                $t = date('YmdHis');
-                $i = 0;
-                foreach ($remoteImages as $remoteImage) {
-                    $localImageName = $t . $i . '.' . strtolower(substr(strrchr($remoteImage, '.'), 1));
-                    $data = $libHttp->get($remoteImage);
-
-                    file_put_contents($dirPath . '/' . $localImageName, $data);
-
-                    // 下截远程图片添加水印
-                    if ($downloadRemoteImageWatermark == 1) {
-                        $serviceSystem = Be::getService('System.Admin');
-                        $serviceSystem->watermark($dirPath . '/' . $localImageName);
-                    }
-
-                    $body = str_replace($remoteImage, '/' . DATA . '/Article/' . $dirName . '/' . $localImageName, $body);
-                    $i++;
-                }
-            }
-        }
-        $tupleArticle->body = $body;
-
-        $configArticle = Be::getConfig('Cms.Article');
-
-        // 提取第一张图作为缩略图
-        if ($thumbnailPickUp == 1) {
-            if (count($images) > 0) {
-
-                $httpClient = new \GuzzleHttp\Client();
-                $response = $httpClient->request('GET', $images[0]);
-                if ($response->getStatusCode() == 200) {
-                    $data = $response->getBody();
-                    if ($data) {
-                        $tmpImage = Be::getRuntime()->getDataPath() . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($images[0], '.'), 1));
-                        file_put_contents($tmpImage, $data);
-
-                        $libImage = Be::getLib('image');
-                        $libImage->open($tmpImage);
-
-                        if ($libImage->isImage()) {
-                            $t = date('YmdHis');
-                            $dir = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail';
-                            if (!file_exists($dir)) {
-                                $libFso = Be::getLib('Fso');
-                                $libFso->mkDir($dir);
-                            }
-
-                            $thumbnailLName = $t . '_l.' . $libImage->getType();
-                            $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                            $libImage->save($dir . '/' . $thumbnailLName);
-                            $tupleArticle->thumbnail_l = $thumbnailLName;
-
-                            $thumbnailMName = $t . '_m.' . $libImage->getType();
-                            $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                            $libImage->save($dir . '/' . $thumbnailMName);
-                            $tupleArticle->thumbnail_m = $thumbnailMName;
-
-                            $thumbnailSName = $t . '_s.' . $libImage->getType();
-                            $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                            $libImage->save($dir . '/' . $thumbnailSName);
-                            $tupleArticle->thumbnail_s = $thumbnailSName;
-                        }
-
-                        @unlink($tmpImage);
-                    }
-                }
-            }
-        } else {
-            // 上传缩图图
-            if ($thumbnailSource == 'upload') {
-                $thumbnailUpload = $_FILES['thumbnailUpload'];
-                if ($thumbnailUpload['error'] == 0) {
-                    $libImage = Be::getLib('image');
-                    $libImage->open($thumbnailUpload['tmpName']);
-                    if ($libImage->isImage()) {
-                        $t = date('YmdHis');
-                        $dir = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail';
-                        if (!file_exists($dir)) {
-                            $libFso = Be::getLib('Fso');
-                            $libFso->mkDir($dir);
-                        }
-
-                        $thumbnailLName = $t . '_l.' . $libImage->getType();
-                        $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                        $libImage->save($dir . '/' . $thumbnailLName);
-                        $tupleArticle->thumbnail_l = $thumbnailLName;
-
-                        $thumbnailMName = $t . '_m.' . $libImage->getType();
-                        $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                        $libImage->save($dir . '/' . $thumbnailMName);
-                        $tupleArticle->thumbnail_m = $thumbnailMName;
-
-                        $thumbnailSName = $t . '_s.' . $libImage->getType();
-                        $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                        $libImage->save($dir . '/' . $thumbnailSName);
-                        $tupleArticle->thumbnail_s = $thumbnailSName;
-                    }
-                }
-            } elseif ($thumbnailSource == 'url') { // 从指定网址获取缩图片
-                $thumbnailUrl = Request::post('thumbnailUrl', '');
-                if ($thumbnailUrl != '' && substr($thumbnailUrl, 0, 7) == 'http://') {
-
-                    $httpClient = new \GuzzleHttp\Client();
-                    $response = $httpClient->request('GET', $thumbnailUrl);
-                    if ($response->getStatusCode() == 200) {
-                        $data = $response->getBody();
-                        if ($data) {
-                            $tmpImage = Be::getRuntime()->getDataPath() . '/Tmp/' .  date('YmdHis') . '.' . strtolower(substr(strrchr($thumbnailUrl, '.'), 1));
-                            file_put_contents($tmpImage, $data);
-
-                            $libImage = Be::getLib('image');
-                            $libImage->open($tmpImage);
-
-                            if ($libImage->isImage()) {
-                                $t = date('YmdHis');
-                                $dir = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail';
-                                if (!file_exists($dir)) {
-                                    $libFso = Be::getLib('Fso');
-                                    $libFso->mkDir($dir);
-                                }
-
-                                $thumbnailLName = $t . '_l.' . $libImage->getType();
-                                $libImage->resize($configArticle->thumbnailLW, $configArticle->thumbnailLH, 'scale');
-                                $libImage->save($dir . '/' . $thumbnailLName);
-                                $tupleArticle->thumbnail_l = $thumbnailLName;
-
-                                $thumbnailMName = $t . '_m.' . $libImage->getType();
-                                $libImage->resize($configArticle->thumbnailMW, $configArticle->thumbnailMH, 'scale');
-                                $libImage->save($dir . '/' . $thumbnailMName);
-                                $tupleArticle->thumbnail_m = $thumbnailMName;
-
-                                $thumbnailSName = $t . '_s.' . $libImage->getType();
-                                $libImage->resize($configArticle->thumbnailSW, $configArticle->thumbnailSH, 'scale');
-                                $libImage->save($dir . '/' . $thumbnailSName);
-                                $tupleArticle->thumbnail_s = $thumbnailSName;
-                            }
-
-                            @unlink($tmpImage);
-                        }
-                    }
-
-                }
-            }
-        }
-
-
-        if ($id == 0) {
-            $tupleArticle->create_by_id = $my->id;
-        } else {
-            $tupleArticle->modify_time = time();
-            $tupleArticle->modify_by_id = $my->id;
-        }
-
-        if ($tupleArticle->save()) {
-            if ($id == 0) {
-                Response::success('添加文章成功！');
-                 Be::getService('System.AdminLog')->addLog('添加文章：#' . $tupleArticle->id . ': ' . $tupleArticle->title);
-            } else {
-                Response::success('修改文章成功！');
-                 Be::getService('System.AdminLog')->addLog('编辑文章：#' . $id . ': ' . $tupleArticle->title);
-            }
-        } else {
-            Response::error($tupleArticle->getError());
-        }
-
-        $libHistory = Be::getLib('History');
-        $libHistory->back('Admin.Cms.Article.articles');
-    }
-
-
-
-    public function delete()
-    {
-        $ids = Request::post('id', '');
-
-        try {
-            $serviceArticle = Be::getService('Cms.Article');
-            $serviceArticle->delete($ids);
-            Response::success('删除文章成功！');
-             Be::getService('System.AdminLog')->addLog('删除文章：#' . $ids);
-        } catch (\Exception $e) {
-            Response::error($e->getMessage());
-        }
-
-        $libHistory = Be::getLib('History');
-        $libHistory->back('Admin.Cms.Article.articles');
-    }
-
-
-    private function cleanHtml($html)
-    {
-        $html = trim($html);
-        $html = strip_tags($html);
-        $html = str_replace(array('&nbsp;', '&ldquo;', '&rdquo;', '　'), '', $html);
-        $html = preg_replace("/\t/", "", $html);
-        $html = preg_replace("/\r\n/", "", $html);
-        $html = preg_replace("/\r/", "", $html);
-        $html = preg_replace("/\n/", "", $html);
-        $html = preg_replace("/ /", "", $html);
-        return $html;
-    }
-
-    // 从内容中提取摘要
-    public function ajaxGetSummary()
-    {
-        $body = $this->cleanHtml($_POST['body']);
-
-        $configArticle = Be::getConfig('Cms.Article');
-
-        Response::set('error', 0);
-        Response::set('summary', Str::limit($body, intval($configArticle->getSummary)));
-        Response::ajax();
-    }
-
-
-    // 从内容中提取 META 关键字
-    public function ajaxGetMetaKeywords()
-    {
-        $body = $this->cleanHtml($_POST['body']);
-
-        $configArticle = Be::getConfig('Cms.Article');
-
-        $libPscws = Be::getLib('Pscws');
-        $libPscws->sendText($body);
-        $keywords = $libPscws->getTops(intval($configArticle->getMetaKeywords));
-        $metaKeywords = '';
-        if ($keywords !== false) {
-            $tmpMetaKeywords = array();
-            foreach ($keywords as $keyword) {
-                $tmpMetaKeywords[] = $keyword['word'];
-            }
-            $metaKeywords = implode(' ', $tmpMetaKeywords);
-        }
-
-        Response::set('error', 0);
-        Response::set('metaKeywords', $metaKeywords);
-        Response::ajax();
-    }
-
-    // 从内容中提取 META 描述
-    public function ajaxGetMetaDescription()
-    {
-        $body = $this->cleanHtml($_POST['body']);
-
-        $configArticle = Be::getConfig('Cms.Article');
-
-        Response::set('error', 0);
-        Response::set('metaDescription', Str::limit($body, intval($configArticle->getMetaDescription)));
-        Response::ajax();
-    }
 
     public function comments()
     {

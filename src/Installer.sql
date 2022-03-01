@@ -6,6 +6,7 @@ CREATE TABLE `cms_article` (
 `description` mediumtext NOT NULL COMMENT '描述',
 `url` varchar(200) NOT NULL COMMENT '自定义网址',
 `auther` varchar(50) NOT NULL COMMENT '作者',
+`publish_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间',
 `seo` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否自定义SEO信息',
 `seo_title` varchar(200) NOT NULL COMMENT 'SEO标题',
 `seo_description` varchar(500) NOT NULL COMMENT 'SEO描述',

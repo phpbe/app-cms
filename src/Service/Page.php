@@ -4,6 +4,7 @@ namespace Be\App\Cms\Service;
 
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Runtime\RuntimeException;
 
 class Page
 {
@@ -26,18 +27,34 @@ class Page
      *
      * @param string $pageId 页面ID
      * @return \stdClass 页面对象
-     * @throws ServiceException
+     * @throws ServiceException|RuntimeException
      */
     public function getPage(string $pageId): \stdClass
     {
-        $cache = Be::getCache();
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        if ($configRedis->enable) {
+            $redis = Be::getRedis($configRedis->db);
 
-        $key = 'Cms:Page:' . $pageId;
-        $page = $cache->get($key);
-        if (!$page) {
-            throw new ServiceException('页面不存在！');
+            $key = 'Cms:Page:' . $pageId;
+            $page = $redis->get($key);
+            if ($page) {
+                $page = unserialize($page);
+            }
+
+            if (!$page) {
+                throw new ServiceException('页面不存在！');
+            }
+
+            return $page;
+        } else {
+            $tuplePage = Be::newtuple('cms_page');
+            try {
+                $tuplePage->loadBy($pageId);
+            } catch (\Throwable $t) {
+                throw new ServiceException('页面不存在！');
+            }
+            return $tuplePage->toObject();
         }
-        return $page;
     }
 
 }

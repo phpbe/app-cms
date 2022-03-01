@@ -17,10 +17,8 @@ class Category
      */
     public function getCategories(): array
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
         $sql = 'SELECT * FROM cms_category WHERE is_delete = 0 ORDER BY ordering ASC';
-        $categories = Be::getDb($configCms->db)->getObjects($sql);
+        $categories = Be::getDb()->getObjects($sql);
         return $categories;
     }
 
@@ -35,10 +33,8 @@ class Category
      */
     public function getCategory(string $categoryId): \stdClass
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
         $sql = 'SELECT * FROM cms_category WHERE id=? AND is_delete = 0';
-        $category = Be::getDb($configCms->db)->getObject($sql, [$categoryId]);
+        $category = Be::getDb()->getObject($sql, [$categoryId]);
         if (!$category) {
             throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
         }
@@ -58,10 +54,8 @@ class Category
      */
     public function getCategoryKeyValues(): array
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
         $sql = 'SELECT id, `name` FROM cms_category WHERE is_delete = 0 ORDER BY ordering ASC';
-        return Be::getDb($configCms->db)->getKeyValues($sql);
+        return Be::getDb()->getKeyValues($sql);
     }
 
     /**
@@ -73,9 +67,7 @@ class Category
      */
     public function edit(array $data): bool
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $db = Be::getDb($configCms->db);
+        $db = Be::getDb();
 
         $isNew = true;
         $categoryId = null;
@@ -84,7 +76,7 @@ class Category
             $categoryId = $data['id'];
         }
 
-        $tupleCategory = Be::newTuple('cms_category', $configCms->db);
+        $tupleCategory = Be::newTuple('cms_category');
         if (!$isNew) {
             try {
                 $tupleCategory->load($categoryId);
@@ -119,11 +111,11 @@ class Category
         $urlExist = null;
         do {
             if ($isNew) {
-                $urlExist = Be::newTable('cms_category', $configCms->db)
+                $urlExist = Be::newTable('cms_category')
                         ->where('url', $urlUnique)
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $urlExist = Be::newTable('cms_category', $configCms->db)
+                $urlExist = Be::newTable('cms_category')
                         ->where('url', $urlUnique)
                         ->where('id', '!=', $categoryId)
                         ->getValue('COUNT(*)') > 0;
@@ -199,9 +191,7 @@ class Category
      */
     public function addArticle(string $categoryId, array $articleIds): bool
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $db = Be::getDb($configCms->db);
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_category WHERE id=? AND is_delete=0';
         $category = $db->getObject($sql, [$categoryId]);
         if (!$category) {
@@ -215,7 +205,7 @@ class Category
         }
 
         if (count($articleIds) > 0) {
-            $existArticleIds = Be::newTable('cms_article', $configCms->db)
+            $existArticleIds = Be::newTable('cms_article')
                 ->where('id', 'IN', $articleIds)
                 ->getValues('id');
 
@@ -229,7 +219,7 @@ class Category
             }
 
             foreach ($articleIds as $articleId) {
-                $tupleArticleCategory = Be::newTuple('cms_article_category', $configCms->db);
+                $tupleArticleCategory = Be::newTuple('cms_article_category');
                 $tupleArticleCategory->article_id = $articleId;
                 $tupleArticleCategory->category_id = $categoryId;
                 $tupleArticleCategory->insert();
@@ -250,16 +240,14 @@ class Category
      */
     public function deleteArticle(string $categoryId, array $articleIds): bool
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $db = Be::getDb($configCms->db);
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_category WHERE id=? AND is_delete=0';
         $category = $db->getObject($sql, [$categoryId]);
         if (!$category) {
             throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
         }
 
-        Be::newTable('cms_article_category', $configCms->db)
+        Be::newTable('cms_article_category')
             ->where('category_id', $categoryId)
             ->where('article_id', 'IN', $articleIds)
             ->delete();
@@ -276,9 +264,7 @@ class Category
      */
     public function onUpdate(array $categoryIds)
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $articleIds = Be::newTable('cms_article_category', $configCms->db)
+        $articleIds = Be::newTable('cms_article_category')
             ->where('category_id', 'IN',  $categoryIds)
             ->getValues('article_id');
         if (count($articleIds) > 0) {

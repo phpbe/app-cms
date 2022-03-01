@@ -26,12 +26,9 @@ class Category
      */
     public function categories()
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-
         Be::getAdminPlugin('Curd')->setting([
 
             'label' => '文章分类',
-            'db' => $configCms->db,
             'table' => 'cms_category',
 
             'grid' => [
@@ -111,9 +108,9 @@ class Category
                             'align' => 'center',
                             'width' => '120',
                             'driver' => TableItemLink::class,
-                            'value' => function ($row) use ($configCms) {
+                            'value' => function ($row) {
                                 $sql = 'SELECT COUNT(*) FROM cms_article_category WHERE category_id = ?';
-                                $count = Be::getDb($configCms->db)->getValue($sql, [$row['id']]);
+                                $count = Be::getDb()->getValue($sql, [$row['id']]);
                                 return $count;
                             },
                             'action' => 'goArticles',
@@ -396,13 +393,11 @@ class Category
         $categoryId = $request->get('id', '');
         $category = Be::getService('App.Cms.Admin.Category')->getCategory($categoryId);
 
-        $configCms = Be::getConfig('App.Cms.Cms');
-
         $filter = [
             ['is_delete', '=', '0'],
         ];
 
-        $articleIds = Be::newTable('cms_article_category', $configCms->db)
+        $articleIds = Be::newTable('cms_article_category')
             ->where('category_id', $categoryId)
             ->getValues('article_id');
         if (count($articleIds) > 0) {
@@ -417,7 +412,6 @@ class Category
 
         Be::getAdminPlugin('Curd')->setting([
             'label' => '文章分类 ' . $category->name . ' 下的文章',
-            'db' => $configCms->db,
             'table' => 'cms_article',
             'grid' => [
                 'title' => '文章分类 ' . $category->name . ' 下的文章管理',
@@ -555,9 +549,7 @@ class Category
             ['is_delete', '=', '0'],
         ];
 
-        $configCms = Be::getConfig('App.Cms.Cms');
-
-        $articleIds = Be::newTable('cms_article_category', $configCms->db)
+        $articleIds = Be::newTable('cms_article_category')
             ->where('category_id', $categoryId)
             ->getValues('article_id');
         if (count($articleIds) > 0) {
@@ -568,7 +560,6 @@ class Category
 
         Be::getAdminPlugin('Curd')->setting([
             'label' => '向文章分类 ' . $category->name . ' 添加文章',
-            'db' => $configCms->db,
             'table' => 'cms_article',
             'opLog' => false,
             'grid' => [

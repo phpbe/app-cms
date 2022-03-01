@@ -30,14 +30,30 @@ class Article
      */
     public function getArticle(string $articleId): \stdClass
     {
-        $cache = Be::getCache();
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        if ($configRedis->enable) {
+            $redis = Be::getRedis($configRedis->db);
 
-        $key = 'Cms:Article:' . $articleId;
-        $article = $cache->get($key);
-        if (!$article) {
-            throw new ServiceException('文章不存在！');
+            $key = 'Cms:Article:' . $articleId;
+            $article = $redis->get($key);
+            if ($article) {
+                $article = unserialize($article);
+            }
+
+            if (!$article) {
+                throw new ServiceException('文章不存在！');
+            }
+
+            return $article;
+        } else {
+            $tupleArticle = Be::newtuple('cms_article');
+            try {
+                $tupleArticle->loadBy($articleId);
+            } catch (\Throwable $t) {
+                throw new ServiceException('文章不存在！');
+            }
+            return $tupleArticle->toObject();
         }
-        return $article;
     }
 
 

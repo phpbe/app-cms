@@ -1,6 +1,7 @@
 <?php
 namespace Be\App\Cms\Controller;
 
+use Be\App\ControllerException;
 use Be\Be;
 use Be\Request;
 use Be\Response;
@@ -14,11 +15,12 @@ class Article
     /**
      * 首页
      *
-     * @BeRoute("/article/home");
+     * @BeMenu("文章首页")
+     * @BeRoute("/article/home")
      */
     public function home()
     {
-        $serviceArticleCache = Be::getService('Cms.Article')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
+        $serviceArticleCache = Be::getService('App.Cms.Article')->withCache(Be::getConfig('App.Cms.Article')->cacheExpire);
 
         // 最新带图文章
         $latestThumbnailArticles = $serviceArticleCache->getArticles([
@@ -81,7 +83,9 @@ class Article
 
     /**
      * 文章列表
-     * @BeRoute("\Be\Be::getService('App.ShopFai.Product')->getProductUri($params)");
+     *
+     * @BeMenu("文章列表")
+     * @BeRoute("/articles")
      */
     public function articles()
     {
@@ -159,57 +163,31 @@ class Article
     /**
      * 文章明细
      *
-     * @BeRoute("\Be\Be::getService('App.Cms.Article')->getArticlUrl($params)");
+     * @BeMenu("指定一篇文章", paramPicker="return \Be\Be::getService('App.Cms.Admin.Article')->getMenuArticleParamPicker()")
+     * @BeRoute("\Be\Be::getService('App.Cms.Article')->getArticleUrl($params)")
      */
     public function detail()
     {
-        $articleId = Request::get('articleId', 0, 'int');
-        if ($articleId == 0) Response::end('参数(articleId)缺失！');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        $tupleArticle = Be::newTuple('cms_article');
-        $tupleArticle->load($articleId);
-        $tupleArticle->increment('hits', 1); // 点击量加 1
+        try {
+            $service = Be::getService('App.Cms.Article');
+            $id = $request->get('id', '');
+            if ($id === '') {
+                throw new ControllerException('参数（id）缺失！');
+            }
 
-        $serviceArticleCache = Be::getService('Cms.Article')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
-
-        $similarArticles = $serviceArticleCache->getSimilarArticles($tupleArticle, 10);
-
-        // 热门文章
-        $hottestArticles = $serviceArticleCache->getArticles([
-            'block' => 0,
-            'categoryId' => $tupleArticle->category_id,
-            'orderBy' => 'hits',
-            'orderByDir' => 'DESC',
-            'limit' => 10
-        ]);
-
-        // 推荐文章
-        $topArticles = $serviceArticleCache->getArticles([
-            'block' => 0,
-            'categoryId' => $tupleArticle->category_id,
-            'top' => 1,
-            'orderBy' => 'top',
-            'orderByDir' => 'DESC',
-            'limit' => 10
-        ]);
-
-
-        $serviceArticleCommentCache = Be::getService('Cms.ArticleComment')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
-        $comments = $serviceArticleCommentCache->getComments([
-            'articleId' => $articleId
-        ]);
-
-        Response::setTitle($tupleArticle->title);
-        Response::setMetaKeywords($tupleArticle->metaKeywords);
-        Response::setMetaDescription($tupleArticle->metaDescription);
-
-
-        Response::set('article', $tupleArticle);
-        Response::set('similarArticles', $similarArticles);
-        Response::set('hottestArticles', $hottestArticles);
-        Response::set('topArticles', $topArticles);
-        Response::set('comments', $comments);
-        Response::display();
+            $article = $service->getArticle($id);
+            $response->set('title', $article->seo_title);
+            $response->set('meta_keywords', $article->seo_keywords);
+            $response->set('meta_description', $article->seo_description);
+            $response->set('article', $article);
+            $response->display();
+        } catch (\Throwable $t) {
+            print_r($t->getTrace());
+            $response->error($t->getMessage());
+        }
     }
 
 }

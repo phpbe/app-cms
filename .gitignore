@@ -1,10 +1,11 @@
-.idea
-vendor
+index.php
+server.php
 .htaccess
 composer.lock
-index.php
-
-data
-upload
 .DS_store
 Thumbs.db
+
+/data
+/upload
+/vendor
+/.idea

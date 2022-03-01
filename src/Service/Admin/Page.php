@@ -19,9 +19,8 @@ class Page
      */
     public function getPages(): array
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
         $sql = 'SELECT * FROM cms_page WHERE is_delete = 0';
-        $categories = Be::getDb($configCms->db)->getObjects($sql);
+        $categories = Be::getDb()->getObjects($sql);
         return $categories;
     }
 
@@ -33,9 +32,8 @@ class Page
      */
     public function getPageKeyValues(): array
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
         $sql = 'SELECT id, title FROM cms_page WHERE is_delete = 0';
-        return Be::getDb($configCms->db)->getKeyValues($sql);
+        return Be::getDb()->getKeyValues($sql);
     }
 
 
@@ -48,8 +46,7 @@ class Page
      */
     public function getPage(string $pageId): \stdClass
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-        $tuplePage = Be::newTuple('cms_page', $configCms->db);
+        $tuplePage = Be::newTuple('cms_page');
         try {
             $tuplePage->load($pageId);
         } catch (\Throwable $t) {
@@ -71,8 +68,7 @@ class Page
      */
     public function edit(array $data): bool
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-        $db = Be::getDb($configCms->db);
+        $db = Be::getDb();
 
         $isNew = true;
         $pageId = null;
@@ -81,7 +77,7 @@ class Page
             $pageId = $data['id'];
         }
 
-        $tuplePage = Be::newTuple('cms_page', $configCms->db);
+        $tuplePage = Be::newTuple('cms_page');
         if (!$isNew) {
             try {
                 $tuplePage->load($pageId);
@@ -116,11 +112,11 @@ class Page
         $urlExist = null;
         do {
             if ($isNew) {
-                $urlExist = Be::newTable('cms_page', $configCms->db)
+                $urlExist = Be::newTable('cms_page')
                         ->where('url', $urlUnique)
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $urlExist = Be::newTable('cms_page', $configCms->db)
+                $urlExist = Be::newTable('cms_page')
                         ->where('url', $urlUnique)
                         ->where('id', '!=', $pageId)
                         ->getValue('COUNT(*)') > 0;
@@ -190,8 +186,7 @@ class Page
      */
     public function deletePage(string $pageId): bool
     {
-        $configCms = Be::getConfig('App.Cms.Cms');
-        $tuplePage = Be::newTuple('cms_page', $configCms->db);
+        $tuplePage = Be::newTuple('cms_page');
         try {
             $tuplePage->load($pageId);
         } catch (\Throwable $t) {
@@ -221,15 +216,18 @@ class Page
      */
     public function onUpdate(array $pageIds)
     {
-        $keyValues = [];
-        foreach ($pageIds as $pageId) {
-            $key = 'Cms:Page:' . $pageId;
-            $page = $this->getPage($pageId);
-            $keyValues[$key] = $page;
-        }
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        if ($configRedis->enable) {
+            $keyValues = [];
+            foreach ($pageIds as $pageId) {
+                $key = 'Cms:Page:' . $pageId;
+                $page = $this->getPage($pageId);
+                $keyValues[$key] = serialize($page);
+            }
 
-        $cache = Be::getCache();
-        $cache->setMany($keyValues);
+            $redis = Be::getRedis();
+            $redis->mset($keyValues);
+        }
     }
 
 

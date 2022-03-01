@@ -13,6 +13,7 @@ class Page
     /**
      * 详情
      *
+     * @BeMenu("指定自定义页面")
      * @BeRoute("\Be\Be::getService('App.Cms.Page')->getPageUrl($params)");
      */
     public function detail()
