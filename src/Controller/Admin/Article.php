@@ -309,6 +309,10 @@ class Article
                             'label' => '标题',
                         ],
                         [
+                            'name' => 'summary',
+                            'label' => '摘要',
+                        ],
+                        [
                             'name' => 'description',
                             'label' => '描述',
                             'driver' => DetailItemHtml::class,

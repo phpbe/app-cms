@@ -48,7 +48,7 @@ class Article
         } else {
             $tupleArticle = Be::newtuple('cms_article');
             try {
-                $tupleArticle->loadBy($articleId);
+                $tupleArticle->load($articleId);
             } catch (\Throwable $t) {
                 throw new ServiceException('文章不存在！');
             }
@@ -134,7 +134,7 @@ class Article
             }
         }
 
-        if (isset($conditions['categoryId']) && $conditions['categoryId'] != -1) {
+        if (isset($conditions['categoryId']) && $conditions['categoryId']) {
             if ($conditions['categoryId'] == 0)
                 $where[] = ['category_id', 0];
             elseif ($conditions['categoryId'] > 0) {
@@ -150,34 +150,6 @@ class Article
 
         if (isset($conditions['key']) && $conditions['key']) {
             $where[] = ['title', 'like', '%' . $conditions['key'] . '%'];
-        }
-
-        if (isset($conditions['thumbnail'])) {
-            if ($conditions['thumbnail'] == 1) {
-                $where[] = ['thumbnail_s', '!=', ''];
-            } else {
-                $where[] = ['thumbnail_s', '=', ''];
-            }
-        }
-
-        if (isset($conditions['top'])) {
-            if ($conditions['top'] == 0) {
-                $where[] = ['top', '=', 0];
-            } else {
-                $where[] = ['top', '>', 0];
-            }
-        }
-
-        if (isset($conditions['fromTime']) && is_numeric($conditions['fromTime'])) {
-            $where[] = ['create_time', '>', $conditions['fromTime']];
-        }
-
-        if (isset($conditions['userId']) && is_numeric($conditions['userId'])) {
-            $where[] = ['create_by_id', '>', $conditions['userId']];
-        }
-
-        if (isset($conditions['block']) && is_numeric($conditions['block']) && $conditions['block'] != -1) {
-            $where[] = ['block', $conditions['block']];
         }
 
         return $where;
@@ -264,50 +236,6 @@ class Article
         }
 
         return $similarArticles;
-    }
-
-
-    /**
-     * 删除文章
-     *
-     * @param $ids
-     * @throws \Exception
-     */
-    public function delete($ids)
-    {
-        $db = Be::getDb();
-        $db->beginTransaction();
-        try {
-            $files = [];
-            $array = explode(',', $ids);
-            foreach ($array as $id) {
-
-                $articleCommentIds = Be::newTable('cms_article_comment')->where('article_id', $id)->getArray('id');
-                if (count($articleCommentIds)) {
-                    Be::newTable('cms_article_vote_log')->where('comment_id', 'in', $articleCommentIds)->delete();
-                    Be::newTable('cms_article_vote_log')->where('article_id', $id)->delete();
-                    Be::newTable('cms_article_comment')->where('article_id', $id)->delete();
-                }
-
-                $tupleArticle = Be::newTuple('cms_article');
-                $tupleArticle->load($id);
-
-                if ($tupleArticle->thumbnail_l != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' . $tupleArticle->thumbnail_l;
-                if ($tupleArticle->thumbnail_m != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' . $tupleArticle->thumbnail_m;
-                if ($tupleArticle->thumbnail_s != '') $files[] = Be::getRuntime()->getDataPath() . '/Cms/Article/Thumbnail/' . $tupleArticle->thumbnail_s;
-
-                $tupleArticle->delete();
-            }
-
-            foreach ($files as $file) {
-                @unlink($file);
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-            throw $e;
-        }
     }
 
     /**
