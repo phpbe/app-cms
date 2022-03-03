@@ -231,4 +231,57 @@ class Page
     }
 
 
+    /**
+     * 获取菜单参数选择器
+     *
+     * @return array
+     */
+    public function getPageMenuPicker():array
+    {
+        return [
+            'name' => 'id',
+            'value' => '自定义页面：{title}',
+            'table' => 'cms_page',
+            'grid' => [
+                'title' => '选择一个自定义页面',
+
+                'filter' => [
+                    ['is_delete', '=', '0'],
+                ],
+
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'title',
+                            'label' => '标题',
+                        ],
+                    ],
+                ],
+
+                'table' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'name' => 'title',
+                            'label' => '标题',
+                            'align' => 'left'
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '180',
+                            'sortable' => true,
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                            'width' => '180',
+                            'sortable' => true,
+                        ],
+                    ],
+                ],
+            ]
+        ];
+    }
 }

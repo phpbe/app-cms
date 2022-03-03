@@ -322,6 +322,14 @@ class Article
                             }
                         ],
                         [
+                            'name' => 'author',
+                            'label' => '作者',
+                        ],
+                        [
+                            'name' => 'publish_time',
+                            'label' => '发布时间',
+                        ],
+                        [
                             'name' => 'categories',
                             'label' => '分类',
                             'driver' => DetailItemHtml::class,

@@ -163,7 +163,7 @@ class Article
     /**
      * 文章明细
      *
-     * @BeMenu("指定一篇文章", paramPicker="return \Be\Be::getService('App.Cms.Admin.Article')->getMenuArticleParamPicker()")
+     * @BeMenu("指定一篇文章", picker="return \Be\Be::getService('App.Cms.Admin.Article')->getArticleMenuPicker()")
      * @BeRoute("\Be\Be::getService('App.Cms.Article')->getArticleUrl($params)")
      */
     public function detail()
@@ -175,7 +175,7 @@ class Article
             $service = Be::getService('App.Cms.Article');
             $id = $request->get('id', '');
             if ($id === '') {
-                throw new ControllerException('参数（id）缺失！');
+                throw new ControllerException('文章不存在！');
             }
 
             $article = $service->getArticle($id);
@@ -185,7 +185,6 @@ class Article
             $response->set('article', $article);
             $response->display();
         } catch (\Throwable $t) {
-            print_r($t->getTrace());
             $response->error($t->getMessage());
         }
     }

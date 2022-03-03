@@ -13,8 +13,8 @@ class Page
     /**
      * 详情
      *
-     * @BeMenu("指定自定义页面")
-     * @BeRoute("\Be\Be::getService('App.Cms.Page')->getPageUrl($params)");
+     * @BeMenu("自定义页面", picker="return \Be\Be::getService('App.Cms.Admin.Page')->getPageMenuPicker()")
+     * @BeRoute("\Be\Be::getService('App.Cms.Page')->getPageUrl($params)")
      */
     public function detail()
     {
@@ -22,12 +22,12 @@ class Page
         $response = Be::getResponse();
 
         try {
-            $pageId = $request->get('pageId', '');
+            $pageId = $request->get('id', '');
             if (!$pageId) {
                 throw new ControllerException('页面不存在！');
             }
 
-            $servicePage = Be::getService('Cms.Page');
+            $servicePage = Be::getService('App.Cms.Page');
             $page = $servicePage->getPage($pageId);
             $response->set('title', $page->seo_title);
             $response->set('meta_keywords', $page->seo_keywords);

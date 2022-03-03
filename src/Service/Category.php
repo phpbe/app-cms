@@ -22,6 +22,19 @@ class Category
     }
 
 
+    /**
+     * 获取分类
+     *
+     * @param $categoryId
+     * @return \Be\Db\Tuple
+     */
+    public function getCategory($categoryId) {
+        $tupleCategory = Be::newTuple('cms_category');
+        $tupleCategory->load($categoryId);
+        return $tupleCategory;
+    }
+
+
 
     private $categories = null;
     private $categoryTree = null;
@@ -146,17 +159,6 @@ class Category
         return $tree;
     }
 
-    /**
-     * 获取分类
-     *
-     * @param $categoryId
-     * @return \Be\Db\Tuple
-     */
-    public function getCategory($categoryId) {
-        $tupleCategory = Be::newTuple('cms_category');
-        $tupleCategory->load($categoryId);
-        return $tupleCategory;
-    }
 
     /**
      * 获取指定分类的最高父级分类

@@ -4,6 +4,8 @@ namespace Be\App\Cms\Service\Admin;
 
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Db\DbException;
+use Be\Runtime\RuntimeException;
 
 class Category
 {
@@ -271,7 +273,85 @@ class Category
             Be::getService('App.Cms.Article')->onUpdate($articleIds);
         }
 
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        if ($configRedis->enable) {
+            $this->syncRedis($categoryIds);
+        }
     }
 
+    /**
+     * 文章分类同步到 Redis
+     *
+     * @param array $categoryIds
+     * @throws ServiceException
+     * @throws RuntimeException|DbException
+     */
+    public function syncRedis(array $categoryIds)
+    {
+        $keyValues = [];
+        foreach ($categoryIds as $categoryId) {
+            $key = 'Cms:Category:' . $categoryId;
+            $category = $this->getCategory($categoryId);
+            $keyValues[$key] = serialize($category);
+        }
+
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        $redis = Be::getRedis($configRedis->db);
+        $redis->mset($keyValues);
+    }
+
+    /**
+     * 获取菜单参数选择器
+     *
+     * @return array
+     */
+    public function getCategoryMenuPicker():array
+    {
+        return [
+            'name' => 'id',
+            'value' => '文章分类：{name}',
+            'table' => 'cms_category',
+            'grid' => [
+                'title' => '选择一个分类',
+
+                'filter' => [
+                    ['is_delete', '=', '0'],
+                ],
+
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                        ],
+                    ],
+                ],
+
+                'table' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                            'align' => 'left'
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '180',
+                            'sortable' => true,
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                            'width' => '180',
+                            'sortable' => true,
+                        ],
+                    ],
+                ],
+            ]
+        ];
+    }
 
 }

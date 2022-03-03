@@ -4,9 +4,6 @@ namespace Be\App\Cms\Service\Admin;
 
 use Be\AdminPlugin\Form\Item\FormItemSelect;
 use Be\AdminPlugin\Table\Item\TableItemImage;
-use Be\AdminPlugin\Table\Item\TableItemLink;
-use Be\AdminPlugin\Table\Item\TableItemSelection;
-use Be\AdminPlugin\Table\Item\TableItemSwitch;
 use Be\App\ServiceException;
 use Be\Be;
 use Be\Db\DbException;
@@ -54,6 +51,14 @@ class Article
 
         if (!isset($data['description']) || !is_string($data['description'])) {
             $data['description'] = '';
+        }
+
+        if (!isset($data['author']) || !is_string($data['author'])) {
+            $data['author'] = '';
+        }
+
+        if (!isset($data['publish_time']) || !is_string($data['publish_time']) || strtotime($data['publish_time']) === false) {
+            $data['publish_time'] = date('Y-m-d H:i:s');
         }
 
         $url = null;
@@ -122,6 +127,8 @@ class Article
             $tupleArticle->summary = $data['summary'];
             $tupleArticle->description = $data['description'];
             $tupleArticle->url = $url;
+            $tupleArticle->author = $data['author'];
+            $tupleArticle->publish_time = $data['publish_time'];
             $tupleArticle->seo = $data['seo'];
             $tupleArticle->seo_title = $data['seo_title'];
             $tupleArticle->seo_description = $data['seo_description'];
@@ -342,7 +349,7 @@ class Article
      *
      * @return array
      */
-    public function getMenuArticleParamPicker():array
+    public function getArticleMenuPicker():array
     {
         $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
         return [
@@ -390,10 +397,6 @@ class Article
                     // 未指定时取表的所有字段
                     'items' => [
                         [
-                            'driver' => TableItemSelection::class,
-                            'width' => '50',
-                        ],
-                        [
                             'name' => 'image',
                             'label' => '封面图片',
                             'width' => '90',
@@ -411,12 +414,7 @@ class Article
                         [
                             'name' => 'title',
                             'label' => '标题',
-                            'driver' => TableItemLink::class,
                             'align' => 'left',
-                            'task' => 'detail',
-                            'drawer' => [
-                                'width' => '80%'
-                            ],
                         ],
                         [
                             'name' => 'create_time',
