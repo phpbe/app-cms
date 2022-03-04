@@ -49,6 +49,15 @@ class Locoy
      */
     public string $field_description = 'description';
 
+    /**
+     * @BeConfigItem("字段：唯一键值",
+     *     description="用于防止重复入库，常用采集的来源网址作为唯一键值，也可用文章标题",
+     *     driver="FormItemInput",
+     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
+     * )
+     */
+    public string $field_key = 'key';
+
 
 }
 

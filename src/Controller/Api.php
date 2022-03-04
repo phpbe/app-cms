@@ -13,7 +13,7 @@ class Api
     /**
      * 火车采集器接口
      *
-     * @BeRoute("/article/api/locoy")
+     * @BeRoute("/cms/api/locoy")
      */
     public function locoy()
     {
@@ -42,6 +42,7 @@ class Api
             $data['title'] = $title;
             $data['summary'] = $request->post($configLocoy->field_summary, '');
             $data['description'] = $request->post($configLocoy->field_description, '');
+            $data['key'] = $request->post($configLocoy->field_key, '');
             Be::getService('App.Cms.Admin.CollectArticle')->edit($data);
 
             $response->success('导入成功！');

@@ -49,6 +49,7 @@ class Article
                     'name' => 'is_enable',
                     'value' => Be::getRequest()->request('is_enable', '-1'),
                     'nullValue' => '-1',
+                    'counter' => true,
                     'keyValues' => [
                         '-1' => '全部',
                         '1' => '已发布',

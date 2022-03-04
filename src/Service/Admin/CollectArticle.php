@@ -29,10 +29,10 @@ class CollectArticle
             $articleId = $data['id'];
         }
 
-        $tupleArticle = Be::newTuple('cms_collect_article');
+        $tupleCollectArticle = Be::newTuple('cms_collect_article');
         if (!$isNew) {
             try {
-                $tupleArticle->load($articleId);
+                $tupleCollectArticle->load($articleId);
             } catch (\Throwable $t) {
                 throw new ServiceException('采集的文章（# ' . $articleId . '）不存在！');
             }
@@ -58,17 +58,17 @@ class CollectArticle
         $db->startTransaction();
         try {
             $now = date('Y-m-d H:i:s');
-            $tupleArticle->image = $data['image'];
-            $tupleArticle->title = $title;
-            $tupleArticle->summary = $data['summary'];
-            $tupleArticle->description = $data['description'];
-            $tupleArticle->is_delete = 0;
-            $tupleArticle->update_time = $now;
+            $tupleCollectArticle->image = $data['image'];
+            $tupleCollectArticle->title = $title;
+            $tupleCollectArticle->summary = $data['summary'];
+            $tupleCollectArticle->description = $data['description'];
+            $tupleCollectArticle->is_delete = 0;
+            $tupleCollectArticle->update_time = $now;
             if ($isNew) {
-                $tupleArticle->create_time = $now;
-                $tupleArticle->insert();
+                $tupleCollectArticle->create_time = $now;
+                $tupleCollectArticle->insert();
             } else {
-                $tupleArticle->update();
+                $tupleCollectArticle->update();
             }
 
             $db->commit();
@@ -86,25 +86,71 @@ class CollectArticle
     /**
      * 获取采集的文章
      *
-     * @param string $articleId
+     * @param string $collectArticleId
      * @param array $with
      * @return object
      * @throws ServiceException
      * @throws DbException|RuntimeException
      */
-    public function getArticle(string $articleId, array $with = []): object
+    public function getCollectArticle(string $collectArticleId, array $with = []): object
     {
         $db = Be::getDb();
 
         $sql = 'SELECT * FROM `cms_collect_article` WHERE id=?';
-        $article = $db->getObject($sql, [$articleId]);
-        if (!$article) {
-            throw new ServiceException('采集的文章（# ' . $articleId . '）不存在！');
+        $collectArticle = $db->getObject($sql, [$collectArticleId]);
+        if (!$collectArticle) {
+            throw new ServiceException('采集的文章（# ' . $collectArticleId . '）不存在！');
         }
-        
-        $article->is_delete = (int)$article->is_delete;
-        
-        return $article;
+
+        $collectArticle->is_delete = (int)$collectArticle->is_delete;
+
+        return $collectArticle;
+    }
+
+
+    /**
+     * 导入
+     *
+     * @param array $collectArticles 要导入文章数据
+     * @return bool
+     */
+    public function import(array $collectArticles): bool
+    {
+        $serviceArticle = Be::getService('App.Cms.Admin.Article');
+        foreach ($collectArticles as $collectArticle) {
+            $tupleCollectArticle = Be::newTuple('cms_collect_article');
+            try {
+                $tupleCollectArticle->load($collectArticle['id']);
+            } catch (\Throwable $t) {
+                throw new ServiceException('采集的文章（# ' . $collectArticle['id'] . '）不存在！');
+            }
+
+            $articleData = [];
+            if ($tupleCollectArticle->article_id) {
+                $tupleArticle = Be::newTuple('cms_article');
+                try {
+                    $tupleArticle->load($tupleCollectArticle->article_id);
+                    $articleData = $tupleArticle->toArray();
+                } catch (\Throwable $t) {
+                }
+            }
+
+            $articleData['id'] = $tupleCollectArticle->article_id;
+            $articleData['image'] = $tupleCollectArticle->image;
+            $articleData['title'] = $tupleCollectArticle->title;
+            $articleData['summary'] = $tupleCollectArticle->summary;
+            $articleData['description'] = $tupleCollectArticle->description;
+            $articleData['category_ids'] = $collectArticle['category_ids'];
+
+            $tupleArticle = $serviceArticle->edit($articleData);
+
+            $tupleCollectArticle->article_id = $tupleArticle->id;
+            $tupleCollectArticle->is_synced = 1;
+            $tupleCollectArticle->update_time = date('Y-m-d H:i:s');
+            $tupleCollectArticle->update();
+        }
+
+        return true;
     }
 
 }

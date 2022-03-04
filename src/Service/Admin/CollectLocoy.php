@@ -43,6 +43,20 @@ class CollectLocoy
         }
         $title = $data['title'];
 
+        if (!isset($data['key']) || !is_string($data['key'])) {
+            $data['key'] = '';
+        }
+
+        if ($data['key']) {
+            try {
+                $tupleArticle->loadBy('key', $data['key']);
+
+                $isNew = true;
+                $articleId = $tupleArticle->id;
+            } catch (\Throwable $t) {
+            }
+        }
+
         if (!isset($data['summary']) || !is_string($data['summary'])) {
             $data['summary'] = '';
         }
@@ -62,9 +76,12 @@ class CollectLocoy
             $tupleArticle->title = $title;
             $tupleArticle->summary = $data['summary'];
             $tupleArticle->description = $data['description'];
+            $tupleArticle->key = $data['key'];
+            $tupleArticle->is_synced = 0;
             $tupleArticle->is_delete = 0;
             $tupleArticle->update_time = $now;
             if ($isNew) {
+                $tupleArticle->article_id = '';
                 $tupleArticle->create_time = $now;
                 $tupleArticle->insert();
             } else {

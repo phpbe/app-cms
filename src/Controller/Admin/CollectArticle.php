@@ -1,9 +1,11 @@
 <?php
+
 namespace Be\App\Cms\Controller\Admin;
 
 
 use Be\AdminPlugin\Detail\Item\DetailItemHtml;
 use Be\AdminPlugin\Detail\Item\DetailItemImage;
+use Be\AdminPlugin\Detail\Item\DetailItemToggleIcon;
 use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
@@ -44,15 +46,26 @@ class CollectArticle
                     'nullValue' => '-1',
                     'keyValues' => [
                         '-1' => '全部',
-                        '1' => '已导入',
                         '0' => '未导入',
+                        '1' => '已导入',
+                        '2' => '已导入，有更新未同步',
+                        '3' => '已导入，已同步',
                     ],
-                    'buildSql' => function($dbName, $formData) {
+                    'counter' => true,
+                    'buildSql' => function ($dbName, $formData) {
                         if (isset($formData['status'])) {
-                            if ($formData['status'] === '1') {
-                                return ['article_id', '!=', ''];
-                            } elseif ($formData['status'] === '0') {
+                            if ($formData['status'] === '0') {
                                 return ['article_id', '=', ''];
+                            } elseif ($formData['status'] === '1') {
+                                return ['article_id', '!=', ''];
+                            } elseif ($formData['status'] === '2') {
+                                return [
+                                    ['article_id', '!=', ''],
+                                    'AND',
+                                    ['is_synced', '=', '0']
+                                ];
+                            } elseif ($formData['status'] === '3') {
+                                return ['is_synced', '=', '1'];
                             }
                         }
                         return '';
@@ -101,16 +114,14 @@ class CollectArticle
                 'tableToolbar' => [
                     'items' => [
                         [
-                            'label' => '批量导入',
-                            'task' => 'fieldEdit',
-                            'postData' => [
-                                'field' => 'is_enable',
-                                'value' => '1',
+                            'label' => '批量导入&同步',
+                            'action' => 'import',
+                            'drawer' => [
+                                'title' => '批量导入&同步',
+                                'width' => '80%'
                             ],
-                            'target' => 'ajax',
-                            'confirm' => '确认要导入吗？',
                             'ui' => [
-                                'icon' => 'el-icon-check',
+                                'icon' => 'el-icon-upload2',
                                 'type' => 'success',
                             ]
                         ],
@@ -148,7 +159,7 @@ class CollectArticle
                             'ui' => [
                                 'style' => 'max-width: 60px; max-height: 60px'
                             ],
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 if ($row['image'] === '') {
                                     return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
                                 }
@@ -178,6 +189,15 @@ class CollectArticle
                             },
                         ],
                         [
+                            'name' => 'is_synced',
+                            'label' => '是否已同步',
+                            'driver' => TableItemToggleIcon::class,
+                            'width' => '90',
+                            'exportValue' => function ($row) {
+                                return $row['is_synced'] === '0' ? '未同步' : '已同步';
+                            },
+                        ],
+                        [
                             'name' => 'create_time',
                             'label' => '创建时间',
                             'width' => '180',
@@ -192,7 +212,7 @@ class CollectArticle
                     ],
                     'operation' => [
                         'label' => '操作',
-                        'width' => '180',
+                        'width' => '240',
                         'items' => [
                             [
                                 'label' => '',
@@ -205,6 +225,21 @@ class CollectArticle
                                     'style' => 'font-size: 20px;',
                                 ],
                                 'icon' => 'el-icon-view',
+                            ],
+                            [
+                                'label' => '',
+                                'tooltip' => '导入&同步',
+                                'action' => 'import',
+                                'drawer' => [
+                                    'title' => '导入&同步',
+                                    'width' => '80%'
+                                ],
+                                'ui' => [
+                                    'type' => 'warning',
+                                    ':underline' => 'false',
+                                    'style' => 'font-size: 20px;',
+                                ],
+                                'icon' => 'el-icon-upload2',
                             ],
                             [
                                 'label' => '',
@@ -248,10 +283,14 @@ class CollectArticle
                             'label' => 'ID',
                         ],
                         [
+                            'name' => 'key',
+                            'label' => '唯一键',
+                        ],
+                        [
                             'name' => 'image',
                             'label' => '封面图片',
                             'driver' => DetailItemImage::class,
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 if ($row['image'] === '') {
                                     return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
                                 }
@@ -273,6 +312,28 @@ class CollectArticle
                             'name' => 'description',
                             'label' => '描述',
                             'driver' => DetailItemHtml::class,
+                        ],
+                        [
+                            'name' => 'article_id',
+                            'label' => '导入的文章',
+                            'driver' => DetailItemHtml::class,
+                            'value' => function ($row) {
+                                if ($row['article_id'] === '') {
+                                    return '尚未导入';
+                                } else {
+                                    try {
+                                        $article = Be::getService('App.Cms.Admin.Article')->getArticle($row['article_id']);
+                                        return 'ID：' . $row['article_id'] . '<br>标题：' . $article->title;
+                                    } catch (\Throwable $t) {
+                                        return '导入的文章已删除！';
+                                    }
+                                }
+                            }
+                        ],
+                        [
+                            'name' => 'is_synced',
+                            'label' => '是否已同步',
+                            'driver' => DetailItemToggleIcon::class,
                         ],
                         [
                             'name' => 'create_time',
@@ -327,7 +388,7 @@ class CollectArticle
             }
         } else {
             $articleId = $request->get('id', '');
-            $article = Be::getService('App.Cms.Admin.CollectArticle')->getArticle($articleId);
+            $article = Be::getService('App.Cms.Admin.CollectArticle')->getCollectArticle($articleId);
             $response->set('article', $article);
             $response->set('title', '编辑采集的文章');
             $response->display();
@@ -347,6 +408,80 @@ class CollectArticle
         Be::getResponse()->redirect(beUrl('Cms.CollectArticle.detail', ['id' => $data['row']['id']]));
     }
 
+    /**
+     * 导入&同步
+     *
+     * @BePermission("导入&同步", ordering="2.13")
+     */
+    public function import()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $data = $request->post('data', '', '');
+        $data = json_decode($data, true);
+
+        $collectArticles = [];
+        if (isset($data['row'])) {
+            $collectArticles[] = $data['row'];
+        } elseif (isset($data['selectedRows'])) {
+            $collectArticles = $data['selectedRows'];
+        }
+
+        if (count($collectArticles) === 0) {
+            $response->error('您未选择文章！');
+            return;
+        }
+
+        foreach ($collectArticles as &$collectArticle) {
+            $collectArticle['category_ids'] = [];
+            if ($collectArticle['article_id'] !== '') {
+                try {
+                    $article = Be::getService('App.Cms.Admin.Article')->getArticle($collectArticle['article_id'], ['categories' => 1, 'tags' => 1]);
+                    $collectArticle['article_title'] = $article->title;
+                    $collectArticle['category_ids'] = $article->category_ids;
+                } catch (\Throwable $t) {
+                    $collectArticle['article_id'] = '';
+                    $collectArticle['article_title'] = '文章已删除';
+                }
+            } else {
+                $collectArticle['article_title'] = '无';
+            }
+        }
+        unset($article);
+
+        $response->set('title', '导入&同步');
+        $response->set('collectArticles', $collectArticles);
+
+        $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
+        $response->set('categoryKeyValues', $categoryKeyValues);
+
+        $response->display(null, 'Blank');
+    }
+
+    /**
+     * 导入&同步
+     *
+     * @BePermission("导入&同步", ordering="2.13")
+     */
+    public function importSave()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $formData = $request->json('formData');
+            $collectArticles = $formData['collectArticles'];
+            Be::getService('App.Cms.Admin.CollectArticle')->import($collectArticles);
+            $response->set('success', true);
+            $response->set('message', '导入&同步成功！');
+            $response->json();
+        } catch (\Throwable $t) {
+            $response->set('success', false);
+            $response->set('message', $t->getMessage());
+            $response->json();
+        }
+    }
 
 
 
