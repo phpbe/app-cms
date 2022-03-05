@@ -320,7 +320,10 @@ class Article
      */
     public function syncEs(array $articleIds)
     {
+        $configEs = Be::getConfig('App.Cms.Es');
+        if ($configEs->enable) {
 
+        }
     }
 
     /**
@@ -332,16 +335,19 @@ class Article
      */
     public function syncRedis(array $articleIds)
     {
-        $keyValues = [];
-        foreach ($articleIds as $articleId) {
-            $key = 'Cms:Article:' . $articleId;
-            $article = $this->getArticle($articleId);
-            $keyValues[$key] = serialize($article);
-        }
-
         $configRedis = Be::getConfig('App.Cms.Redis');
-        $redis = Be::getRedis($configRedis->db);
-        $redis->mset($keyValues);
+        if ($configRedis->enable) {
+            $keyValues = [];
+            foreach ($articleIds as $articleId) {
+                $key = 'Cms:Article:' . $articleId;
+                $article = $this->getArticle($articleId);
+                $keyValues[$key] = serialize($article);
+            }
+
+            $configRedis = Be::getConfig('App.Cms.Redis');
+            $redis = Be::getRedis($configRedis->db);
+            $redis->mset($keyValues);
+        }
     }
 
 
@@ -350,7 +356,7 @@ class Article
      *
      * @return array
      */
-    public function getArticleMenuPicker():array
+    public function getArticleMenuPicker(): array
     {
         $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
         return [

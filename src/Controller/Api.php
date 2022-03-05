@@ -2,6 +2,7 @@
 namespace Be\App\Cms\Controller;
 
 use Be\App\ControllerException;
+use Be\App\ServiceException;
 use Be\Be;
 
 /**
@@ -43,6 +44,7 @@ class Api
             $data['summary'] = $request->post($configLocoy->field_summary, '');
             $data['description'] = $request->post($configLocoy->field_description, '');
             $data['key'] = $request->post($configLocoy->field_key, '');
+
             Be::getService('App.Cms.Admin.CollectArticle')->edit($data);
 
             $response->success('导入成功！');

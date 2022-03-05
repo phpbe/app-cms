@@ -172,6 +172,13 @@ class Category
 
             $db->commit();
 
+            $articleIds = Be::newTable('cms_article_category')
+                ->where('category_id', '=',  $tupleCategory->id)
+                ->getValues('article_id');
+            if (count($articleIds) > 0) {
+                Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
+            }
+
             $this->onUpdate([$tupleCategory->id]);
 
         } catch (\Throwable $t) {
@@ -254,7 +261,7 @@ class Category
             ->where('article_id', 'IN', $articleIds)
             ->delete();
 
-        Be::getService('App.Cms.Article')->onUpdate($articleIds);
+        Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
 
         return true;
     }
@@ -266,13 +273,6 @@ class Category
      */
     public function onUpdate(array $categoryIds)
     {
-        $articleIds = Be::newTable('cms_article_category')
-            ->where('category_id', 'IN',  $categoryIds)
-            ->getValues('article_id');
-        if (count($articleIds) > 0) {
-            Be::getService('App.Cms.Article')->onUpdate($articleIds);
-        }
-
         $configRedis = Be::getConfig('App.Cms.Redis');
         if ($configRedis->enable) {
             $this->syncRedis($categoryIds);
@@ -288,16 +288,19 @@ class Category
      */
     public function syncRedis(array $categoryIds)
     {
-        $keyValues = [];
-        foreach ($categoryIds as $categoryId) {
-            $key = 'Cms:Category:' . $categoryId;
-            $category = $this->getCategory($categoryId);
-            $keyValues[$key] = serialize($category);
-        }
-
         $configRedis = Be::getConfig('App.Cms.Redis');
-        $redis = Be::getRedis($configRedis->db);
-        $redis->mset($keyValues);
+        if ($configRedis->enable) {
+            $keyValues = [];
+            foreach ($categoryIds as $categoryId) {
+                $key = 'Cms:Category:' . $categoryId;
+                $category = $this->getCategory($categoryId);
+                $keyValues[$key] = serialize($category);
+            }
+
+            $configRedis = Be::getConfig('App.Cms.Redis');
+            $redis = Be::getRedis($configRedis->db);
+            $redis->mset($keyValues);
+        }
     }
 
     /**

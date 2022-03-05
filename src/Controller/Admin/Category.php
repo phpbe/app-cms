@@ -269,7 +269,14 @@ class Category
                             $categoryIds[] = $postData['row']['id'];
                         }
 
-                        Be::getService('App.Cms.Category')->onUpdate($categoryIds);
+                        $articleIds = Be::newTable('cms_article_category')
+                            ->where('category_id', 'IN',  $categoryIds)
+                            ->getValues('article_id');
+                        if (count($articleIds) > 0) {
+                            Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
+                        }
+
+                        Be::getService('App.Cms.Admin.Category')->onUpdate($categoryIds);
                     },
                 ],
             ],

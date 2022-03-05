@@ -23,18 +23,30 @@ class CollectArticle
         $db = Be::getDb();
 
         $isNew = true;
-        $articleId = null;
+        $collectArticleId = null;
         if (isset($data['id']) && $data['id'] !== '') {
             $isNew = false;
-            $articleId = $data['id'];
+            $collectArticleId = $data['id'];
         }
 
         $tupleCollectArticle = Be::newTuple('cms_collect_article');
         if (!$isNew) {
             try {
-                $tupleCollectArticle->load($articleId);
+                $tupleCollectArticle->load($collectArticleId);
             } catch (\Throwable $t) {
-                throw new ServiceException('采集的文章（# ' . $articleId . '）不存在！');
+                throw new ServiceException('采集的文章（# ' . $collectArticleId . '）不存在！');
+            }
+        }
+
+        if (!isset($data['key']) || !is_string($data['key'])) {
+            $data['key'] = '';
+        }
+
+        if ($data['key'] !== '') {
+            try {
+                $tupleCollectArticle->loadBy('key', $data['key']);
+                $isNew = false;
+            } catch (\Throwable $t) {
             }
         }
 
@@ -58,6 +70,7 @@ class CollectArticle
         $db->startTransaction();
         try {
             $now = date('Y-m-d H:i:s');
+            $tupleCollectArticle->key = $data['key'];
             $tupleCollectArticle->image = $data['image'];
             $tupleCollectArticle->title = $title;
             $tupleCollectArticle->summary = $data['summary'];
@@ -65,6 +78,8 @@ class CollectArticle
             $tupleCollectArticle->is_delete = 0;
             $tupleCollectArticle->update_time = $now;
             if ($isNew) {
+                $tupleCollectArticle->article_id = '';
+                $tupleCollectArticle->is_synced = 0;
                 $tupleCollectArticle->create_time = $now;
                 $tupleCollectArticle->insert();
             } else {
@@ -102,6 +117,7 @@ class CollectArticle
             throw new ServiceException('采集的文章（# ' . $collectArticleId . '）不存在！');
         }
 
+        $collectArticle->is_synced = (int)$collectArticle->is_synced;
         $collectArticle->is_delete = (int)$collectArticle->is_delete;
 
         return $collectArticle;

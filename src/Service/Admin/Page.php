@@ -218,6 +218,21 @@ class Page
     {
         $configRedis = Be::getConfig('App.Cms.Redis');
         if ($configRedis->enable) {
+            $this->syncRedis($pageIds);
+        }
+    }
+
+    /**
+     * 页面同步到 Redis
+     *
+     * @param array $pageIds 页面ID列表
+     * @throws ServiceException
+     * @throws RuntimeException
+     */
+    public function syncRedis(array $pageIds)
+    {
+        $configRedis = Be::getConfig('App.Cms.Redis');
+        if ($configRedis->enable) {
             $keyValues = [];
             foreach ($pageIds as $pageId) {
                 $key = 'Cms:Page:' . $pageId;
