@@ -31,7 +31,7 @@ class Api
                 throw new ControllerException('密码错误！');
             }
 
-            $title = $request->post($configLocoy->field_title, '');
+            $title = $request->post('title', '');
             if ($title === '') {
                 $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
                 $response->set('categories', $categoryKeyValues);
@@ -41,9 +41,9 @@ class Api
 
             $data = [];
             $data['title'] = $title;
-            $data['summary'] = $request->post($configLocoy->field_summary, '');
-            $data['description'] = $request->post($configLocoy->field_description, '');
-            $data['key'] = $request->post($configLocoy->field_key, '');
+            $data['summary'] = $request->post('summary', '');
+            $data['description'] = $request->post('description', '');
+            $data['unique_key'] = $request->post('unique_key', '');
 
             Be::getService('App.Cms.Admin.CollectArticle')->edit($data);
 

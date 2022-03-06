@@ -38,13 +38,13 @@ class CollectArticle
             }
         }
 
-        if (!isset($data['key']) || !is_string($data['key'])) {
-            $data['key'] = '';
+        if (!isset($data['unique_key']) || !is_string($data['unique_key'])) {
+            $data['unique_key'] = '';
         }
 
-        if ($data['key'] !== '') {
+        if ($data['unique_key'] !== '') {
             try {
-                $tupleCollectArticle->loadBy('key', $data['key']);
+                $tupleCollectArticle->loadBy('unique_key', $data['unique_key']);
                 $isNew = false;
             } catch (\Throwable $t) {
             }
@@ -70,7 +70,7 @@ class CollectArticle
         $db->startTransaction();
         try {
             $now = date('Y-m-d H:i:s');
-            $tupleCollectArticle->key = $data['key'];
+            $tupleCollectArticle->unique_key = $data['unique_key'];
             $tupleCollectArticle->image = $data['image'];
             $tupleCollectArticle->title = $title;
             $tupleCollectArticle->summary = $data['summary'];

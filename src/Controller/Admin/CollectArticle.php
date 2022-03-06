@@ -42,7 +42,7 @@ class CollectArticle
 
                 'tab' => [
                     'name' => 'status',
-                    'value' => Be::getRequest()->request('is_enable', '-1'),
+                    'value' => '-1',
                     'nullValue' => '-1',
                     'keyValues' => [
                         '-1' => '全部',

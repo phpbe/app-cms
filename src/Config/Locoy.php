@@ -16,47 +16,13 @@ class Locoy
     public int $enable = 0;
 
     /**
-     * @BeConfigItem("接口密码",
+     * @BeConfigItem("接口密钥",
      *     description="密码用于识别已授权的访问，附加到网址中传输，为了系统安全，请妥善保管。",
      *     driver="FormItemInput",
      *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
      * )
      */
-    public string $password = '123456';
-
-    /**
-     * @BeConfigItem("字段：标题",
-     *     description="字段配置用于自定义POST传输的数据内容",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
-     * )
-     */
-    public string $field_title = 'title';
-
-    /**
-     * @BeConfigItem("字段：摘要",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
-     * )
-     */
-    public string $field_summary = 'summary';
-
-    /**
-     * @BeConfigItem("字段：描述",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
-     * )
-     */
-    public string $field_description = 'description';
-
-    /**
-     * @BeConfigItem("字段：唯一键值",
-     *     description="用于防止重复入库，常用采集的来源网址作为唯一键值，也可用文章标题",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
-     * )
-     */
-    public string $field_key = 'key';
+    public string $token = '';
 
 
 }
