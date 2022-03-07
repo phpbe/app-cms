@@ -85,7 +85,7 @@
         <div class="be-row">
             <div class="be-col">
                 <div style="padding: 1.25rem 0 0 2rem;">
-                    <el-link icon="el-icon-back" href="<?php echo beAdminUrl('Cms.Article.articles'); ?>">返回采集的文章列表</el-link>
+                    <el-link icon="el-icon-back" href="<?php echo beAdminUrl('Cms.CollectArticle.collectArticles'); ?>">返回采集的文章列表</el-link>
                 </div>
             </div>
             <div class="be-col-auto">
@@ -124,7 +124,7 @@
             <div class="be-center-title"><?php echo $this->title; ?></div>
             <el-form ref="formRef" :model="formData" class="be-mb-400">
                 <?php
-                $formData['id'] = ($this->article ? $this->article->id : '');
+                $formData['id'] = ($this->collectArticle ? $this->collectArticle->id : '');
                 ?>
 
                 <div class="be-row">
@@ -142,7 +142,7 @@
                                         show-word-limit>
                                 </el-input>
                             </el-form-item>
-                            <?php $formData['title'] = ($this->article ? $this->article->title : ''); ?>
+                            <?php $formData['title'] = ($this->collectArticle ? $this->collectArticle->title : ''); ?>
 
                             <div class="be-mt-100">摘要：</div>
                             <el-form-item class="be-mt-50" prop="summary">
@@ -156,7 +156,7 @@
                                         show-word-limit>
                                 </el-input>
                             </el-form-item>
-                            <?php $formData['summary'] = ($this->article ? $this->article->summary : ''); ?>
+                            <?php $formData['summary'] = ($this->collectArticle ? $this->collectArticle->summary : ''); ?>
 
                             <div class="be-mt-100">描述：</div>
                             <?php
@@ -173,7 +173,7 @@
                             ]);
                             echo $driver->getHtml();
 
-                            $formData['description'] = ($this->article ? $this->article->description : '');
+                            $formData['description'] = ($this->collectArticle ? $this->collectArticle->description : '');
 
                             $jsX = $driver->getJs();
                             if ($jsX) {
@@ -230,7 +230,7 @@
                                 </div>
                             </div>
                             <?php
-                            $formData['image'] = ($this->article ? $this->article->image : '');
+                            $formData['image'] = ($this->collectArticle ? $this->collectArticle->image : '');
                             ?>
 
                             <el-dialog :visible.sync="imageSelectorVisible" class="dialog-image-selector" title="选择主图" :width="600" :close-on-click-modal="false">
@@ -242,6 +242,30 @@
                                     <img style="max-width: 100%;max-height: 400px;" :src="formData.image" alt="">
                                 </div>
                             </el-dialog>
+
+                            <div class="be-mt-150">
+                                作者：
+                            </div>
+                            <el-form-item class="be-mt-50" prop="author">
+                                <el-form-item prop="author">
+                                    <el-input v-model="formData.author" size="medium"></el-input>
+                                </el-form-item>
+                            </el-form-item>
+                            <?php
+                            $formData['author'] = ($this->collectArticle ? $this->collectArticle->author : \Be\Be::getAdminUser()->name);
+                            ?>
+
+                            <div class="be-mt-150">
+                                发布时间：
+                            </div>
+                            <el-form-item class="be-mt-50" prop="publish_time">
+                                <el-form-item prop="publish_time">
+                                    <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" placeholder="选择发布时间"></el-date-picker>
+                                </el-form-item>
+                            </el-form-item>
+                            <?php
+                            $formData['publish_time'] = ($this->collectArticle ? $this->collectArticle->publish_time : date('Y-m-d H:i:s'));
+                            ?>
 
                         </div>
 
@@ -299,7 +323,7 @@
                         if (valid) {
                             _this.loading = true;
                             vueNorth.loading = true;
-                            _this.$http.post("<?php echo beAdminUrl('Cms.CollectArticle.' . ($this->article ? 'edit' :'create')); ?>", {
+                            _this.$http.post("<?php echo beAdminUrl('Cms.CollectArticle.' . ($this->collectArticle ? 'edit' :'create')); ?>", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.loading = false;
@@ -311,7 +335,7 @@
                                         _this.$message.success(responseData.message);
                                         setTimeout(function () {
                                             window.onbeforeunload = null;
-                                            window.location.href = "<?php echo beAdminUrl('Cms.CollectArticle.articles'); ?>";
+                                            window.location.href = "<?php echo beAdminUrl('Cms.CollectArticle.collectArticles'); ?>";
                                         }, 1000);
                                     } else {
                                         if (responseData.message) {
@@ -333,7 +357,7 @@
                 },
                 cancel: function () {
                     window.onbeforeunload = null;
-                    window.location.href = "<?php echo beAdminUrl('Cms.CollectArticle.articles'); ?>";
+                    window.location.href = "<?php echo beAdminUrl('Cms.CollectArticle.collectArticles'); ?>";
                 },
 
                 imageSelect: function () {

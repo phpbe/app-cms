@@ -47,13 +47,12 @@ CREATE TABLE `cms_category` (
 
 CREATE TABLE `cms_collect_article` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
-`key` varchar(200) NOT NULL COMMENT '唯一键',
+`unique_key` varchar(200) NOT NULL COMMENT '唯一键',
 `image` varchar(200) NOT NULL COMMENT '封面图片',
 `title` varchar(120) NOT NULL COMMENT '标题',
 `summary` varchar(500) NOT NULL COMMENT '摘要',
 `description` mediumtext NOT NULL COMMENT '描述',
 `article_id` varchar(36) NOT NULL COMMENT '导入到的文章ID',
-`is_synced` tinyint(4) NOT NULL COMMENT '是否已同步到文章中',
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
@@ -89,11 +88,11 @@ ADD UNIQUE KEY `article_tag` (`article_id`,`tag`) USING BTREE;
 
 ALTER TABLE `cms_category`
 ADD PRIMARY KEY (`id`),
-ADD UNIQUE KEY `store_id` (`url`) USING BTREE;
+ADD UNIQUE KEY `url` (`url`) USING BTREE;
 
 ALTER TABLE `cms_collect_article`
 ADD PRIMARY KEY (`id`),
-ADD KEY `key` (`key`);
+ADD KEY `unique_key` (`unique_key`);
 
 ALTER TABLE `cms_page`
 ADD PRIMARY KEY (`id`),

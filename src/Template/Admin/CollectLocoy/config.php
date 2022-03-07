@@ -85,6 +85,11 @@
                         "description" : "唯一值，有传值时可用于去重，可取采集的网址，标题等，未传值时不校验是否复复导入，200个字符以内"
                     },
                     {
+                        "name" : "image",
+                        "required" : 0,
+                        "description" : "主图网址，200个字符以内"
+                    },
+                    {
                         "name" : "title",
                         "required" : 1,
                         "description" : "标题，200个字符以内"
@@ -98,6 +103,16 @@
                         "name" : "description",
                         "required" : 0,
                         "description" : "描述"
+                    },
+                    {
+                        "name" : "author",
+                        "required" : 0,
+                        "description" : "作者，50个字符以内"
+                    },
+                    {
+                        "name" : "publish_time",
+                        "required" : 0,
+                        "description" : "发布时间"
                     }
                 ]
             },

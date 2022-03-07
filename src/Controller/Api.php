@@ -26,9 +26,9 @@ class Api
                 throw new ControllerException('火车采集器接口未启用！');
             }
 
-            $password = $request->get('password', '');
-            if ($configLocoy->password !== $password) {
-                throw new ControllerException('密码错误！');
+            $token = $request->get('token', '');
+            if ($configLocoy->token !== $token) {
+                throw new ControllerException('密钥错误！');
             }
 
             $title = $request->post('title', '');
@@ -40,16 +40,18 @@ class Api
             }
 
             $data = [];
+            $data['unique_key'] = $request->post('unique_key', '');
             $data['title'] = $title;
             $data['summary'] = $request->post('summary', '');
-            $data['description'] = $request->post('description', '');
-            $data['unique_key'] = $request->post('unique_key', '');
+            $data['description'] = $request->post('description', '', 'html');
+            $data['author'] = $request->post('author', '');
+            $data['publish_time'] = $request->post('publish_time', '');
 
             Be::getService('App.Cms.Admin.CollectArticle')->edit($data);
 
-            $response->success('导入成功！');
+            $response->end('[OK] 导入成功！');
         } catch (\Throwable $t) {
-            $response->error($t->getMessage());
+            $response->end('[ERROR] ' . $t->getMessage());
         }
     }
 

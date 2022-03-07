@@ -35,24 +35,19 @@
     <div id="app" v-cloak>
         <div style="position: absolute; left: 0; right: 0; top: 0; bottom: 6rem; overflow-y: auto;">
             <div class="be-row collect-article-header">
-                <div class="be-col-8 be-fw-bold be-pl-100">
+                <div class="be-col-12 be-fw-bold be-pl-100">
                     采集的文章
                 </div>
-                <div class="be-col-8 be-fw-bold">
-                    导入到文章
-                </div>
-                <div class="be-col-8 be-fw-bold be-ta-center">
+                <div class="be-col-12 be-fw-bold be-ta-center">
                     设置分类
                 </div>
             </div>
 
             <div class="be-row collect-article-op">
-                <div class="be-col-8 be-pl-100">
+                <div class="be-col-12 be-pl-100">
                     批量设置
                 </div>
-                <div class="be-col-8">
-                </div>
-                <div class="be-col-8 be-fw-bold be-ta-center">
+                <div class="be-col-12 be-fw-bold be-ta-center">
                     <el-select
                             v-model="categoryIds"
                             multiple
@@ -71,13 +66,10 @@
 
 
             <div class="be-row collect-article" v-for="collectArticle, collectArticleIndex in formData.collectArticles" :key="collectArticle.id">
-                <div class="be-col-8 be-pl-100">
+                <div class="be-col-12 be-pl-100">
                     {{collectArticle.title}}
                 </div>
-                <div class="be-col-8">
-                    {{collectArticle.article_title}}
-                </div>
-                <div class="be-col-8 be-ta-center">
+                <div class="be-col-12 be-ta-center">
                     <el-select
                             v-model="collectArticle.category_ids"
                             multiple
@@ -96,7 +88,7 @@
         <div class="be-row be-bt" style="position: absolute; left: 0; right: 0; bottom: 0; height: 5rem; line-height: 4rem;">
             <div class="be-col"></div>
             <div class="be-col-auto">
-                <el-button type="primary" icon="el-icon-check" @click="importConfirm" :disable="loading">确认导入&同步</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="importConfirm" :disable="loading">确认导入</el-button>
             </div>
         </div>
 

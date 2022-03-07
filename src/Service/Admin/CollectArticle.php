@@ -36,35 +36,70 @@ class CollectArticle
             } catch (\Throwable $t) {
                 throw new ServiceException('采集的文章（# ' . $collectArticleId . '）不存在！');
             }
+
+            if ($tupleCollectArticle->article_id !== '') {
+                throw new ServiceException('已导入的文章不可编辑！');
+            }
         }
+
 
         if (!isset($data['unique_key']) || !is_string($data['unique_key'])) {
             $data['unique_key'] = '';
         }
 
         if ($data['unique_key'] !== '') {
+            $loaded = false;
             try {
                 $tupleCollectArticle->loadBy('unique_key', $data['unique_key']);
-                $isNew = false;
+                $loaded = true;
             } catch (\Throwable $t) {
             }
+
+            if ($loaded) {
+                if ($tupleCollectArticle->article_id !== '') {
+                    throw new ServiceException('唯一键值（unique_key=' . $data['unique_key'] . '）对应的文章已导入过！');
+                }
+
+                // 再次导入，覆盖
+                $isNew = false;
+                $collectArticleId = $tupleCollectArticle->id;
+            }
+        }
+
+        if (!isset($data['image']) || !is_string($data['image'])) {
+            $data['image'] = '';
         }
 
         if (!isset($data['title']) || !is_string($data['title'])) {
             throw new ServiceException('采集的文章标题未填写！');
         }
         $title = $data['title'];
+        if (strlen($title) > 200) {
+            throw new ServiceException('采集的文章标题（title）不得超过200个字符！');
+        }
 
         if (!isset($data['summary']) || !is_string($data['summary'])) {
             $data['summary'] = '';
+        } else {
+            if ($data['summary'] && strlen($data['summary']) > 500) {
+                throw new ServiceException('摘要（summary）不得超过500个字符！');
+            }
         }
 
         if (!isset($data['description']) || !is_string($data['description'])) {
             $data['description'] = '';
         }
 
-        if (!isset($data['image']) || !is_string($data['image'])) {
-            $data['image'] = '';
+        if (!isset($data['author']) || !is_string($data['author'])) {
+            $data['author'] = '';
+        } else {
+            if ($data['author'] && strlen($data['author']) > 50) {
+                throw new ServiceException('作者（author）不得超过50个字符！');
+            }
+        }
+
+        if (!isset($data['publish_time']) || !is_string($data['publish_time']) || !strtotime($data['publish_time'])) {
+            $data['publish_time'] = date('Y-m-d H:i:s');
         }
 
         $db->startTransaction();
@@ -75,11 +110,12 @@ class CollectArticle
             $tupleCollectArticle->title = $title;
             $tupleCollectArticle->summary = $data['summary'];
             $tupleCollectArticle->description = $data['description'];
+            $tupleCollectArticle->author = $data['author'];
+            $tupleCollectArticle->publish_time = $data['publish_time'];
             $tupleCollectArticle->is_delete = 0;
             $tupleCollectArticle->update_time = $now;
             if ($isNew) {
                 $tupleCollectArticle->article_id = '';
-                $tupleCollectArticle->is_synced = 0;
                 $tupleCollectArticle->create_time = $now;
                 $tupleCollectArticle->insert();
             } else {
@@ -117,12 +153,10 @@ class CollectArticle
             throw new ServiceException('采集的文章（# ' . $collectArticleId . '）不存在！');
         }
 
-        $collectArticle->is_synced = (int)$collectArticle->is_synced;
         $collectArticle->is_delete = (int)$collectArticle->is_delete;
 
         return $collectArticle;
     }
-
 
     /**
      * 导入
@@ -142,26 +176,18 @@ class CollectArticle
             }
 
             $articleData = [];
-            if ($tupleCollectArticle->article_id) {
-                $tupleArticle = Be::newTuple('cms_article');
-                try {
-                    $tupleArticle->load($tupleCollectArticle->article_id);
-                    $articleData = $tupleArticle->toArray();
-                } catch (\Throwable $t) {
-                }
-            }
-
-            $articleData['id'] = $tupleCollectArticle->article_id;
+            $articleData['id'] = '';
             $articleData['image'] = $tupleCollectArticle->image;
             $articleData['title'] = $tupleCollectArticle->title;
             $articleData['summary'] = $tupleCollectArticle->summary;
             $articleData['description'] = $tupleCollectArticle->description;
+            $articleData['author'] = $tupleCollectArticle->author;
+            $articleData['publish_time'] = $tupleCollectArticle->publish_time;
             $articleData['category_ids'] = $collectArticle['category_ids'];
 
             $tupleArticle = $serviceArticle->edit($articleData);
 
             $tupleCollectArticle->article_id = $tupleArticle->id;
-            $tupleCollectArticle->is_synced = 1;
             $tupleCollectArticle->update_time = date('Y-m-d H:i:s');
             $tupleCollectArticle->update();
         }
