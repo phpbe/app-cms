@@ -17,7 +17,6 @@
   ],
   "require": {
     "be/be": "dev-master",
-    "guzzlehttp/guzzle": "~7.0",
     "ext-json": "*"
   },
   "autoload": {
