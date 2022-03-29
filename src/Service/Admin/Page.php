@@ -6,6 +6,7 @@ use Be\App\ServiceException;
 use Be\Be;
 use Be\Db\DbException;
 use Be\Runtime\RuntimeException;
+use Be\Util\Str\Pinyin;
 
 class Page
 {
@@ -101,9 +102,14 @@ class Page
 
         $url = null;
         if (!isset($data['url']) || !is_string($data['url'])) {
-            $url = strtolower($title);
-            $url = str_replace(' ', '', $url);
-            $url = preg_replace('/[^a-z0-9\-]/', '', $url);
+            $urlTitle = strtolower($title);
+            $url = Pinyin::convert($urlTitle, '-');
+            if (strlen($url) > 200) {
+                $url = Pinyin::convert($urlTitle, '-', true);
+                if (strlen($url) > 200) {
+                    $url = Pinyin::convert($urlTitle, '', true);
+                }
+            }
         } else {
             $url = $data['url'];
         }

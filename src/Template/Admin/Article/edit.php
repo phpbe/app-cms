@@ -596,9 +596,14 @@
                         }
                         this.formData.seo_description = seoDescription;
 
-                        let url = this.formData.title.toLowerCase();
-                        url = url.replace(' ', '-');
-                        url = url.replace(/[^a-z0-9\-]/g, '');
+                        let title = this.formData.title.toLowerCase();
+                        let url = Pinyin.convert(title, "-");
+                        if (url.length > 200) {
+                            url = Pinyin.convert(title, "-", true);
+                            if (url.length > 200) {
+                                url = Pinyin.convert(title, "", true);
+                            }
+                        }
                         this.formData.url = url;
                     }
                 },
