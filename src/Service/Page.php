@@ -38,7 +38,7 @@ class Page
             $key = 'Cms:Page:' . $pageId;
             $page = $redis->get($key);
             if ($page) {
-                $page = unserialize($page);
+                $page = json_decode($page);
             }
 
             if (!$page) {
@@ -49,7 +49,7 @@ class Page
         } else {
             $tuplePage = Be::newtuple('cms_page');
             try {
-                $tuplePage->loadBy($pageId);
+                $tuplePage->load($pageId);
             } catch (\Throwable $t) {
                 throw new ServiceException('页面不存在！');
             }

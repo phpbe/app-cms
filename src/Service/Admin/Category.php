@@ -300,7 +300,7 @@ class Category
             foreach ($categoryIds as $categoryId) {
                 $key = 'Cms:Category:' . $categoryId;
                 $category = $this->getCategory($categoryId);
-                $keyValues[$key] = serialize($category);
+                $keyValues[$key] = json_encode($category);
             }
 
             $configRedis = Be::getConfig('App.Cms.Redis');

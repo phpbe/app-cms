@@ -37,7 +37,7 @@ class Article
             $key = 'Cms:Article:' . $articleId;
             $article = $redis->get($key);
             if ($article) {
-                $article = unserialize($article);
+                $article = json_decode($article);
             }
 
             if (!$article) {

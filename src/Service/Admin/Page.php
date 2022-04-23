@@ -243,7 +243,7 @@ class Page
             foreach ($pageIds as $pageId) {
                 $key = 'Cms:Page:' . $pageId;
                 $page = $this->getPage($pageId);
-                $keyValues[$key] = serialize($page);
+                $keyValues[$key] = json_encode($page);
             }
 
             $redis = Be::getRedis();

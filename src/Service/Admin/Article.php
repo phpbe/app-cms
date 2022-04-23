@@ -347,7 +347,7 @@ class Article
             foreach ($articleIds as $articleId) {
                 $key = 'Cms:Article:' . $articleId;
                 $article = $this->getArticle($articleId);
-                $keyValues[$key] = serialize($article);
+                $keyValues[$key] = json_encode($article);
             }
 
             $configRedis = Be::getConfig('App.Cms.Redis');
