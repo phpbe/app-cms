@@ -66,7 +66,7 @@ class Article
                             'keyValues' => $categoryKeyValues,
                             'buildSql' => function($dbName, $formData) {
                                 if (isset($formData['category_id']) && $formData['category_id']) {
-                                    $articleIds = Be::newTable('cms_article_category', $dbName)
+                                    $articleIds = Be::getTable('cms_article_category', $dbName)
                                         ->where('category_id', $formData['category_id'])
                                         ->getValues('article_id');
                                     if (count($articleIds) > 0) {
@@ -339,11 +339,11 @@ class Article
                             'label' => '分类',
                             'driver' => DetailItemHtml::class,
                             'value' => function ($row) {
-                                $categoryIds = Be::newTable('cms_article_category')
+                                $categoryIds = Be::getTable('cms_article_category')
                                     ->where('article_id', $row['id'])
                                     ->getValues('category_id');
                                 if (count($categoryIds) > 0) {
-                                    $categoryNames = Be::newTable('cms_category')
+                                    $categoryNames = Be::getTable('cms_category')
                                         ->where('id', 'IN', $categoryIds)
                                         ->getValues('name');
 
@@ -358,7 +358,7 @@ class Article
                             'label' => '标签',
                             'driver' => DetailItemHtml::class,
                             'value' => function ($row) {
-                                $tags = Be::newTable('cms_article_tag')
+                                $tags = Be::getTable('cms_article_tag')
                                     ->where('article_id', $row['id'])
                                     ->getValues('tag');
                                 if (count($tags) > 0) {
@@ -575,7 +575,7 @@ class Article
         $comments = $adminServiceArticle->getComments($option);
         foreach ($comments as $comment) {
             if (!array_key_exists($comment->articleId, $articles)) {
-                $tupleArticle = Be::newTuple('cms_article');
+                $tupleArticle = Be::getTuple('cms_article');
                 $tupleArticle->load($comment->articleId);
                 $articles[$comment->articleId] = $tupleArticle;
             }

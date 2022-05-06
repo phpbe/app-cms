@@ -74,7 +74,7 @@ class Article
         } else {
             // 数据库搜索
 
-            $tableArticle = Be::newTable('cms_article');
+            $tableArticle = Be::getTable('cms_article');
 
             $where = $this->createArticleWhere($conditions);
             $tableArticle->where($where);
@@ -110,7 +110,7 @@ class Article
         if ($configEs->enable) {
             return 0;
         } else {
-            return Be::newTable('cms_article')
+            return Be::getTable('cms_article')
                 ->where($this->createArticleWhere($conditions))
                 ->count();
         }
@@ -206,7 +206,7 @@ class Article
 
         $keywordsCount = count($keywords);
         if ($keywordsCount > 0) {
-            $tableArticle = Be::newTable('cms_article');
+            $tableArticle = Be::getTable('cms_article');
             $tableArticle->where('id', '!=', $tupleArticle->id);
             $tableArticle->where('(');
             for ($i = 0; $i < $keywordsCount; $i++) {
@@ -251,13 +251,13 @@ class Article
             throw new \Exception('请先登陆！');
         }
 
-        $tupleArticle = Be::newTuple('cms_article');
+        $tupleArticle = Be::getTuple('cms_article');
         $tupleArticle->load($articleId);
         if ($tupleArticle->id == 0 || $tupleArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
-        $tupleArticleVoteLog = Be::newTuple('cms_article_vote_log');
+        $tupleArticleVoteLog = Be::getTuple('cms_article_vote_log');
         $tupleArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
         if ($tupleArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');
@@ -294,13 +294,13 @@ class Article
             throw new \Exception('请先登陆！');
         }
 
-        $tupleArticle = Be::newTuple('cms_article');
+        $tupleArticle = Be::getTuple('cms_article');
         $tupleArticle->load($articleId);
         if ($tupleArticle->id == 0 || $tupleArticle->block == 1) {
             throw new \Exception('文章不存在！');
         }
 
-        $tupleArticleVoteLog = Be::newTuple('cms_article_vote_log');
+        $tupleArticleVoteLog = Be::getTuple('cms_article_vote_log');
         $tupleArticleVoteLog->load(['article_id' => $articleId, 'user_id' => $my->id]);
         if ($tupleArticleVoteLog->id > 0) {
             throw new \Exception('您已经表过态啦！');

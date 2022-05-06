@@ -29,7 +29,7 @@ class Category
      * @return \Be\Db\Tuple
      */
     public function getCategory($categoryId) {
-        $tupleCategory = Be::newTuple('cms_category');
+        $tupleCategory = Be::getTuple('cms_category');
         $tupleCategory->load($categoryId);
         return $tupleCategory;
     }
@@ -44,7 +44,7 @@ class Category
      */
     public function getCategories()
     {
-        return Be::newTable('cms_category')->orderBy('ordering', 'ASC')->getObjects();
+        return Be::getTable('cms_category')->orderBy('ordering', 'ASC')->getObjects();
     }
 
     /**
@@ -67,7 +67,7 @@ class Category
      */
     public function getCategoryCount()
     {
-        return Be::newTable('cms_article_category')->count();
+        return Be::getTable('cms_article_category')->count();
     }
 
     /**
@@ -78,7 +78,7 @@ class Category
     public function getCategoryTree()
     {
         if ($this->categoryTree === null) {
-            $categories = Be::newTable('cms_article_category')->getObjects();
+            $categories = Be::getTable('cms_article_category')->getObjects();
             $this->categoryTree = $this->_createCategoryTree($categories);
         }
         return $this->categoryTree;
@@ -166,14 +166,14 @@ class Category
      * @return mixed | null | \Be\Db\Tuple
      */
     public function getTopParentCategory($categoryId) {
-        $tupleCategory = Be::newTuple('cms_category');
+        $tupleCategory = Be::getTuple('cms_category');
         $tupleCategory->load($categoryId);
 
         $parentCategory = null;
         $tmpCategory = $tupleCategory;
         while ($tmpCategory->parentId > 0) {
             $parentId = $tmpCategory->parentId;
-            $tmpCategory = Be::newTuple('cms_category');
+            $tmpCategory = Be::getTuple('cms_category');
             $tmpCategory->load($parentId);
         }
         $parentCategory = $tmpCategory;
@@ -193,9 +193,9 @@ class Category
         $db->beginTransaction();
         try {
 
-            Be::newTable('cms_article')->where('category_id', $categoryId)->update(['category_id' => 0]);
-            Be::newTable('cms_category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
-            Be::newTuple('cms_category')->delete($categoryId);
+            Be::getTable('cms_article')->where('category_id', $categoryId)->update(['category_id' => 0]);
+            Be::getTable('cms_category')->where('parent_id', $categoryId)->update(['parent_id' => 0]);
+            Be::getTuple('cms_category')->delete($categoryId);
 
             $db->commit();
         } catch (\Exception $e) {

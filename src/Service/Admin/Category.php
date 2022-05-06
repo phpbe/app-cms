@@ -79,7 +79,7 @@ class Category
             $categoryId = $data['id'];
         }
 
-        $tupleCategory = Be::newTuple('cms_category');
+        $tupleCategory = Be::getTuple('cms_category');
         if (!$isNew) {
             try {
                 $tupleCategory->load($categoryId);
@@ -119,11 +119,11 @@ class Category
         $urlExist = null;
         do {
             if ($isNew) {
-                $urlExist = Be::newTable('cms_category')
+                $urlExist = Be::getTable('cms_category')
                         ->where('url', $urlUnique)
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $urlExist = Be::newTable('cms_category')
+                $urlExist = Be::getTable('cms_category')
                         ->where('url', $urlUnique)
                         ->where('id', '!=', $categoryId)
                         ->getValue('COUNT(*)') > 0;
@@ -178,7 +178,7 @@ class Category
 
             $db->commit();
 
-            $articleIds = Be::newTable('cms_article_category')
+            $articleIds = Be::getTable('cms_article_category')
                 ->where('category_id', '=',  $tupleCategory->id)
                 ->getValues('article_id');
             if (count($articleIds) > 0) {
@@ -220,7 +220,7 @@ class Category
         }
 
         if (count($articleIds) > 0) {
-            $existArticleIds = Be::newTable('cms_article')
+            $existArticleIds = Be::getTable('cms_article')
                 ->where('id', 'IN', $articleIds)
                 ->getValues('id');
 
@@ -234,7 +234,7 @@ class Category
             }
 
             foreach ($articleIds as $articleId) {
-                $tupleArticleCategory = Be::newTuple('cms_article_category');
+                $tupleArticleCategory = Be::getTuple('cms_article_category');
                 $tupleArticleCategory->article_id = $articleId;
                 $tupleArticleCategory->category_id = $categoryId;
                 $tupleArticleCategory->insert();
@@ -262,7 +262,7 @@ class Category
             throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
         }
 
-        Be::newTable('cms_article_category')
+        Be::getTable('cms_article_category')
             ->where('category_id', $categoryId)
             ->where('article_id', 'IN', $articleIds)
             ->delete();

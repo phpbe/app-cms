@@ -16,7 +16,7 @@
     }
   ],
   "require": {
-    "be/be": "dev-master",
+    "be/be": "^2.2",
     "ext-json": "*"
   },
   "autoload": {

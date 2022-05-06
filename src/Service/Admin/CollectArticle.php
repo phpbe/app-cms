@@ -29,7 +29,7 @@ class CollectArticle
             $collectArticleId = $data['id'];
         }
 
-        $tupleCollectArticle = Be::newTuple('cms_collect_article');
+        $tupleCollectArticle = Be::getTuple('cms_collect_article');
         if (!$isNew) {
             try {
                 $tupleCollectArticle->load($collectArticleId);
@@ -168,7 +168,7 @@ class CollectArticle
     {
         $serviceArticle = Be::getService('App.Cms.Admin.Article');
         foreach ($collectArticles as $collectArticle) {
-            $tupleCollectArticle = Be::newTuple('cms_collect_article');
+            $tupleCollectArticle = Be::getTuple('cms_collect_article');
             try {
                 $tupleCollectArticle->load($collectArticle['id']);
             } catch (\Throwable $t) {

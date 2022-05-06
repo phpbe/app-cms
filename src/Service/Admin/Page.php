@@ -47,7 +47,7 @@ class Page
      */
     public function getPage(string $pageId): \stdClass
     {
-        $tuplePage = Be::newTuple('cms_page');
+        $tuplePage = Be::getTuple('cms_page');
         try {
             $tuplePage->load($pageId);
         } catch (\Throwable $t) {
@@ -78,7 +78,7 @@ class Page
             $pageId = $data['id'];
         }
 
-        $tuplePage = Be::newTuple('cms_page');
+        $tuplePage = Be::getTuple('cms_page');
         if (!$isNew) {
             try {
                 $tuplePage->load($pageId);
@@ -118,11 +118,11 @@ class Page
         $urlExist = null;
         do {
             if ($isNew) {
-                $urlExist = Be::newTable('cms_page')
+                $urlExist = Be::getTable('cms_page')
                         ->where('url', $urlUnique)
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $urlExist = Be::newTable('cms_page')
+                $urlExist = Be::getTable('cms_page')
                         ->where('url', $urlUnique)
                         ->where('id', '!=', $pageId)
                         ->getValue('COUNT(*)') > 0;
@@ -192,7 +192,7 @@ class Page
      */
     public function deletePage(string $pageId): bool
     {
-        $tuplePage = Be::newTuple('cms_page');
+        $tuplePage = Be::getTuple('cms_page');
         try {
             $tuplePage->load($pageId);
         } catch (\Throwable $t) {

@@ -33,7 +33,7 @@ class Article
             $articleId = $data['id'];
         }
 
-        $tupleArticle = Be::newTuple('cms_article');
+        $tupleArticle = Be::getTuple('cms_article');
         if (!$isNew) {
             try {
                 $tupleArticle->load($articleId);
@@ -81,11 +81,11 @@ class Article
         $urlExist = null;
         do {
             if ($isNew) {
-                $urlExist = Be::newTable('cms_article')
+                $urlExist = Be::getTable('cms_article')
                         ->where('url', $urlUnique)
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $urlExist = Be::newTable('cms_article')
+                $urlExist = Be::getTable('cms_article')
                         ->where('url', $urlUnique)
                         ->where('id', '!=', $articleId)
                         ->getValue('COUNT(*)') > 0;
@@ -153,13 +153,13 @@ class Article
             if (isset($data['category_ids']) && is_array($data['category_ids']) && count($data['category_ids']) > 0) {
                 if ($isNew) {
                     foreach ($data['category_ids'] as $category_id) {
-                        $tupleArticleCategory = Be::newTuple('cms_article_category');
+                        $tupleArticleCategory = Be::getTuple('cms_article_category');
                         $tupleArticleCategory->article_id = $tupleArticle->id;
                         $tupleArticleCategory->category_id = $category_id;
                         $tupleArticleCategory->insert();
                     }
                 } else {
-                    $existCategoryIds = Be::newTable('cms_article_category')
+                    $existCategoryIds = Be::getTable('cms_article_category')
                         ->where('article_id', $articleId)
                         ->getValues('category_id');
 
@@ -167,7 +167,7 @@ class Article
                     if (count($existCategoryIds) > 0) {
                         $removeCategoryIds = array_diff($existCategoryIds, $data['category_ids']);
                         if (count($removeCategoryIds) > 0) {
-                            Be::newTable('cms_article_category')
+                            Be::getTable('cms_article_category')
                                 ->where('article_id', $articleId)
                                 ->where('category_id', 'NOT IN', $removeCategoryIds)
                                 ->delete();
@@ -183,7 +183,7 @@ class Article
                     }
                     if (count($newCategoryIds) > 0) {
                         foreach ($newCategoryIds as $category_id) {
-                            $tupleArticleCategory = Be::newTuple('cms_article_category');
+                            $tupleArticleCategory = Be::getTuple('cms_article_category');
                             $tupleArticleCategory->article_id = $tupleArticle->id;
                             $tupleArticleCategory->category_id = $category_id;
                             $tupleArticleCategory->insert();
@@ -196,13 +196,13 @@ class Article
             if (isset($data['tags']) && is_array($data['tags']) && count($data['tags']) > 0) {
                 if ($isNew) {
                     foreach ($data['tags'] as $tag) {
-                        $tupleArticleTag = Be::newTuple('cms_article_tag');
+                        $tupleArticleTag = Be::getTuple('cms_article_tag');
                         $tupleArticleTag->article_id = $tupleArticle->id;
                         $tupleArticleTag->tag = $tag;
                         $tupleArticleTag->insert();
                     }
                 } else {
-                    $existTags = Be::newTable('cms_article_tag')
+                    $existTags = Be::getTable('cms_article_tag')
                         ->where('article_id', $articleId)
                         ->getValues('tag');
 
@@ -210,7 +210,7 @@ class Article
                     if (count($existTags) > 0) {
                         $removeTags = array_diff($existTags, $data['tags']);
                         if (count($removeTags) > 0) {
-                            Be::newTable('cms_article_tag')
+                            Be::getTable('cms_article_tag')
                                 ->where('article_id', $articleId)
                                 ->where('tag', 'NOT IN', $removeTags)
                                 ->delete();
@@ -226,7 +226,7 @@ class Article
                     }
                     if (count($newTags) > 0) {
                         foreach ($newTags as $newTag) {
-                            $tupleArticleTag = Be::newTuple('cms_article_tag');
+                            $tupleArticleTag = Be::getTuple('cms_article_tag');
                             $tupleArticleTag->article_id = $tupleArticle->id;
                             $tupleArticleTag->tag = $newTag;
                             $tupleArticleTag->insert();
@@ -386,7 +386,7 @@ class Article
                             'keyValues' => $categoryKeyValues,
                             'buildSql' => function ($dbName, $formData) {
                                 if (isset($formData['category_id']) && $formData['category_id']) {
-                                    $articleIds = Be::newTable('cms_article_category', $dbName)
+                                    $articleIds = Be::getTable('cms_article_category', $dbName)
                                         ->where('category_id', $formData['category_id'])
                                         ->getValues('article_id');
                                     if (count($articleIds) > 0) {

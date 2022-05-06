@@ -269,7 +269,7 @@ class Category
                             $categoryIds[] = $postData['row']['id'];
                         }
 
-                        $articleIds = Be::newTable('cms_article_category')
+                        $articleIds = Be::getTable('cms_article_category')
                             ->where('category_id', 'IN',  $categoryIds)
                             ->getValues('article_id');
                         if (count($articleIds) > 0) {
@@ -404,7 +404,7 @@ class Category
             ['is_delete', '=', '0'],
         ];
 
-        $articleIds = Be::newTable('cms_article_category')
+        $articleIds = Be::getTable('cms_article_category')
             ->where('category_id', $categoryId)
             ->getValues('article_id');
         if (count($articleIds) > 0) {
@@ -556,7 +556,7 @@ class Category
             ['is_delete', '=', '0'],
         ];
 
-        $articleIds = Be::newTable('cms_article_category')
+        $articleIds = Be::getTable('cms_article_category')
             ->where('category_id', $categoryId)
             ->getValues('article_id');
         if (count($articleIds) > 0) {
