@@ -159,7 +159,7 @@
                                     </div>
                                 </div>
                                 <div class="be-col-auto">
-                                    <el-button type="text" size="mini" @click="drawerSeo=true">编辑</el-button>
+                                    <el-link type="primary" @click="drawerSeo=true">编辑</el-link>
                                 </div>
                             </div>
 
