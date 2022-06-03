@@ -46,7 +46,7 @@ class Article
 
             return $article;
         } else {
-            $tupleArticle = Be::newtuple('cms_article');
+            $tupleArticle = Be::getTuple('cms_article');
             try {
                 $tupleArticle->load($articleId);
             } catch (\Throwable $t) {

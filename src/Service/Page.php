@@ -47,7 +47,7 @@ class Page
 
             return $page;
         } else {
-            $tuplePage = Be::newtuple('cms_page');
+            $tuplePage = Be::getTuple('cms_page');
             try {
                 $tuplePage->load($pageId);
             } catch (\Throwable $t) {

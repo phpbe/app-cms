@@ -17,7 +17,7 @@ class CollectArticle
      */
     public function getArticle(string $articleId): \stdClass
     {
-        $tupleArticle = Be::newtuple('cms_collect_article');
+        $tupleArticle = Be::getTuple('cms_collect_article');
         try {
             $tupleArticle->load($articleId);
         } catch (\Throwable $t) {
