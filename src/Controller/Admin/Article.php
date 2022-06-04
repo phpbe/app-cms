@@ -420,18 +420,7 @@ class Article
                         $tuple->update_time = date('Y-m-d H:i:s');
                     },
                     'success' => function () {
-                        $postData = Be::getRequest()->json();
-
-                        $articleIds = [];
-                        if (isset($postData['selectedRows'])) {
-                            foreach ($postData['selectedRows'] as $row) {
-                                $articleIds[] = $row['id'];
-                            }
-                        } elseif (isset($postData['row'])) {
-                            $articleIds[] = $postData['row']['id'];
-                        }
-
-                        Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
+                        Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
                     },
                 ],
             ],
@@ -527,7 +516,7 @@ class Article
         $request = Be::getRequest();
         $data = $request->post('data', '', '');
         $data = json_decode($data, true);
-        Be::getResponse()->redirect(beUrl('Cms.Article.detail', ['id' => $data['row']['id']]));
+        Be::getResponse()->redirect(beUrl('Cms.Article.preview', ['id' => $data['row']['id']]));
     }
 
 

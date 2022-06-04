@@ -1,5 +1,5 @@
 <be-head>
-
+    <script src="<?php echo \Be\Be::getProperty('App.Cms')->getUrl(); ?>/Template/Admin/js/pinyin.js"></script>
     <style>
 
         .el-form-item {

@@ -237,7 +237,7 @@ class Article
 
             $db->commit();
 
-            $this->onUpdate([$tupleArticle->id]);
+            Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
 
         } catch (\Throwable $t) {
             $db->rollback();
@@ -298,64 +298,6 @@ class Article
 
         return $article;
     }
-
-    /**
-     * 文章更新
-     *
-     * @param array $articleIds 文章ID列表
-     * @throws ServiceException
-     * @throws RuntimeException|DbException
-     */
-    public function onUpdate(array $articleIds)
-    {
-        $configEs = Be::getConfig('App.Cms.Es');
-        if ($configEs->enable) {
-            $this->syncEs($articleIds);
-        }
-
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $this->syncRedis($articleIds);
-        }
-    }
-
-    /**
-     * 文章同步到 ES
-     *
-     * @param array $articleId
-     */
-    public function syncEs(array $articleIds)
-    {
-        $configEs = Be::getConfig('App.Cms.Es');
-        if ($configEs->enable) {
-
-        }
-    }
-
-    /**
-     * 文章同步到 Redis
-     *
-     * @param array $articleId
-     * @throws ServiceException
-     * @throws RuntimeException|DbException
-     */
-    public function syncRedis(array $articleIds)
-    {
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $keyValues = [];
-            foreach ($articleIds as $articleId) {
-                $key = 'Cms:Article:' . $articleId;
-                $article = $this->getArticle($articleId);
-                $keyValues[$key] = json_encode($article);
-            }
-
-            $configRedis = Be::getConfig('App.Cms.Redis');
-            $redis = Be::getRedis($configRedis->db);
-            $redis->mset($keyValues);
-        }
-    }
-
 
     /**
      * 获取菜单参数选择器

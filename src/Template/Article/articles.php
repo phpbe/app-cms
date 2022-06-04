@@ -1,167 +1,137 @@
-<?php
-use Be\Be;
-?>
+<be-head>
+    <style type="text/css">
+        html {
+            font-size: 16px;
+        }
 
-<!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/Cms/Template/Article/css/articles.css">
-<!--{/head}-->
+        .article-image {
+            width: 200px;
+            text-align: center;
+        }
 
-<!--{middle}-->
-<div class="row">
+        .article-image img {
+            max-width: 100%;
+        }
+    </style>
+</be-head>
 
-    <div class="col" style="width:<?php echo (!$west && !$east)?100:70; ?>%;">
+<be-center>
+    <div class="be-container be-my-400">
+        <?php
+        foreach ($this->result['rows'] as $article) {
+            ?>
+            <div class="be-mb-300 be-row">
 
-        <div class="theme-center-container">
-            <div class="theme-center">
+                <div class="be-col-auto">
+                    <div class="article-image">
+                        <a class="be-d-inline-block" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>">
+                        <img src="<?php
+                        if ($article->image === '') {
+                            echo \Be\Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image-m.jpg';
+                        } else {
+                            echo $article->image;
+                        }
+                        ?>" alt="<?php echo $article->title; ?>">
+                        </a>
+                    </div>
+                </div>
 
-                <!--{center}-->
-                <?php
-                $categoryId = $this->categoryId;
-                $articles = $this->articles;
-
-                $pagination = $this->pagination;
-
-                $configArticle = Be::getConfig('Cms', 'Article');
-
-                if (count($articles)) {
-                    $configArticle = Be::getConfig('Cms', 'Article');
-
-                    if ($pagination->getPage() == 1) {
-                        $article = array_shift($articles);
-                        ?>
-                        <h4 class="head-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
-                        <div class="head-article-summary"><?php echo $article->summary; ?></div>
-                        <div class="head-article-thumbnail">
-                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
-                                <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailL == ''?('default/'.$configArticle->defaultThumbnailL):$article->thumbnailL; ?>" alt="<?php echo $article->title; ?>" />
-                            </a>
+                <div class="be-col">
+                    <div class="be-pl-100">
+                        <a class="be-fs-175 be-fw-bold be-lh-300" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>">
+                            <?php echo $article->title; ?>
+                        </a>
+                        <div class="be-mt-150 be-lh-150 be-c-666">
+                            <?php echo $article->summary; ?>
                         </div>
-                        <?php
-                    }
-                }
-                ?>
-
-                <?php
-                if (count($articles)) {
-                    foreach ($articles as $article) {
-                        ?>
-                        <div class="article">
-                            <div class="article-thumbnail" style="width:<?php echo $configArticle->thumbnailMW; ?>px; height:<?php echo $configArticle->thumbnailMH; ?>px;">
-                                <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
-                                    <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailM == ''?('default/'.$configArticle->defaultThumbnailM):$article->thumbnailM; ?>" alt="<?php echo $article->title; ?>" />
-                                </a>
-                            </div>
-
-                            <div style="margin-left:<?php echo $configArticle->thumbnailMW; ?>px;">
-                                <h4 class="article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h4>
-                                <div class="article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
-                                <div class="article-summary"><?php echo $article->summary; ?></div>
-                            </div>
-                        </div>
-
-                        <div class="clear-left"></div>
-                        <?php
-                    }
-                }
-                ?>
-                <div style="padding:10px 0;"><?php $pagination->display(); ?></div>
-                <!--{/center}-->
-
-            </div>
-        </div>
-
-    </div>
-
-
-    <div class="col" style="width:30%;">
-        <div class="theme-east-container">
-            <div class="theme-east">
-
-                <!--{east}-->
-                <?php
-                $hottestArticles = $this->hottestArticles;
-                $topArticles = $this->topArticles;
-
-                $configArticle = Be::getConfig('Cms', 'Article');
-
-                if (count($hottestArticles)) {
-                    ?>
-                    <div class="theme-box-container">
-                        <div class="theme-box">
-                            <div class="theme-box-title">热门文章</div>
-                            <div class="theme-box-body">
-
-                                <?php
-                                foreach ($hottestArticles as $article) {
-                                    ?>
-                                    <div class="hottest-article">
-
-                                        <div class="hottest-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
-                                            </a>
-                                        </div>
-
-                                        <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                                            <h5 class="hottest-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
-                                            <div class="hottest-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="clear-left"></div>
-                                    <?php
-                                }
-                                ?>
-
-
-                            </div>
+                        <div class="be-mt-150 be-c-999">
+                            <span><?php echo date('Y年n月j日', strtotime($article->publish_time)); ?></span>
+                            <?php
+                            if ($article->author) {
+                                echo '<span class="be-ml-100">作者：' . $article->author . '</span>';
+                            }
+                            ?>
                         </div>
                     </div>
-                    <?php
-                }
-
-
-                if (count($topArticles)) {
-                    ?>
-                    <div class="theme-box-container">
-                        <div class="theme-box">
-                            <div class="theme-box-title">推荐文章</div>
-                            <div class="theme-box-body">
-
-                                <?php
-                                foreach ($topArticles as $article) {
-                                    ?>
-                                    <div class="top-article">
-
-                                        <div class="top-article-thumbnail" style="width:<?php echo $configArticle->thumbnailSW; ?>px; height:<?php echo $configArticle->thumbnailSH; ?>px;">
-                                            <a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>">
-                                                <img src="<?php echo Be::getRuntime()->getDataUrl().'/Article/Thumbnail/'; ?><?php echo $article->thumbnailS == ''?('default/'.$configArticle->defaultThumbnailS):$article->thumbnailS; ?>" alt="<?php echo $article->title; ?>" />
-                                            </a>
-                                        </div>
-
-                                        <div style="margin-left:<?php echo $configArticle->thumbnailSW; ?>px;">
-                                            <h5 class="top-article-title"><a href="<?php echo url('Cms', 'Article', 'detail', ['articleId' => $article->id]); ?>" title="<?php echo $article->title; ?>"><?php echo $article->title; ?></a></h5>
-                                            <div class="top-article-time"><?php echo date('Y-m-d H:i:s', $article->createTime); ?></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="clear-left"></div>
-                                    <?php
-                                }
-                                ?>
-
-                            </div>
-                        </div>
-                    </div>
-                    <?php
-                }
-                ?>
-                <!--{/east}-->
+                </div>
 
             </div>
-        </div>
-    </div>
+            <?php
+        }
 
-    <div class="clear-left"></div>
-</div>
-<!--{/middle}-->
+        $paginationUrl = $this->paginationUrl;
+        $paginationUrl .= strpos($paginationUrl, '?') === false ? '?' : '&';
+
+        $total = $this->result['total'];
+        $pageSize = $this->result['pageSize'];
+        $page = $this->result['page'];
+        $pages = ceil($total / $pageSize);
+        if ($page > $pages) $page = $pages;
+
+        $html = '<nav class="be-mt-300">';
+        $html .= '<ul class="be-pagination" style="justify-content: center;">';
+        $html .= '<li>';
+        if ($page > 1) {
+            $url = $paginationUrl;
+            $url .= http_build_query(['page' => ($page - 1)]);
+            $html .= '<a href="' . $url . '">上一页</a>';
+        } else {
+            $html .= '<span>上一页</span>';
+        }
+        $html .= '</li>';
+
+        $from = null;
+        $to = null;
+        if ($pages < 9) {
+            $from = 1;
+            $to = $pages;
+        } else {
+            $from = $page - 4;
+            if ($from < 1) {
+                $from = 1;
+            }
+
+            $to = $from + 8;
+            if ($to > $pages) {
+                $to = $pages;
+            }
+        }
+
+        if ($from > 1) {
+            $html .= '<li><span>...</span></li>';
+        }
+
+        for ($i = $from; $i <= $to; $i++) {
+            if ($i == $page) {
+                $html .= '<li class="active">';
+                $html .= '<span>' . $i . '</span>';
+                $html .= '</li>';
+            } else {
+                $url = $paginationUrl;
+                $url .= http_build_query(['page' => $i]);
+                $html .= '<li>';
+                $html .= '<a href="' . $url . '">' . $i . '</a>';
+                $html .= '</li>';
+            }
+        }
+
+        if ($to < $pages) {
+            $html .= '<li><span>...</span></li>';
+        }
+
+        $html .= '<li>';
+        if ($page < $pages) {
+            $url = $paginationUrl;
+            $url .= http_build_query(['page' => ($page + 1)]);
+            $html .= '<a href="' . $url . '">下一面</a>';
+        } else {
+            $html .= '<span>下一面</span>';
+        }
+        $html .= '</li>';
+        $html .= '</ul>';
+        $html .= '</nav>';
+
+        echo $html;
+        ?>
+    </div>
+</be-center>

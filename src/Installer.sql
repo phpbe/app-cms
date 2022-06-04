@@ -12,6 +12,8 @@ CREATE TABLE `cms_article` (
 `seo_description` varchar(500) NOT NULL COMMENT 'SEO描述',
 `seo_keywords` varchar(60) NOT NULL COMMENT 'SEO关键词',
 `ordering` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
+`hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量 ',
+`collect_blog_id` varchar(36) NOT NULL DEFAULT '' COMMENT '采集的文章ID',
 `is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用',
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -75,7 +77,9 @@ CREATE TABLE `cms_page` (
 
 ALTER TABLE `cms_article`
 ADD PRIMARY KEY (`id`),
-ADD KEY `url` (`url`);
+ADD KEY `url` (`url`),
+ADD KEY `update_time` (`update_time`);
+
 
 ALTER TABLE `cms_article_category`
 ADD PRIMARY KEY (`id`),

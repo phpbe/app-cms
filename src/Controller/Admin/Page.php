@@ -226,18 +226,7 @@ class Page extends Auth
                         $tuple->update_time = date('Y-m-d H:i:s');
                     },
                     'success' => function () {
-                        $postData = Be::getRequest()->json();
-
-                        $pageIds = [];
-                        if (isset($postData['selectedRows'])) {
-                            foreach ($postData['selectedRows'] as $row) {
-                                $pageIds[] = $row['id'];
-                            }
-                        } elseif (isset($postData['row'])) {
-                            $pageIds[] = $postData['row']['id'];
-                        }
-
-                        Be::getService('App.Cms.Admin.Page')->onUpdate($pageIds);
+                        Be::getService('App.System.Task')->trigger('Cms.PageSyncRedis');
                     },
                 ],
             ],

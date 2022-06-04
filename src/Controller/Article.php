@@ -3,7 +3,6 @@ namespace Be\App\Cms\Controller;
 
 use Be\App\ControllerException;
 use Be\Be;
-use Be\Request;
 use Be\Response;
 
 /**
@@ -20,144 +19,60 @@ class Article
      */
     public function home()
     {
-        $serviceArticleCache = Be::getService('App.Cms.Article')->withCache(Be::getConfig('App.Cms.Article')->cacheExpire);
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        // 最新带图文章
-        $latestThumbnailArticles = $serviceArticleCache->getArticles([
-            'block' => 0,
-            'thumbnail' => 1,
-            'orderBy' => 'create_time',
-            'orderByDir' => 'DESC',
-            'limit' => 6
-        ]);
-
-        $activeUsers = $serviceArticleCache->getActiveUsers();
-
-        // 本月热点
-        $monthHottestArticles = $serviceArticleCache->getArticles([
-            'block' => 0,
-            'orderBy' => 'hits',
-            'orderByDir' => 'DESC',
-            'fromTime' => time() - 86400 * 30,
-            'limit' => 6
-        ]);
-
-        // 推荐文章
-        $topArticles = $serviceArticleCache->getArticles([
-            'block' => 0,
-            'top' => 1,
-            'orderBy' => 'top',
-            'orderByDir' => 'DESC',
-            'limit' => 6
-        ]);
-
-        $topCategories = array();
-
-        $serviceCategoryCache = Be::getService('Cms.Category')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
-        $categories = $serviceCategoryCache->getCategories();
-        foreach ($categories as $category) {
-            if ($category->parentId > 0) continue;
-            $topCategories[] = $category;
-
-            $category->articles = $serviceArticleCache->getArticles([
-                'block' => 0,
-                'categoryId' => $category->id,
-                'orderBy' => 'create_time',
-                'orderByDir' => 'DESC',
-                'limit' => 6
-            ]);
-        }
-
-        $configSystem = Be::getConfig('System.System');
-
-        Response::setTitle($configSystem->homeTitle);
-        Response::setMetaKeywords($configSystem->homeMetaKeywords);
-        Response::setMetaDescription($configSystem->homeMetaDescription);
-        Response::set('latestThumbnailArticles', $latestThumbnailArticles);
-        Response::set('activeUsers', $activeUsers);
-        Response::set('monthHottestArticles', $monthHottestArticles);
-        Response::set('topArticles', $topArticles);
-        Response::set('categories', $topCategories);
-        Response::display();
+        $response->display();
     }
 
     /**
-     * 文章列表
+     * 最新文章
      *
-     * @BeMenu("文章列表")
-     * @BeRoute("/articles")
+     * @BeMenu("最新文章")
+     * @BeRoute("/article/latest")
      */
-    public function articles()
+    public function latest()
     {
-        $categoryId = Request::get('categoryId', 0, 'int');
-        Response::set('categoryId', $categoryId);
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        $serviceCategoryCache = Be::getService('Cms.Category')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
-        $category = $serviceCategoryCache->getCategory($categoryId);
-
-        if ($category->id == 0) Response::end('文章分类不存在！');
-
-        Response::setTitle($category->name);
-        Response::set('category', $category);
-
-        if ($category->parentId > 0) {
-            $parentCategory = $serviceCategoryCache->getTopParentCategory($category->parentId);
-            Response::set('parentCategory', $parentCategory);
-
-            $northMenu = Be::getMenu('north');
-            $northMenuTree = $northMenu->getMenuTree();
-            if (count($northMenuTree)) {
-                //$menuExist = false;
-                foreach ($northMenuTree as $menu) {
-                    if (
-                        isset($menu->params['app']) && $menu->params['app'] == 'Cms' &&
-                        isset($menu->params['controller']) && $menu->params['controller'] == 'Article' &&
-                        isset($menu->params['action']) && $menu->params['action'] == 'listing' &&
-                        isset($menu->params['categoryId']) && $menu->params['categoryId'] == $parentCategory->id
-                    ) {
-                        Response::set('menuId', $menu->id);
-                        break;
-                    }
-                }
-            }
-        } else {
-            Response::set('parentCategory', $category);
-        }
-
-        $serviceArticleCache = Be::getService('Cms.Article')->withCache(Be::getConfig('Cms.Article')->cacheExpire);
-
-        $option = array('categoryId' => $categoryId);
-
-        $limit = 10;
-        $pagination = Be::getUi('Pagination');
-        $pagination->setLimit($limit);
-        $pagination->setTotal($serviceArticleCache->getArticleCount($option));
-        $pagination->setPage(Request::get('page', 1, 'int'));
-        $pagination->seturl('Cms', 'Article', 'articles', ['categoryId' => $categoryId]);
-        Response::set('pagination', $pagination);
-
-        $option['offset'] = $pagination->getOffset();
-        $option['limit'] = $limit;
-        $option['orderByString'] = '`top` DESC, `ordering` DESC, `create_time` DESC';
-
-        $articles = $serviceArticleCache->getArticles($option);
-        Response::set('articles', $articles);
-
-        // 热门文章
-        $hottestArticles = $serviceArticleCache->getArticles([
-            'block' => 0,
-            'categoryId' => $categoryId,
-            'orderBy' => 'hits',
-            'orderByDir' => 'DESC',
-            'limit' => 10
+        $page = $request->get('page', 1);
+        $result = Be::getService('App.Cms.Article')->search('', [
+            'orderBy' => 'publish_time',
+            'orderByDir' => 'desc',
+            'page' => $page,
         ]);
-        Response::set('hottestArticles', $hottestArticles);
+        $response->set('result', $result);
 
-        // 推荐文章
-        $topArticles = $serviceArticleCache->getArticles(array('categoryId' => $categoryId, 'top' => 1, 'orderBy' => 'top', 'orderByDir' => 'DESC', 'limit' => 10));
-        Response::set('topArticles', $topArticles);
+        $paginationUrl = beUrl('Cms.Article.latest');
+        $response->set('paginationUrl', $paginationUrl);
 
-        Response::display();
+        $response->display('App.Cms.Article.articles');
+    }
+
+    /**
+     * 热门文章
+     *
+     * @BeMenu("热门文章")
+     * @BeRoute("/article/hottest")
+     */
+    public function hottest()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $page = $request->get('page', 1);
+        $result = Be::getService('App.Cms.Article')->search('', [
+            'orderBy' => 'publish_time',
+            'orderByDir' => 'desc',
+            'page' => $page,
+        ]);
+        $response->set('result', $result);
+
+        $paginationUrl = beUrl('Cms.Article.hottest');
+        $response->set('paginationUrl', $paginationUrl);
+
+        $response->display('App.Cms.Article.articles');
     }
 
     /**
@@ -178,7 +93,7 @@ class Article
                 throw new ControllerException('文章不存在！');
             }
 
-            $article = $service->getArticle($id);
+            $article = $service->hit($id);
             $response->set('title', $article->seo_title);
             $response->set('meta_keywords', $article->seo_keywords);
             $response->set('meta_description', $article->seo_description);
@@ -189,4 +104,37 @@ class Article
         }
     }
 
+    /**
+     * 博客预览
+     *
+     * @BeRoute("/article/preview")
+     */
+    public function preview()
+    {
+        // 限速最快 1 秒调用 1 次
+        if (Be::getRuntime()->isSwooleMode()) {
+            \Swoole\Coroutine::sleep(1);
+        }
+
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $service = Be::getService('App.Cms.Article');
+            $id = $request->get('id', '');
+            if ($id === '') {
+                throw new ControllerException('文章不存在！');
+            }
+
+            $article = $service->getArticleFromDb($id);
+
+            $response->set('title', $article->seo_title);
+            $response->set('meta_keywords', $article->seo_keywords);
+            $response->set('meta_description', $article->seo_description);
+            $response->set('article', $article);
+            $response->display('App.Cms.Article.detail');
+        } catch (\Throwable $t) {
+            $response->error($t->getMessage());
+        }
+    }
 }

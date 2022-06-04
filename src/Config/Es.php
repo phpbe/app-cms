@@ -21,32 +21,15 @@ class Es
      *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
      * )
      */
-    public string $article_index = 'article';
+    public string $indexArticle = 'cms.article';
 
     /**
-     * @BeConfigItem("文章索引的分片数",
-     *     description="此配置仅在ES索引创建或重建时生效",
-     *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
-     * )
-     */
-    public int $article_index_shards = 5;
-
-    /**
-     * @BeConfigItem("文章索引的副本数",
-     *     description="此配置仅在ES索引创建或重建时生效", driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
-     * )
-     */
-    public int $article_index_replicas = 2;
-
-    /**
-     * @BeConfigItem("文章索引的分词器",
+     * @BeConfigItem("文章搜索记录索引",
      *     driver="FormItemInput",
      *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
      * )
      */
-    public string $article_index_analyzer = 'ik_max_word';
+    public string $indexArticleSearchHistory = 'cms.article_search_history';
 
 
 }

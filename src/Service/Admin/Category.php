@@ -3,16 +3,15 @@
 namespace Be\App\Cms\Service\Admin;
 
 use Be\App\ServiceException;
+use Be\App\ShopFaiAdmin\ShopFaiAdmin;
 use Be\Be;
-use Be\Db\DbException;
-use Be\Runtime\RuntimeException;
 use Be\Util\Str\Pinyin;
 
 class Category
 {
 
     /**
-     * 获取文章分类列表
+     * 获取分类列表
      *
      * @return array
      * @throws \Be\Db\DbException
@@ -26,7 +25,7 @@ class Category
     }
 
     /**
-     * 获取文章分类
+     * 获取分类
      *
      * @param string $categoryId
      * @return \stdClass
@@ -39,7 +38,7 @@ class Category
         $sql = 'SELECT * FROM cms_category WHERE id=? AND is_delete = 0';
         $category = Be::getDb()->getObject($sql, [$categoryId]);
         if (!$category) {
-            throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
+            throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
         }
 
         $category->seo = (int)$category->seo;
@@ -49,7 +48,7 @@ class Category
     }
 
     /**
-     * 获取文章分类键值对
+     * 获取分类键值对
      *
      * @return array
      * @throws \Be\Db\DbException
@@ -62,13 +61,13 @@ class Category
     }
 
     /**
-     * 编辑文章分类
+     * 编辑分类
      *
-     * @param array $data 文章分类数据
-     * @return bool
+     * @param array $data 分类数据
+     * @return object
      * @throws \Throwable
      */
-    public function edit(array $data): bool
+    public function edit(array $data): object
     {
         $db = Be::getDb();
 
@@ -84,16 +83,16 @@ class Category
             try {
                 $tupleCategory->load($categoryId);
             } catch (\Throwable $t) {
-                throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
+                throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
             }
 
             if ($tupleCategory->is_delete === 1) {
-                throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
+                throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
             }
         }
 
         if (!isset($data['name']) || !is_string($data['name'])) {
-            throw new ServiceException('文章分类名称未填写！');
+            throw new ServiceException('分类名称未填写！');
         }
         $name = $data['name'];
 
@@ -176,45 +175,112 @@ class Category
                 $tupleCategory->update();
             }
 
-            $db->commit();
-
             $articleIds = Be::getTable('cms_article_category')
                 ->where('category_id', '=',  $tupleCategory->id)
                 ->getValues('article_id');
             if (count($articleIds) > 0) {
-                Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
+                Be::getTable('cms_article')
+                    ->where('id', 'IN', $articleIds)
+                    ->update(['update_time' =>  $now]);
             }
 
-            $this->onUpdate([$tupleCategory->id]);
+            $db->commit();
 
         } catch (\Throwable $t) {
             $db->rollback();
             Be::getLog()->error($t);
 
-            throw new ServiceException(($isNew ? '新建' : '编辑') . '文章分类发生异常！');
+            throw new ServiceException(($isNew ? '新建' : '编辑') . '分类发生异常！');
         }
 
-        return true;
+        Be::getService('App.System.Task')->trigger('Cms.CategorySyncEsAndCache');
+        Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
+
+        return $tupleCategory->toObject();
     }
 
     /**
-     * 在文章分类下添加文章
+     * 删除分类
      *
-     * @param string $categoryId 文章分类ID
+     * @param array $categoryIds
+     * @return void
+     * @throws ServiceException
+     * @throws \Be\Db\DbException
+     * @throws \Be\Runtime\RuntimeException
+     */
+    public function delete(array $categoryIds)
+    {
+        if (count($categoryIds) === 0) return;
+
+        $db = Be::getDb('shopfai');
+        $db->startTransaction();
+        try {
+            $now = date('Y-m-d H:i:s');
+            foreach ($categoryIds as $categoryId) {
+                $tupleCategory = Be::getTuple('cms_article_category', 'shopfai');
+                try {
+                    $tupleCategory->loadBy([
+                        'id' => $categoryId,
+                        'is_delete' => 0
+                    ]);
+                } catch (\Throwable $t) {
+                    throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
+                }
+
+                $articleIds = Be::getTable('cms_article_category', 'shopfai')
+                    ->where('category_id', '=', $categoryId)
+                    ->getValues('article_id');
+                if (count($articleIds) > 0) {
+                    Be::getTable('cms_article', 'shopfai')
+                        ->where('id', 'IN', $articleIds)
+                        ->update(['update_time' =>  $now]);
+
+                    Be::getTable('cms_article_categoryd', 'shopfai')
+                        ->where('category_id', '=', $categoryId)
+                        ->delete();
+                }
+
+                $tupleCategory->url = $categoryId;
+                $tupleCategory->is_delete = 1;
+                $tupleCategory->update_time = $now;
+                $tupleCategory->update();
+            }
+
+            $db->commit();
+
+        } catch (\Throwable $t) {
+            $db->rollback();
+            Be::getLog()->error($t);
+
+            throw new ServiceException('删除分类发生异常！');
+        }
+
+        Be::getService('App.System.Task')->trigger('Cms.CategorySyncEsAndCache');
+        Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
+    }
+
+    /**
+     * 在分类下添加文章
+     *
+     * @param string $categoryId 分类ID
      * @param array $articleIds 文章ID列表
      * @return bool
      */
     public function addArticle(string $categoryId, array $articleIds): bool
     {
-        $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_category WHERE id=? AND is_delete=0';
-        $category = $db->getObject($sql, [$categoryId]);
-        if (!$category) {
-            throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
+        try {
+            Be::getTuple('cms_category', 'shopfai')
+                ->loadBy([
+                    'id' => $categoryId,
+                    'is_delete' => 0
+                ]);
+        } catch (\Throwable $t) {
+            throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
         }
 
-        $sql = 'SELECT article_id FROM cms_article_category WHERE category_id=?';
-        $existArticleIds = $db->getValues($sql, [$categoryId]);
+        $existArticleIds = Be::getTable('cms_article_category')
+            ->where('category_id', $categoryId)
+            ->getValues('article_id');
         if (is_array($existArticleIds) && count($existArticleIds) > 0) {
             $articleIds = array_diff($articleIds, $existArticleIds);
         }
@@ -230,83 +296,77 @@ class Category
 
             if (count($existArticleIds) != count($articleIds)) {
                 $diffArticleIds = array_diff($articleIds, $existArticleIds);
-                throw new ServiceException('（#' . implode(', #', $diffArticleIds) . '）不存在！');
+                throw new ServiceException('文章（#' . implode(', #', $diffArticleIds) . '）不存在！');
             }
 
-            foreach ($articleIds as $articleId) {
-                $tupleArticleCategory = Be::getTuple('cms_article_category');
-                $tupleArticleCategory->article_id = $articleId;
-                $tupleArticleCategory->category_id = $categoryId;
-                $tupleArticleCategory->insert();
+            $db = Be::getDb();
+            $db->startTransaction();
+            try {
+                foreach ($articleIds as $articleId) {
+                    $tupleArticleCategory = Be::getTuple('cms_article_category');
+                    $tupleArticleCategory->article_id = $articleId;
+                    $tupleArticleCategory->category_id = $categoryId;
+                    $tupleArticleCategory->insert();
+                }
+
+                $now = date('Y-m-d H:i:s');
+                Be::getTable('cms_article')
+                    ->where('id', 'IN', $articleIds)
+                    ->update(['update_time' => $now]);
+
+                $db->commit();
+            } catch (\Throwable $t) {
+                $db->rollback();
+                Be::getLog()->error($t);
+
+                throw new ServiceException('在分类下添加文章时发生异常！');
             }
 
-            Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
+            Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
         }
-
-        return true;
     }
 
     /**
-     * 将文章从文章分类中删除
+     * 将文章从分类中删除
      *
-     * @param string $categoryId 文章分类ID
+     * @param string $categoryId 分类ID
      * @param array $articleIds 文章ID列表
-     * @return bool
      */
-    public function deleteArticle(string $categoryId, array $articleIds): bool
+    public function deleteArticle(string $categoryId, array $articleIds)
     {
+        try {
+            Be::getTuple('cms_category', 'shopfai')
+                ->loadBy([
+                    'id' => $categoryId,
+                    'is_delete' => 0
+                ]);
+        } catch (\Throwable $t) {
+            throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
+        }
+
         $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_category WHERE id=? AND is_delete=0';
-        $category = $db->getObject($sql, [$categoryId]);
-        if (!$category) {
-            throw new ServiceException('文章分类（# ' . $categoryId . '）不存在！');
+        $db->startTransaction();
+        try {
+
+            Be::getTable('cms_article_category', 'shopfai')
+                ->where('category_id', $categoryId)
+                ->where('article_id', 'IN', $articleIds)
+                ->delete();
+
+            $now = date('Y-m-d H:i:s');
+            Be::getTable('cms_article', 'shopfai')
+                ->where('id', 'IN', $articleIds)
+                ->update(['update_time' => $now]);
+
+            $db->commit();
+        } catch (\Throwable $t) {
+            $db->rollback();
+            Be::getLog()->error($t);
+
+            throw new ServiceException('从分类中的删除文章时发生异常！');
         }
 
-        Be::getTable('cms_article_category')
-            ->where('category_id', $categoryId)
-            ->where('article_id', 'IN', $articleIds)
-            ->delete();
-
-        Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
-
-        return true;
-    }
-
-    /**
-     * 文章分类更新
-     *
-     * @param array $categoryIds 文章分类ID列表
-     */
-    public function onUpdate(array $categoryIds)
-    {
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $this->syncRedis($categoryIds);
-        }
-    }
-
-    /**
-     * 文章分类同步到 Redis
-     *
-     * @param array $categoryIds
-     * @throws ServiceException
-     * @throws RuntimeException|DbException
-     */
-    public function syncRedis(array $categoryIds)
-    {
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $keyValues = [];
-            foreach ($categoryIds as $categoryId) {
-                $key = 'Cms:Category:' . $categoryId;
-                $category = $this->getCategory($categoryId);
-                $keyValues[$key] = json_encode($category);
-            }
-
-            $configRedis = Be::getConfig('App.Cms.Redis');
-            $redis = Be::getRedis($configRedis->db);
-            $redis->mset($keyValues);
-        }
+        Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
     }
 
     /**
@@ -318,7 +378,7 @@ class Category
     {
         return [
             'name' => 'id',
-            'value' => '文章分类：{name}',
+            'value' => '分类：{name}',
             'table' => 'cms_category',
             'grid' => [
                 'title' => '选择一个分类',

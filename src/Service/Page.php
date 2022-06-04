@@ -26,35 +26,44 @@ class Page
      * 获取页面
      *
      * @param string $pageId 页面ID
-     * @return \stdClass 页面对象
+     * @return object 页面对象
      * @throws ServiceException|RuntimeException
      */
-    public function getPage(string $pageId): \stdClass
+    public function getPage(string $pageId): object
     {
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $redis = Be::getRedis($configRedis->db);
+        $cache = Be::getCache();
 
-            $key = 'Cms:Page:' . $pageId;
-            $page = $redis->get($key);
-            if ($page) {
-                $page = json_decode($page);
-            }
-
-            if (!$page) {
-                throw new ServiceException('页面不存在！');
-            }
-
-            return $page;
-        } else {
-            $tuplePage = Be::getTuple('cms_page');
-            try {
-                $tuplePage->load($pageId);
-            } catch (\Throwable $t) {
-                throw new ServiceException('页面不存在！');
-            }
-            return $tuplePage->toObject();
+        $key = 'Cms:Page:' . $pageId;
+        $page = $cache->get($key);
+        if ($page) {
+            $page = json_decode($page);
         }
+
+        if (!$page) {
+            throw new ServiceException('页面不存在！');
+        }
+
+        return $page;
+    }
+
+    /**
+     * 获取页面
+     *
+     * @param string $pageId 页面ID
+     * @return object 页面对象
+     * @throws ServiceException|RuntimeException
+     */
+    public function getPageFromDb(string $pageId): object
+    {
+        $tuplePage = Be::getTuple('cms_page');
+
+        try {
+            $tuplePage->load($pageId);
+        } catch (\Throwable $t) {
+            throw new ServiceException('页面不存在！');
+        }
+        
+        return $tuplePage->toObject();
     }
 
 }

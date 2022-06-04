@@ -172,7 +172,7 @@ class Page
 
             $db->commit();
 
-            $this->onUpdate([$tuplePage->id]);
+            Be::getService('App.System.Task')->trigger('Cms.PageSyncCache');
 
         } catch (\Throwable $t) {
             $db->rollback();
@@ -209,48 +209,9 @@ class Page
         $tuplePage->update_time = $now;
         $tuplePage->update();
 
-        $this->onUpdate([$pageId]);
+        Be::getService('App.System.Task')->trigger('Cms.PageSyncCache');
         return true;
     }
-
-
-    /**
-     * 页面更新
-     *
-     * @param array $pageIds 页面ID列表
-     * @throws ServiceException|RuntimeException
-     */
-    public function onUpdate(array $pageIds)
-    {
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $this->syncRedis($pageIds);
-        }
-    }
-
-    /**
-     * 页面同步到 Redis
-     *
-     * @param array $pageIds 页面ID列表
-     * @throws ServiceException
-     * @throws RuntimeException
-     */
-    public function syncRedis(array $pageIds)
-    {
-        $configRedis = Be::getConfig('App.Cms.Redis');
-        if ($configRedis->enable) {
-            $keyValues = [];
-            foreach ($pageIds as $pageId) {
-                $key = 'Cms:Page:' . $pageId;
-                $page = $this->getPage($pageId);
-                $keyValues[$key] = json_encode($page);
-            }
-
-            $redis = Be::getRedis();
-            $redis->mset($keyValues);
-        }
-    }
-
 
     /**
      * 获取菜单参数选择器
