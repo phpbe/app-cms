@@ -30,9 +30,9 @@ class PageSyncCache extends TaskInterval
         $d1 = date('Y-m-d H:i:s', $t1 - 60);
         $d2 = date('Y-m-d H:i:s', $t2);
 
-        $service = Be::newService('App.Cms.Admin.TaskPage');
+        $service = Be::getService('App.Cms.Admin.TaskPage');
 
-        $db = Be::newDb();
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_page WHERE update_time >= ? AND update_time < ?';
         $pages = $db->getYieldObjects($sql, [$d1, $d2]);
 

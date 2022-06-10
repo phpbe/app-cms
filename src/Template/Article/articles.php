@@ -59,79 +59,82 @@
             <?php
         }
 
-        $paginationUrl = $this->paginationUrl;
-        $paginationUrl .= strpos($paginationUrl, '?') === false ? '?' : '&';
 
         $total = $this->result['total'];
         $pageSize = $this->result['pageSize'];
-        $page = $this->result['page'];
         $pages = ceil($total / $pageSize);
-        if ($page > $pages) $page = $pages;
+        if ($pages > 1) {
+            $page = $this->result['page'];
+            if ($page > $pages) $page = $pages;
 
-        $html = '<nav class="be-mt-300">';
-        $html .= '<ul class="be-pagination" style="justify-content: center;">';
-        $html .= '<li>';
-        if ($page > 1) {
-            $url = $paginationUrl;
-            $url .= http_build_query(['page' => ($page - 1)]);
-            $html .= '<a href="' . $url . '">上一页</a>';
-        } else {
-            $html .= '<span>上一页</span>';
-        }
-        $html .= '</li>';
+            $paginationUrl = $this->paginationUrl;
+            $paginationUrl .= strpos($paginationUrl, '?') === false ? '?' : '&';
 
-        $from = null;
-        $to = null;
-        if ($pages < 9) {
-            $from = 1;
-            $to = $pages;
-        } else {
-            $from = $page - 4;
-            if ($from < 1) {
-                $from = 1;
-            }
-
-            $to = $from + 8;
-            if ($to > $pages) {
-                $to = $pages;
-            }
-        }
-
-        if ($from > 1) {
-            $html .= '<li><span>...</span></li>';
-        }
-
-        for ($i = $from; $i <= $to; $i++) {
-            if ($i == $page) {
-                $html .= '<li class="active">';
-                $html .= '<span>' . $i . '</span>';
-                $html .= '</li>';
-            } else {
+            $html = '<nav class="be-mt-300">';
+            $html .= '<ul class="be-pagination" style="justify-content: center;">';
+            $html .= '<li>';
+            if ($page > 1) {
                 $url = $paginationUrl;
-                $url .= http_build_query(['page' => $i]);
-                $html .= '<li>';
-                $html .= '<a href="' . $url . '">' . $i . '</a>';
-                $html .= '</li>';
+                $url .= http_build_query(['page' => ($page - 1)]);
+                $html .= '<a href="' . $url . '">上一页</a>';
+            } else {
+                $html .= '<span>上一页</span>';
             }
-        }
+            $html .= '</li>';
 
-        if ($to < $pages) {
-            $html .= '<li><span>...</span></li>';
-        }
+            $from = null;
+            $to = null;
+            if ($pages < 9) {
+                $from = 1;
+                $to = $pages;
+            } else {
+                $from = $page - 4;
+                if ($from < 1) {
+                    $from = 1;
+                }
 
-        $html .= '<li>';
-        if ($page < $pages) {
-            $url = $paginationUrl;
-            $url .= http_build_query(['page' => ($page + 1)]);
-            $html .= '<a href="' . $url . '">下一面</a>';
-        } else {
-            $html .= '<span>下一面</span>';
-        }
-        $html .= '</li>';
-        $html .= '</ul>';
-        $html .= '</nav>';
+                $to = $from + 8;
+                if ($to > $pages) {
+                    $to = $pages;
+                }
+            }
 
-        echo $html;
+            if ($from > 1) {
+                $html .= '<li><span>...</span></li>';
+            }
+
+            for ($i = $from; $i <= $to; $i++) {
+                if ($i == $page) {
+                    $html .= '<li class="active">';
+                    $html .= '<span>' . $i . '</span>';
+                    $html .= '</li>';
+                } else {
+                    $url = $paginationUrl;
+                    $url .= http_build_query(['page' => $i]);
+                    $html .= '<li>';
+                    $html .= '<a href="' . $url . '">' . $i . '</a>';
+                    $html .= '</li>';
+                }
+            }
+
+            if ($to < $pages) {
+                $html .= '<li><span>...</span></li>';
+            }
+
+            $html .= '<li>';
+            if ($page < $pages) {
+                $url = $paginationUrl;
+                $url .= http_build_query(['page' => ($page + 1)]);
+                $html .= '<a href="' . $url . '">下一页</a>';
+            } else {
+                $html .= '<span>下一页</span>';
+            }
+            $html .= '</li>';
+            $html .= '</ul>';
+            $html .= '</nav>';
+
+            echo $html;
+        }
         ?>
     </div>
 </be-center>

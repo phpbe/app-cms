@@ -34,8 +34,8 @@ class ArticleSyncEsAndCache extends TaskInterval
         $d1 = date('Y-m-d H:i:s', $t1 - 60);
         $d2 = date('Y-m-d H:i:s', $t2);
 
-        $service = Be::newService('App.Cms.Admin.TaskArticle');
-        $db = Be::newDb();
+        $service = Be::getService('App.Cms.Admin.TaskArticle');
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_article WHERE is_enable != -1 AND update_time >= ? AND update_time < ?';
         $blogs = $db->getYieldObjects($sql, [$d1, $d2]);
 

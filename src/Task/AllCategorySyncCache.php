@@ -13,9 +13,9 @@ class AllCategorySyncCache extends Task
 
     public function execute()
     {
-        $service = Be::newService('App.Cms.Admin.TaskCategory');
+        $service = Be::getService('App.Cms.Admin.TaskCategory');
 
-        $db = Be::newDb();
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_category';
         $categories = $db->getYieldObjects($sql);
 

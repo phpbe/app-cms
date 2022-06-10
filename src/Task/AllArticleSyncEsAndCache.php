@@ -16,9 +16,9 @@ class AllArticleSyncEsAndCache extends Task
     {
         $configEs = Be::getConfig('App.Cms.Es');
 
-        $service = Be::newService('App.Cms.Admin.TaskArticle');
+        $service = Be::getService('App.Cms.Admin.TaskArticle');
 
-        $db = Be::newDb();
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_article WHERE is_enable != -1';
         $blogs = $db->getYieldObjects($sql);
 

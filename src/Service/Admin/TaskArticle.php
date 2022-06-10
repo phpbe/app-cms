@@ -25,8 +25,8 @@ class TaskArticle
 
         file_put_contents(Be::getRuntime()->getRootPath() . '/es-log-0', print_r($articles, true));
 
-        $es = Be::newEs();
-        $db = Be::newDb();
+        $es = Be::getEs();
+        $db = Be::getDb();
 
         $batch = [];
         foreach ($articles as $article) {
@@ -111,8 +111,8 @@ class TaskArticle
     {
         if (count($articles) === 0) return;
 
-        $db = Be::newDb();
-        $cache = Be::newCache();
+        $db = Be::getDb();
+        $cache = Be::getCache();
         $keyValues = [];
         foreach ($articles as $article) {
 

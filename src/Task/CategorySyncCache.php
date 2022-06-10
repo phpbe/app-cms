@@ -30,8 +30,8 @@ class CategorySyncCache extends TaskInterval
         $d1 = date('Y-m-d H:i:s', $t1 - 60);
         $d2 = date('Y-m-d H:i:s', $t2);
 
-        $service = Be::newService('App.Cms.Admin.TaskCategory');
-        $db = Be::newDb();
+        $service = Be::getService('App.Cms.Admin.TaskCategory');
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_category WHERE update_time >= ? AND update_time < ?';
         $categories = $db->getYieldObjects($sql, [$d1, $d2]);
 

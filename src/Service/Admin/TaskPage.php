@@ -16,7 +16,7 @@ class TaskPage
     {
         if (count($pages) === 0) return;
 
-        $cache = Be::newCache();
+        $cache = Be::getCache();
         $keyValues = [];
         foreach ($pages as $page) {
             $key = 'Cms:Page:' . $page->id;

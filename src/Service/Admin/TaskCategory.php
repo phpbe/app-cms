@@ -17,7 +17,7 @@ class TaskCategory
     {
         if (count($categories) === 0) return;
 
-        $cache = Be::newCache();
+        $cache = Be::getCache();
         $keyValues = [];
         foreach ($categories as $category) {
             $key = 'Cms:Category:' . $category->id;

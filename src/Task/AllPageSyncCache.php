@@ -15,7 +15,7 @@ class AllPageSyncCache extends Task
     {
         $service = Be::getService('App.Cms.Admin.TaskPage');
 
-        $db = Be::newDb();
+        $db = Be::getDb();
         $sql = 'SELECT * FROM cms_page';
         $pages = $db->getYieldObjects($sql);
 
