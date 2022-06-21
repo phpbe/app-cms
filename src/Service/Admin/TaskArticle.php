@@ -153,7 +153,7 @@ class TaskArticle
                 $sql = 'SELECT tag FROM cms_article_tag WHERE article_id = ?';
                 $article->tags = $db->getValues($sql, [$article->id]);
 
-                $keyValues[$key] = json_encode($article);
+                $keyValues[$key] = $article;
             }
         }
 

@@ -25,9 +25,8 @@ class TaskPage
             if ($page->is_delete === 1) {
                 $cache->delete($key);
             } else {
-
                 $page->seo = (int)$page->seo;
-                $keyValues[$key] = json_encode($page);
+                $keyValues[$key] = $page;
             }
         }
 

@@ -2,7 +2,6 @@
 namespace Be\App\Cms\Controller;
 
 use Be\App\ControllerException;
-use Be\App\ServiceException;
 use Be\Be;
 
 /**

@@ -457,6 +457,9 @@ class Article
             $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
             $response->set('categoryKeyValues', $categoryKeyValues);
 
+            $configEditor = Be::getConfig('App.Cms.Editor');
+            $response->set('configEditor', $configEditor);
+
             $response->display('App.Cms.Admin.Article.edit');
         }
     }
@@ -491,16 +494,19 @@ class Article
             }
         } else {
             $productId = $request->get('id', '');
-            $product = Be::getService('App.Cms.Admin.Article')->getArticle($productId, [
+            $article = Be::getService('App.Cms.Admin.Article')->getArticle($productId, [
                 'categories' => 1,
                 'tags' => 1,
             ]);
-            $response->set('article', $product);
+            $response->set('article', $article);
 
             $response->set('title', '编辑文章');
 
             $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
             $response->set('categoryKeyValues', $categoryKeyValues);
+
+            $configEditor = Be::getConfig('App.Cms.Editor');
+            $response->set('configEditor', $configEditor);
 
             $response->display();
         }

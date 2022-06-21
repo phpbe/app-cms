@@ -35,10 +35,6 @@ class Page
 
         $key = 'Cms:Page:' . $pageId;
         $page = $cache->get($key);
-        if ($page) {
-            $page = json_decode($page);
-        }
-
         if (!$page) {
             throw new ServiceException('页面不存在！');
         }

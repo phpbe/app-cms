@@ -21,10 +21,6 @@ class Article
 
         $key = 'Cms:Article:' . $articleId;
         $article = $cache->get($key);
-        if ($article) {
-            $article = json_decode($article);
-        }
-
         if (!$article) {
             throw new ServiceException('文章不存在！');
         }
@@ -88,11 +84,8 @@ class Article
         $cache = Be::getCache();
         $article = $this->getArticle($articleId);
 
-        $historyKey = 'Cms:ArticleHistory:' . $my->id;
+        $historyKey = 'Cms:Article:History:' . $my->id;
         $history = $cache->get($historyKey);
-        if ($history) {
-            $history = json_decode($history, true);
-        }
 
         if (!$history || !is_array($history)) {
             $history = [];
@@ -105,7 +98,7 @@ class Article
         }
 
         // 最近浏览的文章标题存入缓存，有效期 30 天
-        $cache->set($historyKey, json_encode($history), 86400 * 30);
+        $cache->set($historyKey, $history, 86400 * 30);
 
         // 点击量 使用缓存 存放
         $hits = $article->hits;

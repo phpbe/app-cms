@@ -170,9 +170,8 @@
                                     ],
                                     '@change' => 'seoUpdate',
                                 ],
-                                'option' => [
-                                    'height' => 600,
-                                ],
+                                'layout' => $this->configEditor->tinymce_layout,
+                                'option' => $this->configEditor->tinymce_option,
                             ]);
                             echo $driver->getHtml();
 
@@ -283,7 +282,7 @@
                                 标签：
                             </div>
                             <div v-if="formData.tags">
-                                  <el-tag
+                                <el-tag
                                         v-for="tag in formData.tags"
                                         :key="tag"
                                         closable
@@ -307,9 +306,9 @@
                             <?php
                             $formData['tags'] = ($this->article ? $this->article->tags : []);
                             $vueDataX = [
-                                    'formItems' => [
-                                            'tags' => ['currentTag' => '']
-                                    ]
+                                'formItems' => [
+                                    'tags' => ['currentTag' => '']
+                                ]
                             ];
                             $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                             ?>
@@ -565,6 +564,7 @@
                     window.onbeforeunload = null;
                     window.location.href = "<?php echo beAdminUrl('Cms.Article.articles'); ?>";
                 },
+
                 addTag: function () {
                     if (this.formItems.tags.currentTag) {
                         if (this.formData.tags.indexOf(this.formItems.tags.currentTag) === -1) {

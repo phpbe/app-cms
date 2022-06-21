@@ -31,7 +31,7 @@ class TaskCategory
                 $category->ordering = (int)$category->ordering;
                 $category->is_enable = (int)$category->is_enable;
 
-                $keyValues[$key] = json_encode($category);
+                $keyValues[$key] = $category;
             }
         }
 
