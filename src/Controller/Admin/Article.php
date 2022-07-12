@@ -1,8 +1,6 @@
 <?php
 namespace Be\App\Cms\Controller\Admin;
 
-
-use Be\AdminPlugin\Detail\Item\DetailItemCustom;
 use Be\AdminPlugin\Detail\Item\DetailItemHtml;
 use Be\AdminPlugin\Detail\Item\DetailItemImage;
 use Be\AdminPlugin\Detail\Item\DetailItemToggleIcon;
@@ -11,7 +9,6 @@ use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
-use Be\AdminPlugin\Table\Item\TableItemToggleIcon;
 use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
 use Be\Be;
 use Be\Request;
@@ -195,7 +192,7 @@ class Article
                             ],
                             'value' => function($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl() . '/article/images/no-image-s.jpg';
                                 }
                                 return $row['image'];
                             },
@@ -297,7 +294,7 @@ class Article
                             'driver' => DetailItemImage::class,
                             'value' => function($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl() . '/Template/Article/images/no-image.jpg';
                                 }
                                 return $row['image'];
                             },

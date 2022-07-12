@@ -27,7 +27,7 @@
                         <a class="be-d-inline-block" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>">
                         <img src="<?php
                         if ($article->image === '') {
-                            echo \Be\Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image-m.jpg';
+                            echo \Be\Be::getProperty('App.Cms')->getWwwUrl() . '/Template/Article/images/no-image-m.jpg';
                         } else {
                             echo $article->image;
                         }
