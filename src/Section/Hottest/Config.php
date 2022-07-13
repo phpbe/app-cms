@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\Latest;
+namespace Be\App\Cms\Section\Hottest;
 
 /**
- * @BeConfig("最新文章", icon="el-icon-star-on")
+ * @BeConfig("热门文章", icon="el-icon-star-on")
  */
 class Config
 {
@@ -19,7 +19,7 @@ class Config
      *     driver = "FormItemInput"
      * )
      */
-    public $title = '最新文章';
+    public $title = '热门文章';
 
     /**
      * @BeConfigItem("展示多少个最新文章?",
@@ -51,6 +51,7 @@ class Config
      * )
      */
     public string $backgroundColor = '#FFFFFF';
+
 
     /**
      * @BeConfigItem("内边距 （手机端）",
@@ -99,6 +100,7 @@ class Config
      * )
      */
     public string $marginDesktop = '2rem 0';
+
 
 
 }

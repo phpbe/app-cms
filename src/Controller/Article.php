@@ -1,9 +1,9 @@
 <?php
+
 namespace Be\App\Cms\Controller;
 
 use Be\App\ControllerException;
 use Be\Be;
-use Be\Response;
 
 /**
  * 文章

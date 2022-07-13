@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\Latest;
+namespace Be\App\Cms\Section\TopSearch;
 
 /**
- * @BeConfig("最新文章", icon="el-icon-star-on")
+ * @BeConfig("热门搜索", icon="el-icon-star-on")
  */
 class Config
 {
@@ -19,22 +19,15 @@ class Config
      *     driver = "FormItemInput"
      * )
      */
-    public $title = '最新文章';
+    public $title = '热门搜索';
 
     /**
-     * @BeConfigItem("展示多少个最新文章?",
+     * @BeConfigItem("展示多少个文章?",
      *     driver = "FormItemSlider",
      *     ui="return [':min' => 1, ':max' => 100];"
      * )
      */
     public $quantity = 10;
-
-    /**
-     * @BeConfigItem("查看更多链接",
-     *     driver = "FormItemInput"
-     * )
-     */
-    public $more = '更多';
 
     /**
      * @BeConfigItem("宽度",
@@ -51,6 +44,7 @@ class Config
      * )
      */
     public string $backgroundColor = '#FFFFFF';
+
 
     /**
      * @BeConfigItem("内边距 （手机端）",

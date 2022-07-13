@@ -147,7 +147,7 @@ class Article
         $keywords = trim($keywords);
         if ($keywords !== '') {
             // 将本用户搜索的关键词写入ES search_history
-            $counterKey = 'Cms:ArticleSearchHistory';
+            $counterKey = 'Cms:Article:SearchHistory';
             $counter = (int)$cache->get($counterKey);
             $query = [
                 'index' => $configEs->indexArticleSearchHistory,
@@ -644,11 +644,8 @@ class Article
         $es = Be::getEs();
         $cache = Be::getCache();
 
-        $historyKey = 'Cms:ArticleHistory:' . $my->id;
+        $historyKey = 'Cms:Article:History:' . $my->id;
         $history = $cache->get($historyKey);
-        if ($history) {
-            $history = json_decode($history, true);
-        }
 
         $keywords = [];
         if ($history && is_array($history) && count($history) > 0) {
@@ -811,11 +808,8 @@ class Article
         $es = Be::getEs();
         $cache = Be::getCache();
 
-        $historyKey = 'Cms:ArticleHistory:' . $my->id;
+        $historyKey = 'Cms:Article:History:' . $my->id;
         $history = $cache->get($historyKey);
-        if ($history) {
-            $history = json_decode($history, true);
-        }
 
         $keywords = [];
         if ($history && is_array($history) && count($history) > 0) {

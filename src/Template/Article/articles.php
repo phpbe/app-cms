@@ -15,7 +15,7 @@
     </style>
 </be-head>
 
-<be-center>
+<be-page-content>
     <div class="be-container be-my-400">
         <?php
         foreach ($this->result['rows'] as $article) {
@@ -137,4 +137,4 @@
         }
         ?>
     </div>
-</be-center>
+</be-page-content>

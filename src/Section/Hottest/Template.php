@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\Latest;
+namespace Be\App\Cms\Section\Hottest;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -16,13 +16,13 @@ class Template extends Section
             return;
         }
 
-        $articles = Be::getService('App.Cms.Article')->getLatestArticles($this->config->quantity);
+        $articles = Be::getService('App.Cms.Article')->getHottestArticles($this->config->quantity);
         if (count($articles) === 0) {
             return;
         }
 
-        $moreLink = beUrl('Cms.Article.latest');
-        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'latest', $articles, $moreLink);
+        $moreLink = beUrl('Cms.Article.Hottest');
+        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'hottest', $articles, $moreLink);
     }
 }
 

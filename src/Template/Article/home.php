@@ -1,3 +1,0 @@
-<be-center>
-
-</be-center>
