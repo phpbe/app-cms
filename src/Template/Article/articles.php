@@ -14,10 +14,10 @@
 <be-page-content>
     <?php
     $isMobile = \Be\Be::getRequest()->isMobile();
+    $i = 0;
     foreach ($this->result['rows'] as $article) {
         ?>
-        <div class="be-mb-300 be-row">
-
+        <div class="be-row<?php echo $i === 0 ? '': ' be-mt-300';?>">
             <div class="be-col-auto">
                 <div class="article-image">
                     <a class="be-d-inline-block" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
@@ -34,7 +34,7 @@
 
             <div class="be-col">
                 <div class="be-pl-100">
-                    <a class="be-fs-175 be-fw-bold be-lh-300" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
+                    <a class="be-fs-175 be-fw-bold be-lh-175" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
                         <?php echo $article->title; ?>
                     </a>
                     <div class="be-mt-150 be-lh-150 be-c-666">
@@ -53,6 +53,8 @@
 
         </div>
         <?php
+
+        $i++;
     }
 
 
