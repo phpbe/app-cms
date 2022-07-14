@@ -63,7 +63,7 @@ class Article
 
         $page = $request->get('page', 1);
         $result = Be::getService('App.Cms.Article')->search('', [
-            'orderBy' => 'publish_time',
+            'orderBy' => 'hits',
             'orderByDir' => 'desc',
             'page' => $page,
         ]);

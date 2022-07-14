@@ -136,6 +136,7 @@ class Article
      */
     public function search(string $keywords, array $params = []): array
     {
+        $configArticle = Be::getConfig('App.Cms.Article');
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {
             return $this->searchFromDb($keywords, $params);
@@ -235,6 +236,9 @@ class Article
                 case 'create_time':
                     $orderBy = 'create_time';
                     break;
+                case 'publish_time':
+                    $orderBy = 'publish_time';
+                    break;
             }
 
             if ($orderBy) {
@@ -252,7 +256,7 @@ class Article
         if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
             $pageSize = $params['pageSize'];
         } else {
-            $pageSize = 15;
+            $pageSize = $configArticle->pageSize;
         }
 
         if ($pageSize > 200) {
@@ -298,6 +302,7 @@ class Article
      */
     public function searchFromDb(string $keywords, array $params = []): array
     {
+        $configArticle = Be::getConfig('App.Cms.Article');
         $tableArticle = Be::getTable('cms_article');
 
         $tableArticle->where('is_enable', 1);
@@ -349,7 +354,7 @@ class Article
         if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
             $pageSize = $params['pageSize'];
         } else {
-            $pageSize = 15;
+            $pageSize = $configArticle->pageSize;
         }
 
         if ($pageSize > 200) {
@@ -633,7 +638,7 @@ class Article
      * @param string $excludeArticleId 排除拽定的文章
      * @return array
      */
-    public function getGuessYouLikeArticles(int $n = 40, string $excludeArticleId = null): array
+    public function getRelatedArticles(int $n = 40, string $excludeArticleId = null): array
     {
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {
@@ -789,7 +794,7 @@ class Article
     }
 
     /**
-     * 指定分类下的猜你喜欢
+     * 指定分类下的相关文章
      *
      * @param string $categoryId 分类ID
      * @param string $userId 用户ID
@@ -797,7 +802,7 @@ class Article
      * @param string $excludeArticleId 排除拽定的文章
      * @return array
      */
-    public function getCategoryGuessYouLikeArticles(string $categoryId, int $n = 40, string $excludeArticleId = null): array
+    public function getCategoryRelatedArticles(string $categoryId, int $n = 40, string $excludeArticleId = null): array
     {
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {

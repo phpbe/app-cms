@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\CategoryGuessYouLike;
+namespace Be\App\Cms\Section\CategoryRelated;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -26,12 +26,12 @@ class Template extends Section
             return;
         }
 
-        $articles = Be::getService('App.Cms.Article')->getCategoryGuessYouLikeArticles($categoryId, $this->config->quantity);
+        $articles = Be::getService('App.Cms.Article')->getCategoryRelatedArticles($categoryId, $this->config->quantity);
         if (count($articles) === 0) {
             return;
         }
 
-        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'category-guess-you-like', $articles);
+        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'category-related', $articles);
     }
 }
 

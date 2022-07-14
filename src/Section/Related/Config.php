@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\CategoryGuessYouLike;
+namespace Be\App\Cms\Section\Related;
 
 /**
- * @BeConfig("指定分类猜你喜欢", icon="el-icon-star-on")
+ * @BeConfig("类似文章", icon="el-icon-star-on")
  */
 class Config
 {
@@ -19,7 +19,7 @@ class Config
      *     driver = "FormItemInput"
      * )
      */
-    public $title = '猜你喜欢';
+    public $title = '相关文章';
 
     /**
      * @BeConfigItem("展示多少个文章?",
@@ -93,5 +93,6 @@ class Config
      * )
      */
     public string $marginDesktop = '2rem 0';
+
 
 }

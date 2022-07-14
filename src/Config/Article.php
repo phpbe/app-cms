@@ -8,6 +8,11 @@ class Article
 {
 
     /**
+     * @BeConfigItem("默认分页条数", driver="FormItemSwitch")
+     */
+    public int $pageSize = 5;
+
+    /**
      * @BeConfigItem("是否允许评论", driver="FormItemSwitch")
      */
     public int $comment = 1;

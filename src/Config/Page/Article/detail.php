@@ -17,7 +17,7 @@ class detail
             'name' => 'be-page-content',
         ],
         [
-            'name' => 'App.Cms.GuessYouLike',
+            'name' => 'App.Cms.Related',
         ],
     ];
 
