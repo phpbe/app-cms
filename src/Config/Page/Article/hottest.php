@@ -11,9 +11,6 @@ class hottest
 
     public array $centerSections = [
         [
-            'name' => 'be-page-title',
-        ],
-        [
             'name' => 'be-page-content',
         ],
     ];
