@@ -1,9 +1,5 @@
 <be-head>
     <style type="text/css">
-        html {
-            font-size: 16px;
-        }
-
         .article-image {
             width: 200px;
             text-align: center;
