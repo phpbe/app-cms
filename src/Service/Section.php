@@ -40,9 +40,14 @@ class Section
 
         $html .= $section->pageTemplate->tag0('be-section-content', true);
 
+        $isMobile = \Be\Be::getRequest()->isMobile();
         foreach ($articles as $article) {
             $html .= '<div class="be-py-20">';
-            $html .= '<a class="be-d-block be-t-ellipsis" href="' . beUrl('Cms.Article.detail', ['id' => $article->id]) . '" title="'.$article->title.'">';
+            $html .= '<a class="be-d-block be-t-ellipsis" href="' . beUrl('Cms.Article.detail', ['id' => $article->id]) . '" title="' . $article->title . '"';
+            if (!$isMobile) {
+                $html .= ' target="_blank"';
+            }
+            $html .= '>';
             $html .= $article->title;
             $html .= '</a>';
             $html .= '</div>';
@@ -53,7 +58,7 @@ class Section
         if ($moreLink !== null && isset($section->config->more) && $section->config->more !== '') {
             $html .= '<div class="be-mt-100 be-bt-eee be-pt-100 be-ta-right">';
             $html .= '<a href="' . $moreLink . '"';
-            if (!Be::getRequest()->isMobile()) {
+            if (!$isMobile) {
                 $html .= ' target="_blank"';
             }
             $html .= '>' . $section->config->more . '</a>';

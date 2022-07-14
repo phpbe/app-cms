@@ -13,13 +13,14 @@
 
 <be-page-content>
     <?php
+    $isMobile = \Be\Be::getRequest()->isMobile();
     foreach ($this->result['rows'] as $article) {
         ?>
         <div class="be-mb-300 be-row">
 
             <div class="be-col-auto">
                 <div class="article-image">
-                    <a class="be-d-inline-block" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>">
+                    <a class="be-d-inline-block" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
                     <img src="<?php
                     if ($article->image === '') {
                         echo \Be\Be::getProperty('App.Cms')->getWwwUrl() . '/article/images/no-image-m.jpg';
@@ -33,7 +34,7 @@
 
             <div class="be-col">
                 <div class="be-pl-100">
-                    <a class="be-fs-175 be-fw-bold be-lh-300" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>">
+                    <a class="be-fs-175 be-fw-bold be-lh-300" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
                         <?php echo $article->title; ?>
                     </a>
                     <div class="be-mt-150 be-lh-150 be-c-666">
@@ -42,7 +43,7 @@
                     <div class="be-mt-150 be-c-999">
                         <span><?php echo date('Y年n月j日', strtotime($article->publish_time)); ?></span>
                         <?php
-                        if ($article->author) {
+                        if ($article->author !== '') {
                             echo '<span class="be-ml-100">作者：' . $article->author . '</span>';
                         }
                         ?>
