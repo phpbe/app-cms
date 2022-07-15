@@ -107,7 +107,7 @@
 </be-north>
 
 
-<be-center>
+<be-page-content>
     <?php
     $js = [];
     $css = [];
@@ -120,261 +120,258 @@
     ?>
 
     <div id="app" v-cloak>
-        <div class="be-center">
-            <div class="be-center-title"><?php echo $this->title; ?></div>
-            <el-form ref="formRef" :model="formData" class="be-mb-400">
-                <?php
-                $formData['id'] = ($this->article ? $this->article->id : '');
-                ?>
+        <el-form ref="formRef" :model="formData" class="be-mb-400">
+            <?php
+            $formData['id'] = ($this->article ? $this->article->id : '');
+            ?>
 
-                <div class="be-row">
-                    <div class="be-col-24 be-col-md-18">
-                        <div class="be-center-box">
+            <div class="be-row">
+                <div class="be-col-24 be-col-md-18">
+                    <div class="be-center-box">
 
-                            <div><span class="be-c-red">*</span> 标题：</div>
-                            <el-form-item class="be-mt-50" prop="title" :rules="[{required: true, message: '请输入标题', trigger: 'change' }]">
-                                <el-input
-                                        type="text"
-                                        placeholder="请输入标题"
-                                        v-model = "formData.title"
-                                        size="medium"
-                                        maxlength="200"
-                                        show-word-limit
-                                        @change="seoUpdate">
-                                </el-input>
-                            </el-form-item>
-                            <?php $formData['title'] = ($this->article ? $this->article->title : ''); ?>
+                        <div><span class="be-c-red">*</span> 标题：</div>
+                        <el-form-item class="be-mt-50" prop="title" :rules="[{required: true, message: '请输入标题', trigger: 'change' }]">
+                            <el-input
+                                    type="text"
+                                    placeholder="请输入标题"
+                                    v-model = "formData.title"
+                                    size="medium"
+                                    maxlength="200"
+                                    show-word-limit
+                                    @change="seoUpdate">
+                            </el-input>
+                        </el-form-item>
+                        <?php $formData['title'] = ($this->article ? $this->article->title : ''); ?>
 
-                            <div class="be-mt-100">摘要：</div>
-                            <el-form-item class="be-mt-50" prop="summary">
-                                <el-input
-                                        type="textarea"
-                                        :autosize="{minRows:3,maxRows:6}"
-                                        placeholder="请输入摘要"
-                                        v-model="formData.summary"
-                                        size="medium"
-                                        maxlength="500"
-                                        show-word-limit
-                                        @change="seoUpdate">
-                                </el-input>
-                            </el-form-item>
-                            <?php $formData['summary'] = ($this->article ? $this->article->summary : ''); ?>
+                        <div class="be-mt-100">摘要：</div>
+                        <el-form-item class="be-mt-50" prop="summary">
+                            <el-input
+                                    type="textarea"
+                                    :autosize="{minRows:3,maxRows:6}"
+                                    placeholder="请输入摘要"
+                                    v-model="formData.summary"
+                                    size="medium"
+                                    maxlength="500"
+                                    show-word-limit
+                                    @change="seoUpdate">
+                            </el-input>
+                        </el-form-item>
+                        <?php $formData['summary'] = ($this->article ? $this->article->summary : ''); ?>
 
-                            <div class="be-mt-100">描述：</div>
-                            <?php
-                            $driver = new \Be\AdminPlugin\Form\Item\FormItemTinymce([
-                                'name' => 'description',
-                                'ui' => [
-                                    'form-item' => [
-                                        'class' => 'be-mt-50'
-                                    ],
-                                    '@change' => 'seoUpdate',
+                        <div class="be-mt-100">描述：</div>
+                        <?php
+                        $driver = new \Be\AdminPlugin\Form\Item\FormItemTinymce([
+                            'name' => 'description',
+                            'ui' => [
+                                'form-item' => [
+                                    'class' => 'be-mt-50'
                                 ],
-                                'layout' => $this->configEditor->tinymce_layout,
-                                'option' => $this->configEditor->tinymce_option,
-                            ]);
-                            echo $driver->getHtml();
+                                '@change' => 'seoUpdate',
+                            ],
+                            'layout' => $this->configEditor->tinymce_layout,
+                            'option' => $this->configEditor->tinymce_option,
+                        ]);
+                        echo $driver->getHtml();
 
-                            $formData['description'] = ($this->article ? $this->article->description : '');
+                        $formData['description'] = ($this->article ? $this->article->description : '');
 
-                            $jsX = $driver->getJs();
-                            if ($jsX) {
-                                $js = array_merge($js, $jsX);
-                            }
+                        $jsX = $driver->getJs();
+                        if ($jsX) {
+                            $js = array_merge($js, $jsX);
+                        }
 
-                            $cssX = $driver->getCss();
-                            if ($cssX) {
-                                $css = array_merge($css, $cssX);
-                            }
+                        $cssX = $driver->getCss();
+                        if ($cssX) {
+                            $css = array_merge($css, $cssX);
+                        }
 
-                            $vueDataX = $driver->getVueData();
-                            if ($vueDataX) {
-                                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                            }
+                        $vueDataX = $driver->getVueData();
+                        if ($vueDataX) {
+                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                        }
 
-                            $vueMethodsX = $driver->getVueMethods();
-                            if ($vueMethodsX) {
-                                $vueMethods = array_merge($vueMethods, $vueMethodsX);
-                            }
+                        $vueMethodsX = $driver->getVueMethods();
+                        if ($vueMethodsX) {
+                            $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                        }
 
-                            $vueHooksX = $driver->getVueHooks();
-                            if ($vueHooksX) {
-                                foreach ($vueHooksX as $k => $v) {
-                                    if (isset($vueHooks[$k])) {
-                                        $vueHooks[$k] .= "\r\n" . $v;
-                                    } else {
-                                        $vueHooks[$k] = $v;
-                                    }
+                        $vueHooksX = $driver->getVueHooks();
+                        if ($vueHooksX) {
+                            foreach ($vueHooksX as $k => $v) {
+                                if (isset($vueHooks[$k])) {
+                                    $vueHooks[$k] .= "\r\n" . $v;
+                                } else {
+                                    $vueHooks[$k] = $v;
                                 }
                             }
-                            ?>
-                        </div>
-                    </div>
-
-
-                    <div class="be-col-24 be-col-md-6 be-pl-150">
-                        <div class="be-center-box">
-
-                            <div class="be-row">
-                                <div class="be-col">是否发布：</div>
-                                <div class="be-col-auto">
-                                    <el-form-item prop="is_enable">
-                                        <el-switch v-model.number="formData.is_enable" :active-value="1" :inactive-value="0" size="medium"></el-switch>
-                                    </el-form-item>
-                                </div>
-                            </div>
-                            <?php $formData['is_enable'] = ($this->article ? $this->article->is_enable : 0); ?>
-
-
-                            <div class="be-mt-150">封面图片：</div>
-                            <div class="be-row be-mt-50">
-                                <div class="be-col-auto">
-                                    <div v-if="formData.image !== ''" :key="formData.image" class="image">
-                                        <img :src="formData.image">
-                                        <div class="image-actions">
-                                            <span class="image-action" @click="imagePreview()"><i class="el-icon-zoom-in"></i></span>
-                                            <span class="image-action" @click="imageRemove()"><i class="el-icon-delete"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="formData.image === ''" class="be-col-auto">
-                                    <div class="image-selector" @click="imageSelect" key="99999">
-                                        <i class="el-icon-plus"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php
-                            $formData['image'] = ($this->article ? $this->article->image : '');
-                            ?>
-
-                            <el-dialog :visible.sync="imageSelectorVisible" class="dialog-image-selector" title="选择主图" :width="600" :close-on-click-modal="false">
-                                <iframe :src="imageSelectorUrl" style="width:100%;height:400px;border:0;}"></iframe>
-                            </el-dialog>
-
-                            <el-dialog :visible.sync="imagePreviewVisible" center="true">
-                                <div class="be-ta-center">
-                                    <img style="max-width: 100%;max-height: 400px;" :src="formData.image" alt="">
-                                </div>
-                            </el-dialog>
-
-
-                            <div class="be-mt-150">
-                                分类：
-                            </div>
-                            <el-form-item class="be-mt-50" prop="category_ids">
-                                <el-select
-                                        v-model="formData.category_ids"
-                                        multiple
-                                        placeholder="请选择分类"
-                                        size="medium">
-                                    <?php
-                                    foreach ($this->categoryKeyValues as $key => $val) {
-                                        echo '<el-option value="'. $key .'" key="'. $key .'" label="' .$val . '"></el-option>';
-                                    }
-                                    ?>
-                                </el-select>
-                            </el-form-item>
-                            <?php
-                            $formData['category_ids'] = ($this->article ? $this->article->category_ids : []);
-                            ?>
-
-                            <div class="be-mt-150">
-                                标签：
-                            </div>
-                            <div v-if="formData.tags">
-                                <el-tag
-                                        v-for="tag in formData.tags"
-                                        :key="tag"
-                                        closable
-                                        @close="removeTag(tag)"
-                                        class="be-mr-50 be-mt-50"
-                                        size="medium">
-                                    {{tag}}
-                                </el-tag>
-                            </div>
-                            <el-form-item class="be-mt-50" v-if="formData.tags.length <= 60">
-                                <el-input
-                                        type="text"
-                                        placeholder="添加标签（回车确认输入）"
-                                        v-model="formItems.tags.currentTag"
-                                        maxlength="60"
-                                        size="medium"
-                                        show-word-limit
-                                        @change="addTag">
-                                </el-input>
-                            </el-form-item>
-                            <?php
-                            $formData['tags'] = ($this->article ? $this->article->tags : []);
-                            $vueDataX = [
-                                'formItems' => [
-                                    'tags' => ['currentTag' => '']
-                                ]
-                            ];
-                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                            ?>
-
-                            <div class="be-mt-150">
-                                作者：
-                            </div>
-                            <el-form-item class="be-mt-50" prop="author">
-                                <el-form-item prop="author">
-                                    <el-input v-model="formData.author" size="medium"></el-input>
-                                </el-form-item>
-                            </el-form-item>
-                            <?php
-                            $formData['author'] = ($this->article ? $this->article->author : \Be\Be::getAdminUser()->name);
-                            ?>
-
-                            <div class="be-mt-150">
-                                发布时间：
-                            </div>
-                            <el-form-item class="be-mt-50" prop="publish_time">
-                                <el-form-item prop="publish_time">
-                                    <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" placeholder="选择发布时间"></el-date-picker>
-                                </el-form-item>
-                            </el-form-item>
-                            <?php
-                            $formData['publish_time'] = ($this->article ? $this->article->publish_time : date('Y-m-d H:i:s'));
-                            ?>
-
-                            <div class="be-row be-mt-150">
-                                <div class="be-col be-lh-250">排序：</div>
-                                <div class="be-col-auto">
-                                    <el-form-item prop="ordering">
-                                        <el-input-number
-                                                v-model = "formData.ordering"
-                                                size="medium">
-                                        </el-input-number>
-                                    </el-form-item>
-                                </div>
-                            </div>
-                            <?php $formData['ordering'] = ($this->article ? $this->article->ordering : ''); ?>
-
-                        </div>
-
-                        <div class="be-center-box be-mt-150">
-
-                            <div class="be-row">
-                                <div class="be-col">
-                                    <div class="be-center-box-title">
-                                        SEO（搜索引擎优化）
-                                    </div>
-                                </div>
-                                <div class="be-col-auto">
-                                    <el-link type="primary" @click="drawerSeo=true">编辑</el-link>
-                                </div>
-                            </div>
-
-                            <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl; ?>/article/{{formData.url}}</div>
-                            <div class="be-mt-100">{{formData.seo_title}}</div>
-                            <div class="be-mt-100 be-t-ellipsis-2">{{formData.seo_description}}</div>
-
-                        </div>
+                        }
+                        ?>
                     </div>
                 </div>
 
-            </el-form>
-        </div>
+
+                <div class="be-col-24 be-col-md-6 be-pl-150">
+                    <div class="be-center-box">
+
+                        <div class="be-row">
+                            <div class="be-col">是否发布：</div>
+                            <div class="be-col-auto">
+                                <el-form-item prop="is_enable">
+                                    <el-switch v-model.number="formData.is_enable" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <?php $formData['is_enable'] = ($this->article ? $this->article->is_enable : 0); ?>
+
+
+                        <div class="be-mt-150">封面图片：</div>
+                        <div class="be-row be-mt-50">
+                            <div class="be-col-auto">
+                                <div v-if="formData.image !== ''" :key="formData.image" class="image">
+                                    <img :src="formData.image">
+                                    <div class="image-actions">
+                                        <span class="image-action" @click="imagePreview()"><i class="el-icon-zoom-in"></i></span>
+                                        <span class="image-action" @click="imageRemove()"><i class="el-icon-delete"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="formData.image === ''" class="be-col-auto">
+                                <div class="image-selector" @click="imageSelect" key="99999">
+                                    <i class="el-icon-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                        $formData['image'] = ($this->article ? $this->article->image : '');
+                        ?>
+
+                        <el-dialog :visible.sync="imageSelectorVisible" class="dialog-image-selector" title="选择主图" :width="600" :close-on-click-modal="false">
+                            <iframe :src="imageSelectorUrl" style="width:100%;height:400px;border:0;}"></iframe>
+                        </el-dialog>
+
+                        <el-dialog :visible.sync="imagePreviewVisible" center="true">
+                            <div class="be-ta-center">
+                                <img style="max-width: 100%;max-height: 400px;" :src="formData.image" alt="">
+                            </div>
+                        </el-dialog>
+
+
+                        <div class="be-mt-150">
+                            分类：
+                        </div>
+                        <el-form-item class="be-mt-50" prop="category_ids">
+                            <el-select
+                                    v-model="formData.category_ids"
+                                    multiple
+                                    placeholder="请选择分类"
+                                    size="medium">
+                                <?php
+                                foreach ($this->categoryKeyValues as $key => $val) {
+                                    echo '<el-option value="'. $key .'" key="'. $key .'" label="' .$val . '"></el-option>';
+                                }
+                                ?>
+                            </el-select>
+                        </el-form-item>
+                        <?php
+                        $formData['category_ids'] = ($this->article ? $this->article->category_ids : []);
+                        ?>
+
+                        <div class="be-mt-150">
+                            标签：
+                        </div>
+                        <div v-if="formData.tags">
+                            <el-tag
+                                    v-for="tag in formData.tags"
+                                    :key="tag"
+                                    closable
+                                    @close="removeTag(tag)"
+                                    class="be-mr-50 be-mt-50"
+                                    size="medium">
+                                {{tag}}
+                            </el-tag>
+                        </div>
+                        <el-form-item class="be-mt-50" v-if="formData.tags.length <= 60">
+                            <el-input
+                                    type="text"
+                                    placeholder="添加标签（回车确认输入）"
+                                    v-model="formItems.tags.currentTag"
+                                    maxlength="60"
+                                    size="medium"
+                                    show-word-limit
+                                    @change="addTag">
+                            </el-input>
+                        </el-form-item>
+                        <?php
+                        $formData['tags'] = ($this->article ? $this->article->tags : []);
+                        $vueDataX = [
+                            'formItems' => [
+                                'tags' => ['currentTag' => '']
+                            ]
+                        ];
+                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                        ?>
+
+                        <div class="be-mt-150">
+                            作者：
+                        </div>
+                        <el-form-item class="be-mt-50" prop="author">
+                            <el-form-item prop="author">
+                                <el-input v-model="formData.author" size="medium"></el-input>
+                            </el-form-item>
+                        </el-form-item>
+                        <?php
+                        $formData['author'] = ($this->article ? $this->article->author : \Be\Be::getAdminUser()->name);
+                        ?>
+
+                        <div class="be-mt-150">
+                            发布时间：
+                        </div>
+                        <el-form-item class="be-mt-50" prop="publish_time">
+                            <el-form-item prop="publish_time">
+                                <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" placeholder="选择发布时间"></el-date-picker>
+                            </el-form-item>
+                        </el-form-item>
+                        <?php
+                        $formData['publish_time'] = ($this->article ? $this->article->publish_time : date('Y-m-d H:i:s'));
+                        ?>
+
+                        <div class="be-row be-mt-150">
+                            <div class="be-col be-lh-250">排序：</div>
+                            <div class="be-col-auto">
+                                <el-form-item prop="ordering">
+                                    <el-input-number
+                                            v-model = "formData.ordering"
+                                            size="medium">
+                                    </el-input-number>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <?php $formData['ordering'] = ($this->article ? $this->article->ordering : ''); ?>
+
+                    </div>
+
+                    <div class="be-center-box be-mt-150">
+
+                        <div class="be-row">
+                            <div class="be-col">
+                                <div class="be-center-box-title">
+                                    SEO（搜索引擎优化）
+                                </div>
+                            </div>
+                            <div class="be-col-auto">
+                                <el-link type="primary" @click="drawerSeo=true">编辑</el-link>
+                            </div>
+                        </div>
+
+                        <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl; ?>/article/{{formData.url}}</div>
+                        <div class="be-mt-100">{{formData.seo_title}}</div>
+                        <div class="be-mt-100 be-t-ellipsis-2">{{formData.seo_description}}</div>
+
+                    </div>
+                </div>
+            </div>
+
+        </el-form>
 
         <el-drawer
                 :visible.sync="drawerSeo"
@@ -699,4 +696,4 @@
 
     </script>
 
-</be-center>
+</be-page-content>

@@ -47,7 +47,7 @@
 </be-north>
 
 
-<be-center>
+<be-page-content>
     <?php
     $js = [];
     $css = [];
@@ -60,119 +60,116 @@
     ?>
 
     <div id="app" v-cloak>
-        <div class="be-center">
-            <div class="be-center-title"><?php echo $this->title; ?></div>
-            <el-form ref="formRef" :model="formData" class="be-mb-400">
-                <?php
-                $formData['id'] = ($this->category ? $this->category->id : '');
-                ?>
+        <el-form ref="formRef" :model="formData" class="be-mb-400">
+            <?php
+            $formData['id'] = ($this->category ? $this->category->id : '');
+            ?>
 
-                <div class="be-row">
-                    <div class="be-col-24 be-col-md-18">
-                        <div class="be-center-box">
-                            <div><span class="be-c-red">*</span> 名称：</div>
-                            <el-form-item class="be-mt-50" prop="name" :rules="[{required: true, message: '请输入名称', trigger: 'change' }]">
-                                <el-input
-                                        type="text"
-                                        placeholder="请输入名称"
-                                        v-model = "formData.name"
-                                        size="medium"
-                                        maxlength="120"
-                                        show-word-limit
-                                        @change="seoUpdate">
-                                </el-input>
-                            </el-form-item>
-                            <?php $formData['name'] = ($this->category ? $this->category->name : ''); ?>
+            <div class="be-row">
+                <div class="be-col-24 be-col-md-18">
+                    <div class="be-center-box">
+                        <div><span class="be-c-red">*</span> 名称：</div>
+                        <el-form-item class="be-mt-50" prop="name" :rules="[{required: true, message: '请输入名称', trigger: 'change' }]">
+                            <el-input
+                                    type="text"
+                                    placeholder="请输入名称"
+                                    v-model = "formData.name"
+                                    size="medium"
+                                    maxlength="120"
+                                    show-word-limit
+                                    @change="seoUpdate">
+                            </el-input>
+                        </el-form-item>
+                        <?php $formData['name'] = ($this->category ? $this->category->name : ''); ?>
 
-                            <div class="be-mt-100">描述：</div>
-                            <?php
-                            $driver = new \Be\AdminPlugin\Form\Item\FormItemTinymce([
-                                'name' => 'description',
-                                'ui' => [
-                                    'form-item' => [
-                                        'class' => 'be-mt-50'
-                                    ],
-                                    '@change' => 'seoUpdate',
-                                ]
-                            ]);
-                            echo $driver->getHtml();
+                        <div class="be-mt-100">描述：</div>
+                        <?php
+                        $driver = new \Be\AdminPlugin\Form\Item\FormItemTinymce([
+                            'name' => 'description',
+                            'ui' => [
+                                'form-item' => [
+                                    'class' => 'be-mt-50'
+                                ],
+                                '@change' => 'seoUpdate',
+                            ]
+                        ]);
+                        echo $driver->getHtml();
 
-                            $formData['description'] = ($this->category ? $this->category->description : '');
+                        $formData['description'] = ($this->category ? $this->category->description : '');
 
-                            $jsX = $driver->getJs();
-                            if ($jsX) {
-                                $js = array_merge($js, $jsX);
-                            }
+                        $jsX = $driver->getJs();
+                        if ($jsX) {
+                            $js = array_merge($js, $jsX);
+                        }
 
-                            $cssX = $driver->getCss();
-                            if ($cssX) {
-                                $css = array_merge($css, $cssX);
-                            }
+                        $cssX = $driver->getCss();
+                        if ($cssX) {
+                            $css = array_merge($css, $cssX);
+                        }
 
-                            $vueDataX = $driver->getVueData();
-                            if ($vueDataX) {
-                                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                            }
+                        $vueDataX = $driver->getVueData();
+                        if ($vueDataX) {
+                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                        }
 
-                            $vueMethodsX = $driver->getVueMethods();
-                            if ($vueMethodsX) {
-                                $vueMethods = array_merge($vueMethods, $vueMethodsX);
-                            }
+                        $vueMethodsX = $driver->getVueMethods();
+                        if ($vueMethodsX) {
+                            $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                        }
 
-                            $vueHooksX = $driver->getVueHooks();
-                            if ($vueHooksX) {
-                                foreach ($vueHooksX as $k => $v) {
-                                    if (isset($vueHooks[$k])) {
-                                        $vueHooks[$k] .= "\r\n" . $v;
-                                    } else {
-                                        $vueHooks[$k] = $v;
-                                    }
+                        $vueHooksX = $driver->getVueHooks();
+                        if ($vueHooksX) {
+                            foreach ($vueHooksX as $k => $v) {
+                                if (isset($vueHooks[$k])) {
+                                    $vueHooks[$k] .= "\r\n" . $v;
+                                } else {
+                                    $vueHooks[$k] = $v;
                                 }
                             }
-                            ?>
-                        </div>
-                    </div>
-
-
-                    <div class="be-col-24 be-col-md-6 be-pl-150">
-
-                        <div class="be-center-box">
-                            <div class="be-row">
-                                <div class="be-col be-lh-250">排序：</div>
-                                <div class="be-col-auto">
-                                    <el-form-item prop="ordering">
-                                        <el-input-number
-                                                v-model = "formData.ordering"
-                                                size="medium">
-                                        </el-input-number>
-                                    </el-form-item>
-                                </div>
-                            </div>
-                            <?php $formData['ordering'] = ($this->category ? $this->category->ordering : ''); ?>
-                        </div>
-
-                        <div class="be-center-box be-mt-200">
-                            <div class="be-row">
-                                <div class="be-col">
-                                    <div class="be-center-box-title">
-                                        SEO（搜索引擎优化）
-                                    </div>
-                                </div>
-                                <div class="be-col-auto">
-                                    <el-link type="primary" @click="drawerSeo=true">编辑</el-link>
-                                </div>
-                            </div>
-
-                            <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl; ?>/articles/{{formData.url}}</div>
-                            <div class="be-mt-100">{{formData.seo_title}}</div>
-                            <div class="be-mt-100 be-t-ellipsis-2">{{formData.seo_description}}</div>
-                        </div>
+                        }
+                        ?>
                     </div>
                 </div>
 
 
-            </el-form>
-        </div>
+                <div class="be-col-24 be-col-md-6 be-pl-150">
+
+                    <div class="be-center-box">
+                        <div class="be-row">
+                            <div class="be-col be-lh-250">排序：</div>
+                            <div class="be-col-auto">
+                                <el-form-item prop="ordering">
+                                    <el-input-number
+                                            v-model = "formData.ordering"
+                                            size="medium">
+                                    </el-input-number>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <?php $formData['ordering'] = ($this->category ? $this->category->ordering : ''); ?>
+                    </div>
+
+                    <div class="be-center-box be-mt-200">
+                        <div class="be-row">
+                            <div class="be-col">
+                                <div class="be-center-box-title">
+                                    SEO（搜索引擎优化）
+                                </div>
+                            </div>
+                            <div class="be-col-auto">
+                                <el-link type="primary" @click="drawerSeo=true">编辑</el-link>
+                            </div>
+                        </div>
+
+                        <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl; ?>/articles/{{formData.url}}</div>
+                        <div class="be-mt-100">{{formData.seo_title}}</div>
+                        <div class="be-mt-100 be-t-ellipsis-2">{{formData.seo_description}}</div>
+                    </div>
+                </div>
+            </div>
+
+
+        </el-form>
 
         <el-drawer
                 :visible.sync="drawerSeo"
@@ -444,4 +441,4 @@
         });
     </script>
 
-</be-center>
+</be-page-content>
