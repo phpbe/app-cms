@@ -96,6 +96,8 @@ class Article
         $paginationUrl = beUrl('Cms.Article.hottest');
         $response->set('paginationUrl', $paginationUrl);
 
+        $response->set('title', '搜索 ' . $keyword . ' 的结果');
+
         $response->display('App.Cms.Article.articles');
     }
 
