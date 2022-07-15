@@ -17,7 +17,13 @@
 
 <be-page-content>
     <div class="be-ta-center be-c-999">
-        <span>作者：<?php echo $this->article->author; ?></span>
+        <?php
+        if ($this->article->author !== '') {
+            ?>
+            <span>作者：<?php echo $this->article->author; ?></span>
+            <?php
+        }
+        ?>
         <span class="be-ml-100">发布时间：<?php echo date('Y年n月j日 H:i', strtotime($this->article->publish_time)); ?></span>
         <span class="be-ml-100">浏览：<?php echo $this->article->hits; ?></span>
     </div>
