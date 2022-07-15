@@ -76,6 +76,30 @@ class Article
     }
 
     /**
+     * 搜索
+     *
+     * @BeMenu("搜索")
+     * @BeRoute("/article/search")
+     */
+    public function search()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $keyword = $request->get('keyword', '');
+        $page = $request->get('page', 1);
+        $result = Be::getService('App.Cms.Article')->search($keyword, [
+            'page' => $page,
+        ]);
+        $response->set('result', $result);
+
+        $paginationUrl = beUrl('Cms.Article.hottest');
+        $response->set('paginationUrl', $paginationUrl);
+
+        $response->display('App.Cms.Article.articles');
+    }
+
+    /**
      * 文章明细
      *
      * @BeMenu("指定一篇文章", picker="return \Be\Be::getService('App.Cms.Admin.Article')->getArticleMenuPicker()")
