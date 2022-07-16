@@ -21,7 +21,7 @@
 
 
 <be-north>
-    <div class="be-north" id="be-north">
+    <div id="app-north">
         <div class="be-row">
             <div class="be-col">
                 <div style="padding: 1.25rem 0 0 2rem;">
@@ -38,7 +38,7 @@
     </div>
     <script>
         let vueNorth = new Vue({
-            el: '#be-north',
+            el: '#app-north',
             data: {
                 loading: false,
             }

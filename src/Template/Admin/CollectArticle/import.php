@@ -26,7 +26,7 @@
     </style>
 </be-head>
 
-<be-center>
+<be-page-content>
     <?php
     $rootUrl = \Be\Be::getRequest()->getRootUrl();
     $formData = ['collectArticles' => $this->collectArticles];
@@ -141,4 +141,4 @@
         });
     </script>
 
-</be-center>
+</be-page-content>
