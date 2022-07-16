@@ -33,7 +33,7 @@
         <span class="be-ml-100">发布时间：<?php echo date('Y年n月j日 H:i', strtotime($this->article->publish_time)); ?></span>
         <span class="be-ml-100">浏览：<?php echo $this->article->hits; ?></span>
     </div>
-    <div class="be-mt-200 be-lh-150 be-fs-125">
+    <div class="be-mt-200 be-lh-200 be-fs-125">
         <?php echo $this->article->description; ?>
     </div>
 </be-page-content>
