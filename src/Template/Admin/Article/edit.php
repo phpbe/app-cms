@@ -168,8 +168,8 @@
                                 ],
                                 '@change' => 'seoUpdate',
                             ],
-                            'layout' => $this->configEditor->tinymce_layout,
-                            'option' => $this->configEditor->tinymce_option,
+                            'layout' => $this->configArticle->tinymce_layout,
+                            'option' => $this->configArticle->tinymce_option,
                         ]);
                         echo $driver->getHtml();
 

@@ -454,8 +454,8 @@ class Article
             $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
             $response->set('categoryKeyValues', $categoryKeyValues);
 
-            $configEditor = Be::getConfig('App.Cms.Editor');
-            $response->set('configEditor', $configEditor);
+            $configArticle = Be::getConfig('App.Cms.Article');
+            $response->set('configArticle', $configArticle);
 
             $response->display('App.Cms.Admin.Article.edit');
         }
@@ -502,8 +502,8 @@ class Article
             $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
             $response->set('categoryKeyValues', $categoryKeyValues);
 
-            $configEditor = Be::getConfig('App.Cms.Editor');
-            $response->set('configEditor', $configEditor);
+            $configArticle = Be::getConfig('App.Cms.Article');
+            $response->set('configArticle', $configArticle);
 
             $response->display();
         }

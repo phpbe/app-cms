@@ -5,10 +5,16 @@
         ?>
         <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/lib/highlight.js/11.5.1/default.min.css">
         <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/lib/highlight.js/11.5.1/styles/atom-one-light.css">
+
         <script src="<?php echo $wwwUrl; ?>/lib/highlight.js/11.5.1/highlight.min.js"></script>
-        <script>
-            hljs.highlightAll();
-        </script>
+
+        <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/lib/highlight.js/highlightjs-line-numbers.css">
+        <script src="<?php echo $wwwUrl; ?>/lib/highlight.js/highlightjs-line-numbers.min.js"></script>
+
+        <script src="<?php echo $wwwUrl; ?>/lib/clipboard/clipboard.min.js"></script>
+
+        <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/article/css/detail.code.css">
+        <script src="<?php echo $wwwUrl; ?>/article/js/detail.code.js"></script>
         <?php
     }
     ?>
@@ -27,7 +33,7 @@
         <span class="be-ml-100">发布时间：<?php echo date('Y年n月j日 H:i', strtotime($this->article->publish_time)); ?></span>
         <span class="be-ml-100">浏览：<?php echo $this->article->hits; ?></span>
     </div>
-    <div class="be-mt-200 be-lh-150">
+    <div class="be-mt-200 be-lh-150 be-fs-125">
         <?php echo $this->article->description; ?>
     </div>
 </be-page-content>
