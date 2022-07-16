@@ -67,7 +67,7 @@
 
             <div class="be-row">
                 <div class="be-col-24 be-col-md-18">
-                    <div class="be-center-box">
+                    <div class="be-p-150 be-bc-fff">
                         <div><span class="be-c-red">*</span> 标题：</div>
                         <el-form-item class="be-mt-50" prop="title" :rules="[{required: true, message: '请输入标题', trigger: 'change' }]">
                             <el-input
@@ -136,7 +136,7 @@
 
 
                 <div class="be-col-24 be-col-md-6 be-pl-150">
-                    <div class="be-center-box">
+                    <div class="be-p-150 be-bc-fff">
                         <div class="be-row">
                             <div class="be-col">
                                 <div class="be-center-box-title">

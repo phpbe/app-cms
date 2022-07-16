@@ -67,7 +67,7 @@
 
             <div class="be-row">
                 <div class="be-col-24 be-col-md-18">
-                    <div class="be-center-box">
+                    <div class="be-p-150 be-bc-fff">
                         <div><span class="be-c-red">*</span> 名称：</div>
                         <el-form-item class="be-mt-50" prop="name" :rules="[{required: true, message: '请输入名称', trigger: 'change' }]">
                             <el-input
@@ -134,7 +134,7 @@
 
                 <div class="be-col-24 be-col-md-6 be-pl-150">
 
-                    <div class="be-center-box">
+                    <div class="be-p-150 be-bc-fff">
                         <div class="be-row">
                             <div class="be-col be-lh-250">排序：</div>
                             <div class="be-col-auto">
@@ -149,7 +149,7 @@
                         <?php $formData['ordering'] = ($this->category ? $this->category->ordering : ''); ?>
                     </div>
 
-                    <div class="be-center-box be-mt-200">
+                    <div class="be-p-150 be-bc-fff be-mt-150">
                         <div class="be-row">
                             <div class="be-col">
                                 <div class="be-center-box-title">

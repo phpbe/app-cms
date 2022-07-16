@@ -120,161 +120,157 @@
     ?>
 
     <div id="app" v-cloak>
-        <div class="be-center">
-            <div class="be-center-title"><?php echo $this->title; ?></div>
-            <el-form ref="formRef" :model="formData" class="be-mb-400">
-                <?php
-                $formData['id'] = ($this->collectArticle ? $this->collectArticle->id : '');
-                ?>
+        <el-form ref="formRef" :model="formData" class="be-mb-400">
+            <?php
+            $formData['id'] = ($this->collectArticle ? $this->collectArticle->id : '');
+            ?>
 
-                <div class="be-row">
-                    <div class="be-col-24 be-col-md-18">
-                        <div class="be-center-box">
+            <div class="be-row">
+                <div class="be-col-24 be-col-md-18">
+                    <div class="be-p-150 be-bc-fff">
 
-                            <div><span class="be-c-red">*</span> 标题：</div>
-                            <el-form-item class="be-mt-50" prop="title" :rules="[{required: true, message: '请输入标题', trigger: 'change' }]">
-                                <el-input
-                                        type="text"
-                                        placeholder="请输入标题"
-                                        v-model = "formData.title"
-                                        size="medium"
-                                        maxlength="200"
-                                        show-word-limit>
-                                </el-input>
-                            </el-form-item>
-                            <?php $formData['title'] = ($this->collectArticle ? $this->collectArticle->title : ''); ?>
+                        <div><span class="be-c-red">*</span> 标题：</div>
+                        <el-form-item class="be-mt-50" prop="title" :rules="[{required: true, message: '请输入标题', trigger: 'change' }]">
+                            <el-input
+                                    type="text"
+                                    placeholder="请输入标题"
+                                    v-model = "formData.title"
+                                    size="medium"
+                                    maxlength="200"
+                                    show-word-limit>
+                            </el-input>
+                        </el-form-item>
+                        <?php $formData['title'] = ($this->collectArticle ? $this->collectArticle->title : ''); ?>
 
-                            <div class="be-mt-100">摘要：</div>
-                            <el-form-item class="be-mt-50" prop="summary">
-                                <el-input
-                                        type="textarea"
-                                        :autosize="{minRows:3,maxRows:6}"
-                                        placeholder="请输入摘要"
-                                        v-model="formData.summary"
-                                        size="medium"
-                                        maxlength="500"
-                                        show-word-limit>
-                                </el-input>
-                            </el-form-item>
-                            <?php $formData['summary'] = ($this->collectArticle ? $this->collectArticle->summary : ''); ?>
+                        <div class="be-mt-100">摘要：</div>
+                        <el-form-item class="be-mt-50" prop="summary">
+                            <el-input
+                                    type="textarea"
+                                    :autosize="{minRows:3,maxRows:6}"
+                                    placeholder="请输入摘要"
+                                    v-model="formData.summary"
+                                    size="medium"
+                                    maxlength="500"
+                                    show-word-limit>
+                            </el-input>
+                        </el-form-item>
+                        <?php $formData['summary'] = ($this->collectArticle ? $this->collectArticle->summary : ''); ?>
 
-                            <div class="be-mt-100">描述：</div>
-                            <?php
-                            $driver = new \Be\AdminPlugin\Form\Item\FormItemTinymce([
-                                'name' => 'description',
-                                'ui' => [
-                                    'form-item' => [
-                                        'class' => 'be-mt-50'
-                                    ],
+                        <div class="be-mt-100">描述：</div>
+                        <?php
+                        $driver = new \Be\AdminPlugin\Form\Item\FormItemTinymce([
+                            'name' => 'description',
+                            'ui' => [
+                                'form-item' => [
+                                    'class' => 'be-mt-50'
                                 ],
-                                'option' => [
-                                    'height' => 600,
-                                ],
-                            ]);
-                            echo $driver->getHtml();
+                            ],
+                            'option' => [
+                                'height' => 600,
+                            ],
+                        ]);
+                        echo $driver->getHtml();
 
-                            $formData['description'] = ($this->collectArticle ? $this->collectArticle->description : '');
+                        $formData['description'] = ($this->collectArticle ? $this->collectArticle->description : '');
 
-                            $jsX = $driver->getJs();
-                            if ($jsX) {
-                                $js = array_merge($js, $jsX);
-                            }
+                        $jsX = $driver->getJs();
+                        if ($jsX) {
+                            $js = array_merge($js, $jsX);
+                        }
 
-                            $cssX = $driver->getCss();
-                            if ($cssX) {
-                                $css = array_merge($css, $cssX);
-                            }
+                        $cssX = $driver->getCss();
+                        if ($cssX) {
+                            $css = array_merge($css, $cssX);
+                        }
 
-                            $vueDataX = $driver->getVueData();
-                            if ($vueDataX) {
-                                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                            }
+                        $vueDataX = $driver->getVueData();
+                        if ($vueDataX) {
+                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                        }
 
-                            $vueMethodsX = $driver->getVueMethods();
-                            if ($vueMethodsX) {
-                                $vueMethods = array_merge($vueMethods, $vueMethodsX);
-                            }
+                        $vueMethodsX = $driver->getVueMethods();
+                        if ($vueMethodsX) {
+                            $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                        }
 
-                            $vueHooksX = $driver->getVueHooks();
-                            if ($vueHooksX) {
-                                foreach ($vueHooksX as $k => $v) {
-                                    if (isset($vueHooks[$k])) {
-                                        $vueHooks[$k] .= "\r\n" . $v;
-                                    } else {
-                                        $vueHooks[$k] = $v;
-                                    }
+                        $vueHooksX = $driver->getVueHooks();
+                        if ($vueHooksX) {
+                            foreach ($vueHooksX as $k => $v) {
+                                if (isset($vueHooks[$k])) {
+                                    $vueHooks[$k] .= "\r\n" . $v;
+                                } else {
+                                    $vueHooks[$k] = $v;
                                 }
                             }
-                            ?>
-                        </div>
-                    </div>
-
-
-                    <div class="be-col-24 be-col-md-6 be-pl-150">
-                        <div class="be-center-box">
-                            <div class="be-mt-150">封面图片：</div>
-                            <div class="be-row be-mt-50">
-                                <div class="be-col-auto">
-                                    <div v-if="formData.image !== ''" :key="formData.image" class="image">
-                                        <img :src="formData.image">
-                                        <div class="image-actions">
-                                            <span class="image-action" @click="imagePreview()"><i class="el-icon-zoom-in"></i></span>
-                                            <span class="image-action" @click="imageRemove()"><i class="el-icon-delete"></i></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-if="formData.image === ''" class="be-col-auto">
-                                    <div class="image-selector" @click="imageSelect" key="99999">
-                                        <i class="el-icon-plus"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php
-                            $formData['image'] = ($this->collectArticle ? $this->collectArticle->image : '');
-                            ?>
-
-                            <el-dialog :visible.sync="imageSelectorVisible" class="dialog-image-selector" title="选择主图" :width="600" :close-on-click-modal="false">
-                                <iframe :src="imageSelectorUrl" style="width:100%;height:400px;border:0;}"></iframe>
-                            </el-dialog>
-
-                            <el-dialog :visible.sync="imagePreviewVisible" center="true">
-                                <div class="be-ta-center">
-                                    <img style="max-width: 100%;max-height: 400px;" :src="formData.image" alt="">
-                                </div>
-                            </el-dialog>
-
-                            <div class="be-mt-150">
-                                作者：
-                            </div>
-                            <el-form-item class="be-mt-50" prop="author">
-                                <el-form-item prop="author">
-                                    <el-input v-model="formData.author" size="medium"></el-input>
-                                </el-form-item>
-                            </el-form-item>
-                            <?php
-                            $formData['author'] = ($this->collectArticle ? $this->collectArticle->author : \Be\Be::getAdminUser()->name);
-                            ?>
-
-                            <div class="be-mt-150">
-                                发布时间：
-                            </div>
-                            <el-form-item class="be-mt-50" prop="publish_time">
-                                <el-form-item prop="publish_time">
-                                    <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" placeholder="选择发布时间"></el-date-picker>
-                                </el-form-item>
-                            </el-form-item>
-                            <?php
-                            $formData['publish_time'] = ($this->collectArticle ? $this->collectArticle->publish_time : date('Y-m-d H:i:s'));
-                            ?>
-
-                        </div>
-
+                        }
+                        ?>
                     </div>
                 </div>
 
-            </el-form>
-        </div>
 
+                <div class="be-col-24 be-col-md-6 be-pl-150">
+                    <div class="be-p-150 be-bc-fff">
+                        <div class="be-mt-150">封面图片：</div>
+                        <div class="be-row be-mt-50">
+                            <div class="be-col-auto">
+                                <div v-if="formData.image !== ''" :key="formData.image" class="image">
+                                    <img :src="formData.image">
+                                    <div class="image-actions">
+                                        <span class="image-action" @click="imagePreview()"><i class="el-icon-zoom-in"></i></span>
+                                        <span class="image-action" @click="imageRemove()"><i class="el-icon-delete"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="formData.image === ''" class="be-col-auto">
+                                <div class="image-selector" @click="imageSelect" key="99999">
+                                    <i class="el-icon-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                        $formData['image'] = ($this->collectArticle ? $this->collectArticle->image : '');
+                        ?>
+
+                        <el-dialog :visible.sync="imageSelectorVisible" class="dialog-image-selector" title="选择主图" :width="600" :close-on-click-modal="false">
+                            <iframe :src="imageSelectorUrl" style="width:100%;height:400px;border:0;}"></iframe>
+                        </el-dialog>
+
+                        <el-dialog :visible.sync="imagePreviewVisible" center="true">
+                            <div class="be-ta-center">
+                                <img style="max-width: 100%;max-height: 400px;" :src="formData.image" alt="">
+                            </div>
+                        </el-dialog>
+
+                        <div class="be-mt-150">
+                            作者：
+                        </div>
+                        <el-form-item class="be-mt-50" prop="author">
+                            <el-form-item prop="author">
+                                <el-input v-model="formData.author" size="medium"></el-input>
+                            </el-form-item>
+                        </el-form-item>
+                        <?php
+                        $formData['author'] = ($this->collectArticle ? $this->collectArticle->author : \Be\Be::getAdminUser()->name);
+                        ?>
+
+                        <div class="be-mt-150">
+                            发布时间：
+                        </div>
+                        <el-form-item class="be-mt-50" prop="publish_time">
+                            <el-form-item prop="publish_time">
+                                <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" placeholder="选择发布时间"></el-date-picker>
+                            </el-form-item>
+                        </el-form-item>
+                        <?php
+                        $formData['publish_time'] = ($this->collectArticle ? $this->collectArticle->publish_time : date('Y-m-d H:i:s'));
+                        ?>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </el-form>
 
     </div>
     <?php
