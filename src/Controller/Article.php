@@ -124,6 +124,10 @@ class Article
             $response->set('meta_keywords', $article->seo_keywords);
             $response->set('meta_description', $article->seo_description);
             $response->set('article', $article);
+
+            $configArticle = Be::getConfig('App.Cms.Article');
+            $response->set('configArticle', $configArticle);
+
             $response->display();
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
@@ -158,6 +162,10 @@ class Article
             $response->set('meta_keywords', $article->seo_keywords);
             $response->set('meta_description', $article->seo_description);
             $response->set('article', $article);
+
+            $configArticle = Be::getConfig('App.Cms.Article');
+            $response->set('configArticle', $configArticle);
+
             $response->display('App.Cms.Article.detail');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());

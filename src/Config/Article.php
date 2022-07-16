@@ -8,9 +8,9 @@ class Article
 {
 
     /**
-     * @BeConfigItem("默认分页条数", driver="FormItemSwitch")
+     * @BeConfigItem("默认分页条数", driver="FormItemInputNumberInt")
      */
-    public int $pageSize = 5;
+    public int $pageSize = 15;
 
     /**
      * @BeConfigItem("是否允许评论", driver="FormItemSwitch")
@@ -42,6 +42,21 @@ class Article
     public array $tinymce_option = [
     ];
 
+    /**
+     * @BeConfigItem("文章详情页文字大小",
+     *     driver="FormItemSelect",
+     *     keyValues = "return ['100' => '1rem', '110' => '1.1rem', '120' => '1.2rem', '125' => '1.25rem', '150' => '1.5rem', '175' => '1.75rem', '200' => '2rem'];")
+     * )
+     */
+    public string $detail_font_size = '110';
+
+    /**
+     * @BeConfigItem("文章详情页行高",
+     *     driver="FormItemSelect",
+     *     keyValues = "return ['150' => '1.5rem', '175' => '1.75rem', '200' => '2rem', '250' => '2.5rem', '300' => '3rem', '400' => '4rem'];")
+     * )
+     */
+    public string $detail_line_height = '200';
 
 }
 
