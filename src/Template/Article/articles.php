@@ -34,13 +34,13 @@
 
             <div class="be-col">
                 <div class="be-pl-100">
-                    <a class="be-fs-175 be-fw-bold be-lh-175" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
+                    <a class="be-fs-150 be-fw-bold be-lh-200" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
                         <?php echo $article->title; ?>
                     </a>
-                    <div class="be-mt-150 be-lh-150 be-c-666">
+                    <div class="be-mt-100 be-lh-150 be-c-666">
                         <?php echo $article->summary; ?>
                     </div>
-                    <div class="be-mt-150 be-c-999">
+                    <div class="be-mt-100 be-c-999">
                         <span><?php echo date('Y年n月j日', strtotime($article->publish_time)); ?></span>
                         <?php
                         if ($article->author !== '') {
