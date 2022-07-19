@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\Related;
+namespace Be\App\Cms\Section\Similar;
 
 /**
  * @BeConfig("类似文章", icon="el-icon-star-on")
@@ -19,7 +19,7 @@ class Config
      *     driver = "FormItemInput"
      * )
      */
-    public $title = '相关文章';
+    public $title = '类似文章';
 
     /**
      * @BeConfigItem("展示多少个文章?",

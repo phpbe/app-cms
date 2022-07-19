@@ -22,9 +22,6 @@ class TaskArticle
             return;
         }
 
-
-        file_put_contents(Be::getRuntime()->getRootPath() . '/es-log-0', print_r($articles, true));
-
         $es = Be::getEs();
         $db = Be::getDb();
 
@@ -84,8 +81,6 @@ class TaskArticle
                 ];
             }
         }
-
-        file_put_contents(Be::getRuntime()->getRootPath() . '/es-log', print_r($batch, true));
 
         $response = $es->bulk(['body' => $batch]);
         if ($response['errors'] > 0) {

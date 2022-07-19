@@ -27,13 +27,20 @@ class Category
                 throw new ControllerException('文章分类不存在！');
             }
 
-            $service = Be::getService('App.Cms.Article');
-            $article = $service->getArticle($id);
-            $response->set('title', $article->seo_title);
-            $response->set('meta_keywords', $article->seo_keywords);
-            $response->set('meta_description', $article->seo_description);
-            $response->set('article', $article);
-            $response->display();
+            $page = $request->get('page', 1);
+            $result = Be::getService('App.Cms.Article')->search('', [
+                'categoryId' => $id,
+                'orderBy' => 'publish_time',
+                'orderByDir' => 'desc',
+                'page' => $page,
+            ]);
+            $response->set('result', $result);
+
+            $paginationUrl = beUrl('Cms.Category.articles', ['id' => $id]);
+            $response->set('paginationUrl', $paginationUrl);
+
+            $response->display('App.Cms.Article.articles');
+
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
         }

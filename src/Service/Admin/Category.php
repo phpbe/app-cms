@@ -3,7 +3,6 @@
 namespace Be\App\Cms\Service\Admin;
 
 use Be\App\ServiceException;
-use Be\App\ShopFaiAdmin\ShopFaiAdmin;
 use Be\Be;
 use Be\Util\Str\Pinyin;
 
@@ -193,7 +192,7 @@ class Category
             throw new ServiceException(($isNew ? '新建' : '编辑') . '分类发生异常！');
         }
 
-        Be::getService('App.System.Task')->trigger('Cms.CategorySyncEsAndCache');
+        Be::getService('App.System.Task')->trigger('Cms.CategorySyncCache');
         Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
 
         return $tupleCategory->toObject();

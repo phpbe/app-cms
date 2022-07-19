@@ -17,7 +17,7 @@ class preview
             'name' => 'be-page-content',
         ],
         [
-            'name' => 'App.Cms.Related',
+            'name' => 'App.Cms.Similar',
         ],
     ];
 
@@ -27,6 +27,9 @@ class preview
         ],
         [
             'name' => 'App.Cms.Hottest',
+        ],
+        [
+            'name' => 'App.Cms.GuessYouLike',
         ],
     ];
 

@@ -382,93 +382,6 @@ class Article
     }
 
     /**
-     * 跟据文章名称，获取相似文章
-     *
-     * @param string $articleId 文章ID
-     * @param string $articleTitle 文章标题
-     * @param int $n
-     * @return array
-     */
-    public function getSimilarArticles(string $articleId, string $articleTitle, int $n = 12): array
-    {
-        $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
-            return $this->getSimilarArticlesFromDb($articleId, $articleTitle, $n);
-        }
-
-        $query = [
-            'index' => $configEs->indexArticle,
-            'body' => [
-                'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'must_not' => [
-                            'term' => [
-                                '_id' => $articleId
-                            ]
-                        ],
-                        'must' => [
-                            'match' => [
-                                'title' => $articleTitle
-                            ]
-                        ],
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                        ]
-                    ]
-                ]
-            ]
-        ];
-
-        $es = Be::getEs();
-        $results = $es->search($query);
-
-        if (!isset($results['hits']['hits'])) {
-            return [];
-        }
-
-        $return = [];
-        foreach ($results['hits']['hits'] as $x) {
-            $return[] = $this->formatEsArticle($x['_source']);
-        }
-
-        return $return;
-    }
-
-    /**
-     * 跟据文章名称，获取相似文章
-     *
-     * @param string $articleId 文章ID
-     * @param string $articleTitle 文章标题
-     * @param int $n
-     * @return array
-     */
-    public function getSimilarArticlesFromDb(string $articleId, string $articleTitle, int $n = 12): array
-    {
-        $tableArticle = Be::getTable('cms_article');
-        $tableArticle->where('is_enable', 1)
-            ->where('is_delete', 0)
-            ->where('id', '!=', $articleId);
-
-        if ($articleTitle !== '') {
-            $tableArticle->where('title', 'like', '%' . $articleTitle . '%');
-        }
-
-        $tableArticle->limit($n);
-
-        return $tableArticle->getObjects();
-    }
-
-    /**
      * 获取按指定排序的前N个文章
      *
      * @param int $n
@@ -594,7 +507,7 @@ class Article
                     'bool' => [
                         'must' => [
                             'match' => [
-                                'title' => implode(',', $keywords)
+                                'title' => implode(', ', $keywords)
                             ]
                         ],
                         'filter' => [
@@ -629,16 +542,101 @@ class Article
         return $return;
     }
 
+    /**
+     * 跟据文章名称，获取相似文章
+     *
+     * @param string $articleId 文章ID
+     * @param string $articleTitle 文章标题
+     * @param int $n
+     * @return array
+     */
+    public function getSimilarArticles(string $articleId, string $articleTitle, int $n = 12): array
+    {
+        $configEs = Be::getConfig('App.Cms.Es');
+        if (!$configEs->enable) {
+            return $this->getSimilarArticlesFromDb($articleId, $articleTitle, $n);
+        }
+
+        $query = [
+            'index' => $configEs->indexArticle,
+            'body' => [
+                'size' => $n,
+                'query' => [
+                    'bool' => [
+                        'must_not' => [
+                            'term' => [
+                                '_id' => $articleId
+                            ]
+                        ],
+                        'must' => [
+                            'match' => [
+                                'title' => $articleTitle
+                            ]
+                        ],
+                        'filter' => [
+                            [
+                                'term' => [
+                                    'is_enable' => true,
+                                ],
+                            ],
+                            [
+                                'term' => [
+                                    'is_delete' => false,
+                                ],
+                            ],
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $es = Be::getEs();
+        $results = $es->search($query);
+
+        if (!isset($results['hits']['hits'])) {
+            return [];
+        }
+
+        $return = [];
+        foreach ($results['hits']['hits'] as $x) {
+            $return[] = $this->formatEsArticle($x['_source']);
+        }
+
+        return $return;
+    }
 
     /**
-     * 猜你喜欢
+     * 跟据文章名称，获取相似文章
      *
-     * @param string $userId 用户ID
+     * @param string $articleId 文章ID
+     * @param string $articleTitle 文章标题
+     * @param int $n
+     * @return array
+     */
+    public function getSimilarArticlesFromDb(string $articleId, string $articleTitle, int $n = 12): array
+    {
+        $tableArticle = Be::getTable('cms_article');
+        $tableArticle->where('is_enable', 1)
+            ->where('is_delete', 0)
+            ->where('id', '!=', $articleId);
+
+        if ($articleTitle !== '') {
+            $tableArticle->where('title', 'like', '%' . $articleTitle . '%');
+        }
+
+        $tableArticle->limit($n);
+
+        return $tableArticle->getObjects();
+    }
+
+    /**
+     * 狙你喜欢文章
+     *
      * @param int $n 结果数量
      * @param string $excludeArticleId 排除拽定的文章
      * @return array
      */
-    public function getRelatedArticles(int $n = 40, string $excludeArticleId = null): array
+    public function getGuessYouLikeArticles(int $n = 40, string $excludeArticleId = null): array
     {
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {
@@ -673,7 +671,7 @@ class Article
                     'bool' => [
                         'must' => [
                             'match' => [
-                                'title' => implode(',', $keywords)
+                                'title' => implode(', ', $keywords)
                             ]
                         ],
                         'filter' => [
@@ -713,6 +711,124 @@ class Article
         }
 
         return $return;
+    }
+
+
+    /**
+     * 获取指定分类按指定排序的前N个文章
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n
+     * @param string $orderBy
+     * @param string $orderByDir
+     * @return array
+     * @throws \Be\Runtime\RuntimeException
+     */
+    public function getCategoryTopArticles(string $categoryId, int $n, string $orderBy, string $orderByDir = 'desc'): array
+    {
+        $configEs = Be::getConfig('App.Cms.Es');
+        if (!$configEs->enable) {
+            return $this->getCategoryTopArticlesFromDb($categoryId, $n, $orderBy, $orderByDir);
+        }
+
+        $query = [
+            'index' => $configEs->indexArticle,
+            'body' => [
+                'size' => $n,
+                'query' => [
+                    'bool' => [
+                        'filter' => [
+                            [
+                                'term' => [
+                                    'is_enable' => true,
+                                ],
+                            ],
+                            [
+                                'term' => [
+                                    'is_delete' => false,
+                                ],
+                            ],
+                            [
+                                'nested' => [
+                                    'path' => 'categories',
+                                    'query' => [
+                                        'bool' => [
+                                            'filter' => [
+                                                [
+                                                    'term' => [
+                                                        'categories.id' => $categoryId,
+                                                    ],
+                                                ],
+                                            ]
+                                        ],
+                                    ],
+                                ],
+                            ]
+                        ]
+                    ]
+                ],
+                'sort' => [
+                    $orderBy => [
+                        'order' => $orderByDir
+                    ]
+                ]
+            ]
+        ];
+
+        $es = Be::getEs();
+        $results = $es->search($query);
+
+        if (!isset($results['hits']['hits'])) {
+            return [];
+        }
+
+        $return = [];
+        foreach ($results['hits']['hits'] as $x) {
+            $return[] = $this->formatEsArticle($x['_source']);
+        }
+
+        return $return;
+    }
+
+    /**
+     * 获取指定分类按指定排序的前N个文章
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n
+     * @param string $orderBy
+     * @param string $orderByDir
+     * @return array
+     * @throws \Be\Runtime\RuntimeException
+     */
+    public function getCategoryTopArticlesFromDb(string $categoryId, int $n, string $orderBy, string $orderByDir = 'desc'): array
+    {
+        $tableArticle = Be::getTable('cms_article');
+
+        $tableArticle->where('is_enable', 1)
+        ->where('is_delete', 0)
+        ->orderBy($orderBy, $orderByDir)
+        ->limit($n);
+
+        $productIds = Be::getTable('cms_article_category')->where('category_id', $categoryId)->getValues('article_id');
+        if (count($productIds) > 0) {
+            $tableArticle->where('id', 'IN', $productIds);
+        } else {
+            $tableArticle->where('id', '');
+        }
+
+        return $tableArticle->getObjects();
+    }
+
+    /**
+     * 指定分类下的热门文章
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n 结果数量
+     * @return array
+     */
+    public function getCategoryHottestArticles(string $categoryId, int $n = 10): array
+    {
+        return $this->getCategoryTopArticles($categoryId, $n, 'hits', 'desc');
     }
 
     /**
@@ -742,7 +858,7 @@ class Article
                     'bool' => [
                         'must' => [
                             'match' => [
-                                'title' => implode(',', $keywords)
+                                'title' => implode(', ', $keywords)
                             ],
                         ],
                         'filter' => [
@@ -779,108 +895,6 @@ class Article
         ];
 
         $es = Be::getEs();
-        $results = $es->search($query);
-
-        if (!isset($results['hits']['hits'])) {
-            return [];
-        }
-
-        $return = [];
-        foreach ($results['hits']['hits'] as $x) {
-            $return[] = $this->formatEsArticle($x['_source']);
-        }
-
-        return $return;
-    }
-
-    /**
-     * 指定分类下的相关文章
-     *
-     * @param string $categoryId 分类ID
-     * @param string $userId 用户ID
-     * @param int $n 结果数量
-     * @param string $excludeArticleId 排除拽定的文章
-     * @return array
-     */
-    public function getCategoryRelatedArticles(string $categoryId, int $n = 40, string $excludeArticleId = null): array
-    {
-        $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
-            return [];
-        }
-
-        $my = Be::getUser();
-        $es = Be::getEs();
-        $cache = Be::getCache();
-
-        $historyKey = 'Cms:Article:History:' . $my->id;
-        $history = $cache->get($historyKey);
-
-        $keywords = [];
-        if ($history && is_array($history) && count($history) > 0) {
-            $keywords = $history;
-        }
-
-        if (!$keywords) {
-            $keywords = $this->getTopSearchKeywords(10);
-        }
-
-        if (!$keywords) {
-            return [];
-        }
-
-        $query = [
-            'index' => $configEs->indexArticle,
-            'body' => [
-                'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'must' => [
-                            'match' => [
-                                'title' => implode(' ', $keywords)
-                            ],
-                        ],
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                            [
-                                'nested' => [
-                                    'path' => 'categories',
-                                    'query' => [
-                                        'bool' => [
-                                            'filter' => [
-                                                [
-                                                    'term' => [
-                                                        'categories.id' => $categoryId,
-                                                    ],
-                                                ],
-                                            ]
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ]
-                ]
-            ]
-        ];
-
-        if ($excludeArticleId !== null) {
-            $query['body']['query']['bool']['must_not'] = [
-                'term' => [
-                    '_id' => $excludeArticleId
-                ]
-            ];
-        }
-
         $results = $es->search($query);
 
         if (!isset($results['hits']['hits'])) {

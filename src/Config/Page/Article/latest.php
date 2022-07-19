@@ -19,6 +19,9 @@ class latest
         [
             'name' => 'App.Cms.Hottest',
         ],
+        [
+            'name' => 'App.Cms.GuessYouLike',
+        ],
     ];
 
 

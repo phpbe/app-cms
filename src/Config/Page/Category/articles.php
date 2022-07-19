@@ -1,8 +1,8 @@
 <?php
 
-namespace Be\App\Cms\Config\Page\Article;
+namespace Be\App\Cms\Config\Page\Category;
 
-class hottest
+class articles
 {
 
     public int $west = 0;
@@ -17,7 +17,7 @@ class hottest
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.Latest',
+            'name' => 'App.Cms.CategoryHottest',
         ],
         [
             'name' => 'App.Cms.GuessYouLike',

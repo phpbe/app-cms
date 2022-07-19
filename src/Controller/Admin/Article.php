@@ -42,6 +42,9 @@ class Article
                     ['is_delete', '=', '0'],
                 ],
 
+                'orderBy' => 'create_time',
+                'orderByDir' => 'DESC',
+
                 'tab' => [
                     'name' => 'is_enable',
                     'value' => Be::getRequest()->request('is_enable', '-1'),
