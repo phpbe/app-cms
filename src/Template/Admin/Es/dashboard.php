@@ -7,6 +7,7 @@
             ?>
             <div class="be-fw-bold">
                 ES搜索引擎未启用！
+                <el-link class="be-ml-100" type="primary" href="<?php echo beAdminUrl('Cms.Config.dashboard', ['configName' => 'Es']); ?>">修改</el-link>
             </div>
             <?php
         } else {

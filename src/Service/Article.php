@@ -82,6 +82,9 @@ class Article
     {
         $my = Be::getUser();
         $cache = Be::getCache();
+
+        $configArticle = Be::getConfig('App.Cms.Article');
+
         $article = $this->getArticle($articleId);
 
         $historyKey = 'Cms:Article:History:' . $my->id;
@@ -93,31 +96,33 @@ class Article
 
         $history[] = $article->title;
 
-        if (count($history) > 100) {
-            $history = array_slice($history, -100);
+        $viewHistory = $configArticle->viewHistory > 0 ? $configArticle->viewHistory : 20;
+        if (count($history) > $viewHistory) {
+            $history = array_slice($history, -$viewHistory);
         }
 
         // 最近浏览的文章标题存入缓存，有效期 30 天
         $cache->set($historyKey, $history, 86400 * 30);
 
         // 点击量 使用缓存 存放
-        $hits = $article->hits;
-        $n = 0;
+        $hits = (int) $article->hits;
         $hitsKey = 'Cms:Article:hits:' . $articleId;
         $cacheHits = $cache->get($hitsKey);
         if ($cacheHits !== false) {
-            $cacheHitsArr = explode(',', $cacheHits);
-            if (count($cacheHitsArr) == 2) {
-                $hits = (int)$cacheHitsArr[0];
-                $n = (int)$cacheHitsArr[1];
+            if (is_numeric($cacheHits)) {
+                $cacheHits = (int) $cacheHits;
+                if ($cacheHits > $article->hits) {
+                    $hits = $cacheHits;
+                }
             }
         }
+
         $hits++;
-        $n++;
-        $cache->set($hitsKey, $hits . ',' . ($n >= 1000 ? 0 : $n));
+
+        $cache->set($hitsKey, $hits);
 
         // 每 100 次访问，更新到数据库
-        if ($n >= 100) {
+        if ($hits % 100 === 0) {
             $sql = 'UPDATE cms_article SET hits=?, update_time=? WHERE id=?';
             Be::getDb()->query($sql, [$hits, date('Y-m-d H:i:s'), $articleId]);
         }
@@ -161,7 +166,7 @@ class Article
 
             // 累计写入1千个
             $counter++;
-            if ($counter >= 1000) {
+            if ($counter >= $configArticle->searchHistory) {
                 $counter = 0;
             }
 
@@ -944,6 +949,13 @@ class Article
             return [];
         }
 
+        $cache = Be::getCache();
+        $historyKey = 'Cms:TopSearchKeywords';
+        $topSearchKeywords = $cache->get($historyKey);
+        if ($topSearchKeywords) {
+            return $topSearchKeywords;
+        }
+
         $es = Be::getEs();
         $query = [
             'index' => $configEs->indexArticleSearchHistory,
@@ -980,6 +992,9 @@ class Article
                 $hotKeywords[] = $v['key'];
             }
         }
+
+        $cache->set($historyKey, $hotKeywords, 600);
+
         return $hotKeywords;
     }
 
