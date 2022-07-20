@@ -12,8 +12,8 @@ use Be\Be;
 class Task extends Auth
 {
     /**
-     * @BeMenu("计划任务", icon="el-icon-timer", ordering="3.1")
-     * @BePermission("计划任务", ordering="3.1")
+     * @BeMenu("计划任务", icon="el-icon-timer", ordering="3.2")
+     * @BePermission("计划任务", ordering="3.2")
      */
     public function dashboard()
     {

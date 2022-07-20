@@ -2,7 +2,7 @@
 namespace Be\App\Cms\Config;
 
 /**
- * @BeConfig("搜索引擎")
+ * @BeConfig("ES搜索引擎")
  */
 class Es
 {
