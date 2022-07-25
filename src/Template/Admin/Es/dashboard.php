@@ -83,7 +83,7 @@
 
                             <el-form-item class="be-mt-50" prop="number_of_replicas" label="副本数" :rules="[{required: true, message: '请输入分片数', trigger: 'change' }]">
                                 <el-input-number
-                                        :min="1"
+                                        :min="0"
                                         :step="1"
                                         placeholder="请输入副本数"
                                         v-model = "<?php echo $index['name']; ?>FormData.number_of_replicas"
@@ -111,15 +111,16 @@
 
         if (count($formDatas) > 0) {
             ?>
-            <ul class="be-mt-200">
-                <li class="be-c-999">推荐：分片数 * 副本数 = 集群的CPU总核数 * N (N 可取 1,2 不要取太大，太大了效率反而不高)</li>
-                <li class="be-c-999">副本数 越多，占用的空间越多，是倍数关系，跟据数量量，空间大小确定。</li>
+            <div class="be-mt-200 be-c-999 be-bb-eee be-pb-50 be-mb-50">参考算法</div>
+            <ul>
+                <li class="be-c-999">副本数 <=  ES集群的服务器个数 - 1</li>
+                <li class="be-c-999">预估要存入ES总数据量 * (副本数+1)  <= ES集群的总内存 / 2</li>
+                <li class="be-c-999">分片数 * (副本数 + 1) <= ES集群的总CPU核心个数</li>
+                <li class="be-c-999">参考：<el-link type="primary" href="https://www.liu12.com/article/es-number-of-rshards-and-eplicas" target="_blank">https://www.liu12.com/article/es-number-of-rshards-and-eplicas</el-link></li>
             </ul>
             <?php
-
         }
         ?>
-
 
     </div>
     <script>
