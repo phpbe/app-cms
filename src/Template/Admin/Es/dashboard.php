@@ -16,7 +16,7 @@
                 foreach ($this->indexes as $index) {
                     ?>
                     <div class="be-bb-eee be-pb-50">
-                        <div class="be-row be-fs-125 <?php echo $i > 0 ? 'be-mt-300' : ''; ?>">
+                        <div class="be-row be-fs-110 <?php echo $i > 0 ? 'be-mt-300' : ''; ?>">
                             <div class="be-col-auto">
                                 <div class="be-pr-100">
                                     <?php echo $index['label']; ?>：
@@ -29,7 +29,7 @@
                         </div>
                     </div>
 
-                    <div class="be-mt-150 be-fs-120">
+                    <div class="be-mt-150">
                     <?php
                     if ($index['exists']) {
                         ?>

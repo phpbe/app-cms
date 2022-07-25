@@ -25,7 +25,9 @@ class TaskPage
             if ($page->is_delete === 1) {
                 $cache->delete($key);
             } else {
-                $page->seo = (int)$page->seo;
+                $page->url_custom = (int)$page->url_custom;
+                $page->seo_title_custom = (int)$page->seo_title_custom;
+                $page->seo_description_custom = (int)$page->seo_description_custom;
                 $keyValues[$key] = $page;
             }
         }

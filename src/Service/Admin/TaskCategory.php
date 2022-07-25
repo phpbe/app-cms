@@ -27,7 +27,9 @@ class TaskCategory
             if ($category->is_delete === 1) {
                 $cache->delete($key);
             } else {
-                $category->seo = (int)$category->seo;
+                $category->url_custom = (int)$category->url_custom;
+                $category->seo_title_custom = (int)$category->seo_title_custom;
+                $category->seo_description_custom = (int)$category->seo_description_custom;
                 $category->ordering = (int)$category->ordering;
                 $category->is_enable = (int)$category->is_enable;
 

@@ -45,7 +45,9 @@ class Article
             throw new ServiceException('文章不存在！');
         }
 
-        $article->seo = (int)$article->seo;
+        $article->url_custom = (int)$article->url_custom;
+        $article->seo_title_custom = (int)$article->seo_title_custom;
+        $article->seo_description_custom = (int)$article->seo_description_custom;
         $article->ordering = (int)$article->ordering;
         $article->is_enable = (int)$article->is_enable;
         $article->is_delete = (int)$article->is_delete;

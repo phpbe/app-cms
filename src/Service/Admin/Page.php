@@ -100,6 +100,10 @@ class Page
             $data['description'] = '';
         }
 
+        if (!isset($data['url_custom']) || $data['url_custom'] !== 1) {
+            $data['url_custom'] = 0;
+        }
+
         $url = null;
         if (!isset($data['url']) || !is_string($data['url'])) {
             $urlTitle = strtolower($title);
@@ -110,6 +114,9 @@ class Page
                     $url = Pinyin::convert($urlTitle, '', true);
                 }
             }
+
+            $data['url_custom'] = 0;
+
         } else {
             $url = $data['url'];
         }
@@ -135,16 +142,20 @@ class Page
         } while ($urlExist);
         $url = $urlUnique;
 
-        if (!isset($data['seo']) || $data['seo'] !== 1) {
-            $data['seo'] = 0;
-        }
-
         if (!isset($data['seo_title']) || !is_string($data['seo_title'])) {
             $data['seo_title'] = $title;
         }
 
+        if (!isset($data['seo_title_custom']) || $data['seo_title_custom'] !== 1) {
+            $data['seo_title_custom'] = 0;
+        }
+
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
             $data['seo_description'] = $data['description'];
+        }
+
+        if (!isset($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
+            $data['seo_description_custom'] = 0;
         }
 
         if (!isset($data['seo_keywords']) || !is_string($data['seo_keywords'])) {
@@ -157,9 +168,11 @@ class Page
             $tuplePage->title = $title;
             $tuplePage->description = $data['description'];
             $tuplePage->url = $url;
-            $tuplePage->seo = $data['seo'];
+            $tuplePage->url_custom = $data['url_custom'];
             $tuplePage->seo_title = $data['seo_title'];
+            $tuplePage->seo_title_custom = $data['seo_title_custom'];
             $tuplePage->seo_description = $data['seo_description'];
+            $tuplePage->seo_description_custom = $data['seo_description_custom'];
             $tuplePage->seo_keywords = $data['seo_keywords'];
             $tuplePage->update_time = $now;
             if ($isNew) {

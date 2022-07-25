@@ -126,7 +126,9 @@ class TaskArticle
                 $cache->delete($key);
             } else {
 
-                $article->seo = (int)$article->seo;
+                $article->url_custom = (int)$article->url_custom;
+                $article->seo_title_custom = (int)$article->seo_title_custom;
+                $article->seo_description_custom = (int)$article->seo_description_custom;
                 $article->ordering = (int)$article->ordering;
 
                 $sql = 'SELECT category_id FROM cms_article_category WHERE article_id = ?';

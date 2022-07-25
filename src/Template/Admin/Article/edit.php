@@ -375,27 +375,24 @@
         <el-drawer
                 :visible.sync="drawerSeo"
                 title="搜索引擎优化"
-                size="40%"
+                size="50%"
                 :wrapper-closable="false"
                 :destroy-on-close="true">
 
             <div class="be-px-150">
 
-                <div>
-                    <el-checkbox v-model.number="formData.seo" :true-label="1" :false-label="0">独立编辑</el-checkbox>
-                    <el-tooltip effect="dark" content="单独编辑SEO后,SEO信息不随标题和描述改动" placement="top">
-                        <i class="el-icon-fa fa-question-circle-o"></i>
-                    </el-tooltip>
-                </div>
-                <?php
-                $formData['seo'] = ($this->article ? $this->article->seo : 0);
-                ?>
-
-                <div class="be-mt-150">
-                    SEO标题
-                    <el-tooltip effect="dark" content="标题是SEO最重要的部分，该标题会显示在搜索引擎的搜索结果中。" placement="top">
-                        <i class="el-icon-fa fa-question-circle-o"></i>
-                    </el-tooltip>
+                <div class="be-row">
+                    <div class="be-col-auto">
+                        SEO标题
+                        <el-tooltip effect="dark" content="标题是SEO最重要的部分，该标题会显示在搜索引擎的搜索结果中。" placement="top">
+                            <i class="el-icon-fa fa-question-circle-o"></i>
+                        </el-tooltip>：
+                    </div>
+                    <div class="be-col">
+                        <div class="be-pl-100">
+                            <el-switch v-model.number="formData.seo_title_custom" :active-value="1" :inactive-value="0" inactive-text="自动生成" active-text="自定义" size="medium" @change="seoUpdate"></el-switch>
+                        </div>
+                    </div>
                 </div>
                 <el-input
                         class="be-mt-50"
@@ -405,17 +402,25 @@
                         size="medium"
                         maxlength="200"
                         show-word-limit
-                        :disabled="formData.seo === 0">
+                        :disabled="formData.seo_title_custom === 0">
                 </el-input>
                 <?php
                 $formData['seo_title'] = ($this->article ? $this->article->seo_title : '');
+                $formData['seo_title_custom'] = ($this->article ? $this->article->seo_title_custom : 0);
                 ?>
 
-                <div class="be-mt-150">
-                    SEO描述
-                    <el-tooltip effect="dark" content="这是该商品的整体SEO描述，可以添加一些商品描述，使商品在搜索引擎中获得更高的排名。" placement="top">
-                        <i class="el-icon-fa fa-question-circle-o"></i>
-                    </el-tooltip>
+                <div class="be-row be-mt-150">
+                    <div class="be-col-auto">
+                        SEO描述
+                        <el-tooltip effect="dark" content="这是该文章的整体SEO描述，使文章在搜索引擎中获得更高的排名。" placement="top">
+                            <i class="el-icon-fa fa-question-circle-o"></i>
+                        </el-tooltip>：
+                    </div>
+                    <div class="be-col">
+                        <div class="be-pl-100">
+                            <el-switch v-model.number="formData.seo_description_custom" :active-value="1" :inactive-value="0" inactive-text="自动生成" active-text="自定义" size="medium" @change="seoUpdate"></el-switch>
+                        </div>
+                    </div>
                 </div>
                 <el-input
                         class="be-mt-50"
@@ -426,16 +431,24 @@
                         size="medium"
                         maxlength="500"
                         show-word-limit
-                        :disabled="formData.seo === 0">
+                        :disabled="formData.seo_description_custom === 0">
                 </el-input>
                 <?php
                 $formData['seo_description'] = ($this->article ? $this->article->seo_description : '');
+                $formData['seo_description_custom'] = ($this->article ? $this->article->seo_description_custom : 0);
                 ?>
 
-
-                <div class="be-mt-150">
-                    SEO友好链接
+                <div class="be-row be-mt-150">
+                    <div class="be-col-auto">
+                        SEO友好链接：
+                    </div>
+                    <div class="be-col">
+                        <div class="be-pl-100">
+                            <el-switch v-model.number="formData.url_custom" :active-value="1" :inactive-value="0" inactive-text="自动生成" active-text="自定义" size="medium" @change="seoUpdate"></el-switch>
+                        </div>
+                    </div>
                 </div>
+
                 <el-input
                         class="be-mt-50"
                         type="text"
@@ -444,11 +457,12 @@
                         size="medium"
                         maxlength="200"
                         show-word-limit
-                        :disabled="formData.seo === 0">
+                        :disabled="formData.url_custom === 0">
                     <template slot="prepend"><?php echo $rootUrl; ?>/article/</template>
                 </el-input>
                 <?php
                 $formData['url'] = ($this->article ? $this->article->url : '');
+                $formData['url_custom'] = ($this->article ? $this->article->url_custom : 0);
                 ?>
 
                 <div class="be-mt-150">
@@ -575,9 +589,11 @@
                 },
 
                 seoUpdate: function () {
-                    if (this.formData.seo === 0) {
+                    if (this.formData.seo_title_custom === 0) {
                         this.formData.seo_title = this.formData.title;
+                    }
 
+                    if (this.formData.seo_description_custom === 0) {
                         let seoDescription;
                         if (this.formData.summary) {
                             seoDescription = this.formData.summary;
@@ -591,7 +607,9 @@
                             seoDescription = seoDescription.substr(0, 500);
                         }
                         this.formData.seo_description = seoDescription;
+                    }
 
+                    if (this.formData.url_custom === 0) {
                         let title = this.formData.title.toLowerCase();
                         let url = Pinyin.convert(title, "-");
                         if (url.length > 200) {

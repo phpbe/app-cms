@@ -63,6 +63,10 @@ class Article
             $data['publish_time'] = date('Y-m-d H:i:s');
         }
 
+        if (!isset($data['url_custom']) || $data['url_custom'] !== 1) {
+            $data['url_custom'] = 0;
+        }
+
         $url = null;
         if (!isset($data['url']) || !is_string($data['url'])) {
             $urlTitle = strtolower($title);
@@ -73,6 +77,8 @@ class Article
                     $url = Pinyin::convert($urlTitle, '', true);
                 }
             }
+
+            $data['url_custom'] = 0;
         } else {
             $url = $data['url'];
         }
@@ -98,16 +104,17 @@ class Article
         } while ($urlExist);
         $url = $urlUnique;
 
+
         if (!isset($data['image']) || !is_string($data['image'])) {
             $data['image'] = '';
         }
 
-        if (!isset($data['seo']) || $data['seo'] !== 1) {
-            $data['seo'] = 0;
-        }
-
         if (!isset($data['seo_title']) || !is_string($data['seo_title'])) {
             $data['seo_title'] = $title;
+        }
+
+        if (!isset($data['seo_title_custom']) || $data['seo_title_custom'] !== 1) {
+            $data['seo_title_custom'] = 0;
         }
 
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
@@ -116,6 +123,10 @@ class Article
             } else {
                 $data['seo_description'] = \Be\Util\Str\Html::clean($data['description']);
             }
+        }
+
+        if (!isset($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
+            $data['seo_description_custom'] = 0;
         }
 
         if (!isset($data['seo_keywords']) || !is_string($data['seo_keywords'])) {
@@ -134,11 +145,13 @@ class Article
             $tupleArticle->summary = $data['summary'];
             $tupleArticle->description = $data['description'];
             $tupleArticle->url = $url;
+            $tupleArticle->url_custom = $data['url_custom'];
             $tupleArticle->author = $data['author'];
             $tupleArticle->publish_time = $data['publish_time'];
-            $tupleArticle->seo = $data['seo'];
             $tupleArticle->seo_title = $data['seo_title'];
+            $tupleArticle->seo_title_custom = $data['seo_title_custom'];
             $tupleArticle->seo_description = $data['seo_description'];
+            $tupleArticle->seo_description_custom = $data['seo_description_custom'];
             $tupleArticle->seo_keywords = $data['seo_keywords'];
             $tupleArticle->is_enable = $data['is_enable'];
             $tupleArticle->is_delete = 0;
@@ -268,7 +281,9 @@ class Article
             throw new ServiceException('文章（# ' . $articleId . '）不存在！');
         }
 
-        $article->seo = (int)$article->seo;
+        $article->url_custom = (int)$article->url_custom;
+        $article->seo_title_custom = (int)$article->seo_title_custom;
+        $article->seo_description_custom = (int)$article->seo_description_custom;
         $article->ordering = (int)$article->ordering;
         $article->is_enable = (int)$article->is_enable;
         $article->is_delete = (int)$article->is_delete;
@@ -361,7 +376,7 @@ class Article
                             ],
                             'value' => function ($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl() . '/article/images/no-image.jpg';
                                 }
                                 return $row['image'];
                             },

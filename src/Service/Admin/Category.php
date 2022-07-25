@@ -40,7 +40,9 @@ class Category
             throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
         }
 
-        $category->seo = (int)$category->seo;
+        $category->url_custom = (int)$category->url_custom;
+        $category->seo_title_custom = (int)$category->seo_title_custom;
+        $category->seo_description_custom = (int)$category->seo_description_custom;
         $category->ordering = (int)$category->ordering;
 
         return $category;
@@ -99,6 +101,10 @@ class Category
             $data['description'] = '';
         }
 
+        if (!isset($data['url_custom']) || $data['url_custom'] !== 1) {
+            $data['url_custom'] = 0;
+        }
+
         $url = null;
         if (!isset($data['url']) || !is_string($data['url'])) {
             $urlName = strtolower($name);
@@ -109,6 +115,9 @@ class Category
                     $url = Pinyin::convert($urlName, '', true);
                 }
             }
+
+            $data['url_custom'] = 0;
+
         } else {
             $url = $data['url'];
         }
@@ -134,16 +143,20 @@ class Category
         } while ($urlExist);
         $url = $urlUnique;
 
-        if (!isset($data['seo']) || $data['seo'] !== 1) {
-            $data['seo'] = 0;
-        }
-
         if (!isset($data['seo_title']) || !is_string($data['seo_title'])) {
             $data['seo_title'] = $name;
         }
 
+        if (!isset($data['seo_title_custom']) || $data['seo_title_custom'] !== 1) {
+            $data['seo_title_custom'] = 0;
+        }
+
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
             $data['seo_description'] = $data['description'];
+        }
+
+        if (!isset($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
+            $data['seo_description_custom'] = 0;
         }
 
         if (!isset($data['seo_keywords']) || !is_string($data['seo_keywords'])) {
@@ -160,9 +173,11 @@ class Category
             $tupleCategory->name = $name;
             $tupleCategory->description = $data['description'];
             $tupleCategory->url = $url;
-            $tupleCategory->seo = $data['seo'];
+            $tupleCategory->url_custom = $data['url_custom'];
             $tupleCategory->seo_title = $data['seo_title'];
+            $tupleCategory->seo_title_custom = $data['seo_title_custom'];
             $tupleCategory->seo_description = $data['seo_description'];
+            $tupleCategory->seo_description_custom = $data['seo_description_custom'];
             $tupleCategory->seo_keywords = $data['seo_keywords'];
             $tupleCategory->ordering = $data['ordering'];
             $tupleCategory->update_time = $now;
