@@ -27,6 +27,9 @@ class TaskArticle
 
         $batch = [];
         foreach ($articles as $article) {
+
+            $article->is_push_home = (int)$article->is_push_home;
+            $article->is_on_top = (int)$article->is_on_top;
             $article->is_enable = (int)$article->is_enable;
 
             // 采集的文章，不处理
@@ -72,6 +75,8 @@ class TaskArticle
                     'publish_time' => $article->publish_time,
                     'ordering' => (int)$article->ordering,
                     'hits' => (int)$article->hits,
+                    'is_push_home' => $article->is_push_home === 1,
+                    'is_on_top' => $article->is_on_top === 1,
                     'is_enable' => $article->is_enable === 1,
                     'is_delete' => $article->is_delete === 1,
                     'create_time' => $article->create_time,
@@ -111,6 +116,8 @@ class TaskArticle
         $keyValues = [];
         foreach ($articles as $article) {
 
+            $article->is_push_home = (int)$article->is_push_home;
+            $article->is_on_top = (int)$article->is_on_top;
             $article->is_enable = (int)$article->is_enable;
 
             // 采集的商品，不处理

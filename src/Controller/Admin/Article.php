@@ -10,6 +10,7 @@ use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
 use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
+use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 use Be\Request;
 use Be\Response;
@@ -18,7 +19,7 @@ use Be\Response;
  * @BeMenuGroup("内容管理", icon="el-icon-document-copy", ordering="1")
  * @BePermissionGroup("内容管理", icon="el-icon-document-copy", ordering="1")
  */
-class Article
+class Article extends Auth
 {
 
     /**
@@ -77,6 +78,24 @@ class Article
                                 }
                                 return '';
                             },
+                        ],
+                        [
+                            'name' => 'is_push_home',
+                            'label' => '是否推送到首页',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => [
+                                '1' => '已推送',
+                                '0' => '未推送',
+                            ],
+                        ],
+                        [
+                            'name' => 'is_on_tome',
+                            'label' => '是否置顶',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => [
+                                '1' => '已置顶',
+                                '0' => '未置顶',
+                            ],
                         ],
                         [
                             'name' => 'title',
@@ -211,12 +230,34 @@ class Article
                             ],
                         ],
                         [
-                            'name' => 'is_enable',
-                            'label' => '是否发布',
+                            'name' => 'is_push_home',
+                            'label' => '推首页',
                             'driver' => TableItemSwitch::class,
                             'target' => 'ajax',
                             'task' => 'fieldEdit',
-                            'width' => '90',
+                            'width' => '80',
+                            'exportValue' => function ($row) {
+                                return $row['is_push_home'] ? '已推送' : '未推送';
+                            },
+                        ],
+                        [
+                            'name' => 'is_on_top',
+                            'label' => '置顶',
+                            'driver' => TableItemSwitch::class,
+                            'target' => 'ajax',
+                            'task' => 'fieldEdit',
+                            'width' => '80',
+                            'exportValue' => function ($row) {
+                                return $row['is_on_top'] ? '已置顶' : '未置顶';
+                            },
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '发布',
+                            'driver' => TableItemSwitch::class,
+                            'target' => 'ajax',
+                            'task' => 'fieldEdit',
+                            'width' => '80',
                             'exportValue' => function ($row) {
                                 return $row['is_enable'] ? '已发布' : '未发布';
                             },
@@ -224,12 +265,6 @@ class Article
                         [
                             'name' => 'create_time',
                             'label' => '创建时间',
-                            'width' => '180',
-                            'sortable' => true,
-                        ],
-                        [
-                            'name' => 'update_time',
-                            'label' => '更新时间',
                             'width' => '180',
                             'sortable' => true,
                         ],

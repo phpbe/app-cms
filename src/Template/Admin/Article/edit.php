@@ -212,7 +212,28 @@
 
                 <div class="be-col-24 be-col-md-6 be-pl-150">
                     <div class="be-p-150 be-bc-fff">
+
                         <div class="be-row">
+                            <div class="be-col">是否推送到首页：</div>
+                            <div class="be-col-auto">
+                                <el-form-item prop="is_push_home">
+                                    <el-switch v-model.number="formData.is_push_home" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <?php $formData['is_push_home'] = ($this->article ? $this->article->is_push_home : 1); ?>
+
+                        <div class="be-row be-mt-150">
+                            <div class="be-col">是否置项：</div>
+                            <div class="be-col-auto">
+                                <el-form-item prop="is_on_top">
+                                    <el-switch v-model.number="formData.is_on_top" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <?php $formData['is_on_top'] = ($this->article ? $this->article->is_on_top : 0); ?>
+
+                        <div class="be-row be-mt-150">
                             <div class="be-col">是否发布：</div>
                             <div class="be-col-auto">
                                 <el-form-item prop="is_enable">
@@ -221,7 +242,6 @@
                             </div>
                         </div>
                         <?php $formData['is_enable'] = ($this->article ? $this->article->is_enable : 0); ?>
-
 
                         <div class="be-mt-150">封面图片：</div>
                         <div class="be-row be-mt-50">

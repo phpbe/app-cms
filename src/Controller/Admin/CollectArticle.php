@@ -11,13 +11,14 @@ use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemToggleIcon;
 use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
+use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
  * @BeMenuGroup("采集", icon="el-icon-download", ordering="2")
  * @BePermissionGroup("采集", ordering="2")
  */
-class CollectArticle
+class CollectArticle extends Auth
 {
 
     /**

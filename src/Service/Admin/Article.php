@@ -133,6 +133,14 @@ class Article
             $data['seo_keywords'] = '';
         }
 
+        if (!isset($data['is_push_home']) || !is_numeric($data['is_push_home'])) {
+            $data['is_push_home'] = 0;
+        }
+
+        if (!isset($data['is_on_top']) || !is_numeric($data['is_on_top'])) {
+            $data['is_on_top'] = 0;
+        }
+
         if (!isset($data['is_enable']) || !is_numeric($data['is_enable'])) {
             $data['is_enable'] = 0;
         }
@@ -153,6 +161,8 @@ class Article
             $tupleArticle->seo_description = $data['seo_description'];
             $tupleArticle->seo_description_custom = $data['seo_description_custom'];
             $tupleArticle->seo_keywords = $data['seo_keywords'];
+            $tupleArticle->is_push_home = $data['is_push_home'];
+            $tupleArticle->is_on_top = $data['is_on_top'];
             $tupleArticle->is_enable = $data['is_enable'];
             $tupleArticle->is_delete = 0;
             $tupleArticle->update_time = $now;
@@ -285,6 +295,8 @@ class Article
         $article->seo_title_custom = (int)$article->seo_title_custom;
         $article->seo_description_custom = (int)$article->seo_description_custom;
         $article->ordering = (int)$article->ordering;
+        $article->is_push_home = (int)$article->is_push_home;
+        $article->is_on_top = (int)$article->is_on_top;
         $article->is_enable = (int)$article->is_enable;
         $article->is_delete = (int)$article->is_delete;
 

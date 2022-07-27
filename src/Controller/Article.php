@@ -22,7 +22,18 @@ class Article
         $request = Be::getRequest();
         $response = Be::getResponse();
 
-        $response->display();
+        $page = $request->get('page', 1);
+        $result = Be::getService('App.Cms.Article')->search('', [
+            'isPushHome' => 1,
+            'orderBy' => ['is_on_top', 'publish_time'],
+            'orderByDir' => ['desc', 'desc'],
+            'page' => $page,
+        ]);
+        $response->set('result', $result);
+        $paginationUrl = beUrl('Cms.Article.home');
+        $response->set('paginationUrl', $paginationUrl);
+
+        $response->display('App.Cms.Article.articles');
     }
 
     /**

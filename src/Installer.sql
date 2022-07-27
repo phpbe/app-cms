@@ -16,6 +16,8 @@ CREATE TABLE `cms_article` (
 `ordering` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
 `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量 ',
 `collect_blog_id` varchar(36) NOT NULL DEFAULT '' COMMENT '采集的文章ID',
+`is_push_home` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否推送到首页',
+`is_on_top` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否置项',
 `is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用',
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

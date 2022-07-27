@@ -49,6 +49,8 @@ class Article
         $article->seo_title_custom = (int)$article->seo_title_custom;
         $article->seo_description_custom = (int)$article->seo_description_custom;
         $article->ordering = (int)$article->ordering;
+        $article->is_push_home = (int)$article->is_push_home;
+        $article->is_on_top = (int)$article->is_on_top;
         $article->is_enable = (int)$article->is_enable;
         $article->is_delete = (int)$article->is_delete;
 
@@ -107,12 +109,12 @@ class Article
         $cache->set($historyKey, $history, 86400 * 30);
 
         // 点击量 使用缓存 存放
-        $hits = (int) $article->hits;
+        $hits = (int)$article->hits;
         $hitsKey = 'Cms:Article:hits:' . $articleId;
         $cacheHits = $cache->get($hitsKey);
         if ($cacheHits !== false) {
             if (is_numeric($cacheHits)) {
-                $cacheHits = (int) $cacheHits;
+                $cacheHits = (int)$cacheHits;
                 if ($cacheHits > $article->hits) {
                     $hits = $cacheHits;
                 }
@@ -210,6 +212,14 @@ class Article
             ];
         }
 
+        if (isset($params['isPushHome']) && in_array($params['isPushHome'], [0, 1])) {
+            $query['body']['query']['bool']['filter'][] = [
+                'term' => [
+                    'is_push_home' => (bool)$params['isPushHome'],
+                ]
+            ];
+        }
+
         if (isset($params['categoryId']) && $params['categoryId']) {
             $query['body']['query']['bool']['filter'][] = [
                 'nested' => [
@@ -229,31 +239,38 @@ class Article
             ];
         }
 
-        if (isset($params['orderBy']) && $params['orderBy'] && $params['orderBy'] != 'common') {
-            $orderByDir = 'desc';
-            if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
-                $orderByDir = $params['orderByDir'];
-            }
+        if (isset($params['orderBy'])) {
+            if (is_array($params['orderBy'])) {
+                $len1 = count($params['orderBy']);
+                if ($len1 > 0 && is_array($params['orderByDir'])) {
+                    $len2 = count($params['orderByDir']);
+                    if ($len1 === $len2) {
+                        $query['body']['sort'] = [];
+                        for ($i = 0; $i< $len1; $i++) {
+                            $orderByDir = 'desc';
+                            if (in_array($params['orderByDir'][$i], ['asc', 'desc'])) {
+                                $orderByDir = $params['orderByDir'][$i];
+                            }
+                            $query['body']['sort'][] = [
+                                $params['orderBy'][$i] => [
+                                    'order' => $orderByDir
+                                ]
+                            ];
+                        }
+                    }
+                }
+            } elseif (is_string($params['orderBy']) && in_array($params['orderBy'], ['hits', 'publish_time'])) {
+                $orderByDir = 'desc';
+                if (in_array($params['orderByDir'], ['asc', 'desc'])) {
+                    $orderByDir = $params['orderByDir'];
+                }
 
-            $orderBy = null;
-            switch ($params['orderBy']) {
-                case 'hits':
-                    $orderBy = 'hits';
-                    break;
-                case 'create_time':
-                    $orderBy = 'create_time';
-                    break;
-                case 'publish_time':
-                    $orderBy = 'publish_time';
-                    break;
-            }
-
-            if ($orderBy) {
-                $query['body']['sort'] = [];
-                $query['body']['sort'][] = [
-                    $orderBy => [
-                        'order' => $orderByDir
-                    ]
+                $query['body']['sort'] = [
+                    [
+                        $params['orderBy'] => [
+                            'order' => $orderByDir
+                        ]
+                    ],
                 ];
             }
         }
@@ -319,6 +336,10 @@ class Article
             $tableArticle->where('title', 'like', '%' . $keywords . '%');
         }
 
+        if (isset($params['isPushHome']) && in_array($params['isPushHome'], [0, 1])) {
+            $tableArticle->where('is_push_home', $params['isPushHome']);
+        }
+
         $db = Be::getDb();
         if (isset($params['categoryId']) && $params['categoryId']) {
             $sql = 'SELECT article_id FROM cms_article_category WHERE category_id = ?';
@@ -332,29 +353,46 @@ class Article
 
         $total = $tableArticle->count();
 
-        if (isset($params['orderBy']) && $params['orderBy'] && $params['orderBy'] != 'common') {
+        if (isset($params['orderBy']) && in_array($params['orderBy'], ['hits', 'publish_time'])) {
             $orderByDir = 'desc';
             if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
                 $orderByDir = $params['orderByDir'];
             }
 
-            $orderBy = null;
-            switch ($params['orderBy']) {
-                case 'hits':
-                    $orderBy = 'hits';
-                    break;
-                case 'create_time':
-                    $orderBy = 'create_time';
-                    break;
-                case 'publish_time':
-                    $orderBy = 'publish_time';
-                    break;
-            }
+            $tableArticle->orderBy($params['orderBy'], $orderByDir);
+        } else {
+            $tableArticle->orderBy('is_on_top DESC, publish_time DESC');
+        }
 
-            if ($orderBy) {
-                $tableArticle->orderBy($orderBy, $orderByDir);
+
+        if (isset($params['orderBy'])) {
+            if (is_array($params['orderBy'])) {
+                $len1 = count($params['orderBy']);
+                if ($len1 > 0 && is_array($params['orderByDir'])) {
+                    $len2 = count($params['orderByDir']);
+                    if ($len1 === $len2) {
+                        $orderByStrings = [];
+                        for ($i = 0; $i< $len1; $i++) {
+                            $orderByDir = 'desc';
+                            if (in_array($params['orderByDir'][$i], ['asc', 'desc'])) {
+                                $orderByDir = $params['orderByDir'][$i];
+                            }
+                            $orderByStrings[] = $params['orderBy'][$i] . ' ' . strtoupper($orderByDir);
+                        }
+
+                        $tableArticle->orderBy(implode(', ', $orderByStrings));
+                    }
+                }
+            } elseif (is_string($params['orderBy']) && in_array($params['orderBy'], ['hits', 'publish_time'])) {
+                $orderByDir = 'desc';
+                if (in_array($params['orderByDir'], ['asc', 'desc'])) {
+                    $orderByDir = $params['orderByDir'];
+                }
+
+                $tableArticle->orderBy($params['orderBy'], strtoupper($orderByDir));
             }
         }
+
 
         // 分页
         $pageSize = null;
@@ -812,9 +850,9 @@ class Article
         $tableArticle = Be::getTable('cms_article');
 
         $tableArticle->where('is_enable', 1)
-        ->where('is_delete', 0)
-        ->orderBy($orderBy, $orderByDir)
-        ->limit($n);
+            ->where('is_delete', 0)
+            ->orderBy($orderBy, $orderByDir)
+            ->limit($n);
 
         $productIds = Be::getTable('cms_article_category')->where('category_id', $categoryId)->getValues('article_id');
         if (count($productIds) > 0) {
@@ -1074,7 +1112,7 @@ class Article
     /**
      * 踩
      *
-     * @param string  $articleId 文章编号
+     * @param string $articleId 文章编号
      * @throws \Exception
      */
     public function dislike($articleId)

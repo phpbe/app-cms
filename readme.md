@@ -13,6 +13,6 @@
 
     composer create-project be/new
 
-### 2 安装 be/app-etl
+### 2 安装 be/app-cms
 
     composer require be/app-cms

@@ -30,8 +30,8 @@ class Category
             $page = $request->get('page', 1);
             $result = Be::getService('App.Cms.Article')->search('', [
                 'categoryId' => $id,
-                'orderBy' => 'publish_time',
-                'orderByDir' => 'desc',
+                'orderBy' => ['is_on_top', 'publish_time'],
+                'orderByDir' => ['desc', 'desc'],
                 'page' => $page,
             ]);
             $response->set('result', $result);

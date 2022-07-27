@@ -2,13 +2,14 @@
 namespace Be\App\Cms\Controller\Admin;
 
 
+use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
  * @BeMenuGroup("采集")
  * @BePermissionGroup("采集")
  */
-class CollectLocoy
+class CollectLocoy extends Auth
 {
 
     /**

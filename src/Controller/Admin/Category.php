@@ -9,13 +9,14 @@ use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\App\ControllerException;
+use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
  * @BeMenuGroup("内容管理")
  * @BePermissionGroup("内容管理")
  */
-class Category
+class Category extends Auth
 {
 
     /**
