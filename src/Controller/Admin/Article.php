@@ -84,8 +84,8 @@ class Article extends Auth
                             'label' => '是否推送到首页',
                             'driver' => FormItemSelect::class,
                             'keyValues' => [
-                                '1' => '已推送',
-                                '0' => '未推送',
+                                '1' => '是',
+                                '0' => '否',
                             ],
                         ],
                         [
@@ -93,8 +93,8 @@ class Article extends Auth
                             'label' => '是否置顶',
                             'driver' => FormItemSelect::class,
                             'keyValues' => [
-                                '1' => '已置顶',
-                                '0' => '未置顶',
+                                '1' => '是',
+                                '0' => '否',
                             ],
                         ],
                         [
@@ -237,7 +237,7 @@ class Article extends Auth
                             'task' => 'fieldEdit',
                             'width' => '80',
                             'exportValue' => function ($row) {
-                                return $row['is_push_home'] ? '已推送' : '未推送';
+                                return $row['is_push_home'] ? '是' : '否';
                             },
                         ],
                         [
@@ -248,7 +248,7 @@ class Article extends Auth
                             'task' => 'fieldEdit',
                             'width' => '80',
                             'exportValue' => function ($row) {
-                                return $row['is_on_top'] ? '已置顶' : '未置顶';
+                                return $row['is_on_top'] ? '是' : '否';
                             },
                         ],
                         [
@@ -259,7 +259,7 @@ class Article extends Auth
                             'task' => 'fieldEdit',
                             'width' => '80',
                             'exportValue' => function ($row) {
-                                return $row['is_enable'] ? '已发布' : '未发布';
+                                return $row['is_enable'] ? '是' : '否';
                             },
                         ],
                         [
