@@ -113,19 +113,15 @@ class Article
             $data['seo_title'] = $title;
         }
 
-        if (!isset($data['seo_title_custom']) || $data['seo_title_custom'] !== 1) {
+        if (!isset($data['seo_title_custom']) || !is_numeric($data['seo_title_custom']) || $data['seo_title_custom'] !== 1) {
             $data['seo_title_custom'] = 0;
         }
 
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
-            if ($data['summary'] !== '') {
-                $data['seo_description'] = $data['summary'];
-            } else {
-                $data['seo_description'] = \Be\Util\Str\Html::clean($data['description']);
-            }
+            $data['seo_description'] = '';
         }
 
-        if (!isset($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
+        if (!isset($data['seo_description_custom']) || !is_numeric($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
             $data['seo_description_custom'] = 0;
         }
 
