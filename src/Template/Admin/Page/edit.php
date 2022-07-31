@@ -50,7 +50,7 @@
 <be-page-content>
     <?php
     $formData = [];
-    $formItems = new \Be\AdminPlugin\Form\FormItems();
+    $uiItems = new \Be\AdminPlugin\UiItem\UiItems();
     $rootUrl = \Be\Be::getRequest()->getRootUrl();
     ?>
 
@@ -94,7 +94,7 @@
 
                         $formData['description'] = ($this->page ? $this->page->description : '');
 
-                        $formItems->append($driver);
+                        $uiItems->add($driver);
                         ?>
                     </div>
                 </div>
@@ -243,8 +243,8 @@
     </div>
 
     <?php
-    echo $formItems->getJs();
-    echo $formItems->getCss();
+    echo $uiItems->getJs();
+    echo $uiItems->getCss();
     ?>
 
     <script>
@@ -258,7 +258,7 @@
 
                 t: false
                 <?php
-                echo $formItems->getVueData();
+                echo $uiItems->getVueData();
                 ?>
             },
             methods: {
@@ -334,12 +334,12 @@
                     }
                 }
                 <?php
-                echo $formItems->getVueMethods();
+                echo $uiItems->getVueMethods();
                 ?>
             }
             <?php
-            $formItems->setVueHook('mounted', 'window.onbeforeunload = function(e) {e = e || window.event; if (e) { e.returnValue = ""; } return ""; };');
-            echo $formItems->getVueHooks();
+            $uiItems->setVueHook('mounted', 'window.onbeforeunload = function(e) {e = e || window.event; if (e) { e.returnValue = ""; } return ""; };');
+            echo $uiItems->getVueHooks();
             ?>
         });
     </script>

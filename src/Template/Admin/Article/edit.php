@@ -110,7 +110,7 @@
 <be-page-content>
     <?php
     $formData = [];
-    $formItems = new \Be\AdminPlugin\Form\FormItems();
+    $uiItems = new \Be\AdminPlugin\UiItem\UiItems();
     $rootUrl = \Be\Be::getRequest()->getRootUrl();
     ?>
 
@@ -170,7 +170,7 @@
 
                         $formData['description'] = ($this->article ? $this->article->description : '');
 
-                        $formItems->append($driver);
+                        $uiItems->add($driver);
                         ?>
                     </div>
                 </div>
@@ -288,7 +288,7 @@
                         </el-form-item>
                         <?php
                         $formData['tags'] = ($this->article ? $this->article->tags : []);
-                        $formItems->setVueData('formItems', [
+                        $uiItems->setVueData('formItems', [
                             'tags' => ['currentTag' => '']
                         ]);
                         ?>
@@ -477,8 +477,8 @@
     </div>
 
     <?php
-    echo $formItems->getJs();
-    echo $formItems->getCss();
+    echo $uiItems->getJs();
+    echo $uiItems->getCss();
     ?>
 
     <script>
@@ -497,7 +497,7 @@
 
                 t: false
                 <?php
-                echo $formItems->getVueData();
+                echo $uiItems->getVueData();
                 ?>
             },
             methods: {
@@ -617,12 +617,12 @@
                     this.formData.image = "";
                 }
                 <?php
-                echo $formItems->getVueMethods();
+                echo $uiItems->getVueMethods();
                 ?>
             }
             <?php
-            $formItems->setVueHook('mounted', 'window.onbeforeunload = function(e) {e = e || window.event; if (e) { e.returnValue = ""; } return ""; };');
-            echo $formItems->getVueHooks();
+            $uiItems->setVueHook('mounted', 'window.onbeforeunload = function(e) {e = e || window.event; if (e) { e.returnValue = ""; } return ""; };');
+            echo $uiItems->getVueHooks();
             ?>
         });
 
