@@ -33,6 +33,10 @@ class Page
             $response->set('meta_keywords', $page->seo_keywords);
             $response->set('meta_description', $page->seo_description);
             $response->set('page', $page);
+
+            $configPage = Be::getConfig('App.Cms.Page');
+            $response->set('configPage', $configPage);
+
             $response->display();
         } catch (\Throwable $t) {
             $response->error($t->getMessage());

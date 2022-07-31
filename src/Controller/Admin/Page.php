@@ -257,7 +257,12 @@ class Page extends Auth
             }
         } else {
             $response->set('page', false);
+
             $response->set('title', '新建自定义页面');
+
+            $configPage = Be::getConfig('App.Cms.Page');
+            $response->set('configPage', $configPage);
+
             $response->display('App.Cms.Admin.Page.edit');
         }
     }
@@ -292,10 +297,15 @@ class Page extends Auth
                 }
             }
         } else {
+            $response->set('title', '编辑自定义页面');
+
             $pageId = $request->get('id', '');
             $page = Be::getService('App.Cms.Admin.Page')->getPage($pageId);
             $response->set('page', $page);
-            $response->set('title', '编辑自定义页面');
+
+            $configPage = Be::getConfig('App.Cms.Page');
+            $response->set('configPage', $configPage);
+
             $response->display('App.Cms.Admin.Page.edit');
         }
     }
