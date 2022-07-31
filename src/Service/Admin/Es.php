@@ -18,59 +18,37 @@ class Es
         $indexes = [];
 
         $es = Be::getEs();
+        foreach ([
+                     [
+                         'name' => 'article',
+                         'label' => '文章索引',
+                         'value' => $configEs->indexArticle,
+                     ],
+                     [
+                         'name' => 'articleSearchHistory',
+                         'label' => '文章搜索记录索引',
+                         'value' => $configEs->indexArticleSearchHistory,
+                     ]
+                 ] as $index) {
+            $params = [
+                'index' => $index['value'],
+            ];
+            if ($es->indices()->exists($params)) {
+                $index['exists'] = true;
 
-        $index = [
-            'name' => 'article',
-            'label' => '文章索引',
-            'value' => $configEs->indexArticle,
-        ];
+                $mapping = $es->indices()->getMapping($params);
+                $index['mapping'] = $mapping[$configEs->indexArticle]['mappings'] ?? [];
 
-        $params = [
-            'index' => $configEs->indexArticle,
-        ];
-        if ($es->indices()->exists($params)) {
-            $index['exists'] = true;
+                $settings = $es->indices()->getSettings($params);
+                $index['settings'] = $settings[$configEs->indexArticle]['settings'] ?? [];
 
-            $mapping = $es->indices()->getMapping($params);
-            $index['mapping'] = $mapping[$configEs->indexArticle]['mappings'] ?? [];
-
-            $settings = $es->indices()->getSettings($params);
-            $index['settings'] = $settings[$configEs->indexArticle]['settings'] ?? [];
-
-            $count = $es->count($params);
-            $index['count'] = $count['count'] ?? 0;
-        } else {
-            $index['exists'] = false;
+                $count = $es->count($params);
+                $index['count'] = $count['count'] ?? 0;
+            } else {
+                $index['exists'] = false;
+            }
+            $indexes[] = $index;
         }
-        $indexes[] = $index;
-
-        $index = [
-            'name' => 'articleSearchHistory',
-            'label' => '文章搜索记录索引',
-            'value' => $configEs->indexArticleSearchHistory,
-        ];
-
-        $params = [
-            'index' => $configEs->indexArticleSearchHistory,
-        ];
-
-        if ($es->indices()->exists($params)) {
-            $index['exists'] = true;
-
-            $mapping = $es->indices()->getMapping($params);
-            $index['mapping'] = $mapping[$configEs->indexArticleSearchHistory]['mappings'] ?? [];
-
-            $settings = $es->indices()->getSettings($params);
-            $index['settings'] = $settings[$configEs->indexArticleSearchHistory]['settings'] ?? [];
-
-            $count = $es->count($params);
-            $index['count'] = $count['count'] ?? 0;
-
-        } else {
-            $index['exists'] = false;
-        }
-
-        $indexes[] = $index;
 
         return $indexes;
     }
@@ -84,7 +62,7 @@ class Es
      */
     public function createIndex(string $indexName, array $options = [])
     {
-        $number_of_shards = $options['number_of_shards'] ?? 1;
+        $number_of_shards = $options['number_of_shards'] ?? 2;
         $number_of_replicas = $options['number_of_replicas'] ?? 1;
 
         $configEs = Be::getConfig('App.Cms.Es');

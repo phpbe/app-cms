@@ -47,7 +47,7 @@ class Es extends Auth
             Be::getService('App.Cms.Admin.Es')->createIndex($indexName, $formData);
             $response->success('创建成功！');
         } catch (\Throwable $t) {
-            $response->success('创建失败：' . $t->getMessage());
+            $response->error('创建失败：' . $t->getMessage());
         }
     }
 
@@ -67,7 +67,7 @@ class Es extends Auth
             Be::getService('App.Cms.Admin.Es')->deleteIndex($indexName);
             $response->success('删除成功！');
         } catch (\Throwable $t) {
-            $response->success('删除失败：' . $t->getMessage());
+            $response->error('删除失败：' . $t->getMessage());
         }
     }
 

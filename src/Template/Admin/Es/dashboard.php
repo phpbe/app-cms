@@ -96,7 +96,7 @@
                         <?php
                         $formDatas[$index['name'] . 'FormData'] = [
                             'name' => $index['name'],
-                            'number_of_shards' => 1,
+                            'number_of_shards' => 2,
                             'number_of_replicas' => 1,
                         ];
                     }
