@@ -49,13 +49,8 @@
 
 <be-page-content>
     <?php
-    $js = [];
-    $css = [];
     $formData = [];
-    $vueData = [];
-    $vueMethods = [];
-    $vueHooks = [];
-
+    $formItems = new \Be\AdminPlugin\Form\FormItems();
     $rootUrl = \Be\Be::getRequest()->getRootUrl();
     ?>
 
@@ -92,44 +87,14 @@
                                 ],
                                 '@change' => 'seoUpdate',
                             ],
-                            'option' => [
-                                'height' => 600,
-                            ],
+                            'layout' => $this->configPage->tinymceLayout,
+                            'option' => $this->configPage->tinymceOption,
                         ]);
                         echo $driver->getHtml();
 
                         $formData['description'] = ($this->page ? $this->page->description : '');
 
-                        $jsX = $driver->getJs();
-                        if ($jsX) {
-                            $js = array_merge($js, $jsX);
-                        }
-
-                        $cssX = $driver->getCss();
-                        if ($cssX) {
-                            $css = array_merge($css, $cssX);
-                        }
-
-                        $vueDataX = $driver->getVueData();
-                        if ($vueDataX) {
-                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                        }
-
-                        $vueMethodsX = $driver->getVueMethods();
-                        if ($vueMethodsX) {
-                            $vueMethods = array_merge($vueMethods, $vueMethodsX);
-                        }
-
-                        $vueHooksX = $driver->getVueHooks();
-                        if ($vueHooksX) {
-                            foreach ($vueHooksX as $k => $v) {
-                                if (isset($vueHooks[$k])) {
-                                    $vueHooks[$k] .= "\r\n" . $v;
-                                } else {
-                                    $vueHooks[$k] = $v;
-                                }
-                            }
-                        }
+                        $formItems->append($driver);
                         ?>
                     </div>
                 </div>
@@ -278,19 +243,8 @@
     </div>
 
     <?php
-    if (count($js) > 0) {
-        $js = array_unique($js);
-        foreach ($js as $x) {
-            echo '<script src="' . $x . '"></script>';
-        }
-    }
-
-    if (count($css) > 0) {
-        $css = array_unique($css);
-        foreach ($css as $x) {
-            echo '<link rel="stylesheet" type="text/css" href="' . $x . '" />';
-        }
-    }
+    echo $formItems->getJs();
+    echo $formItems->getCss();
     ?>
 
     <script>
@@ -304,11 +258,7 @@
 
                 t: false
                 <?php
-                if ($vueData) {
-                    foreach ($vueData as $k => $v) {
-                        echo ',' . $k . ':' . json_encode($v);
-                    }
-                }
+                echo $formItems->getVueData();
                 ?>
             },
             methods: {
@@ -382,64 +332,14 @@
                         }
                         this.formData.url = url;
                     }
-                },
-
-                <?php
-                if ($vueMethods) {
-                    foreach ($vueMethods as $k => $v) {
-                        echo ',' . $k . ':' . $v;
-                    }
-                }
-                ?>
-            },
-            created: function () {
-                <?php
-                if (isset($vueHooks['created'])) {
-                    echo $vueHooks['created'];
-                }
-                ?>
-            },
-            mounted: function () {
-                window.onbeforeunload = function(e) {
-                    e = e || window.event;
-                    if (e) {
-                        e.returnValue = "";
-                    }
-                    return "";
                 }
                 <?php
-                if (isset($vueHooks['mounted'])) {
-                    echo $vueHooks['mounted'];
-                }
-                ?>
-            },
-            updated: function () {
-                <?php
-                if (isset($vueHooks['updated'])) {
-                    echo $vueHooks['updated'];
-                }
+                echo $formItems->getVueMethods();
                 ?>
             }
             <?php
-            if (isset($vueHooks['beforeCreate'])) {
-                echo ',beforeCreate: function () {' . $vueHooks['beforeCreate'] . '}';
-            }
-
-            if (isset($vueHooks['beforeMount'])) {
-                echo ',beforeMount: function () {' . $vueHooks['beforeMount'] . '}';
-            }
-
-            if (isset($vueHooks['beforeUpdate'])) {
-                echo ',beforeUpdate: function () {' . $vueHooks['beforeUpdate'] . '}';
-            }
-
-            if (isset($vueHooks['beforeDestroy'])) {
-                echo ',beforeDestroy: function () {' . $vueHooks['beforeDestroy'] . '}';
-            }
-
-            if (isset($vueHooks['destroyed'])) {
-                echo ',destroyed: function () {' . $vueHooks['destroyed'] . '}';
-            }
+            $formItems->setVueHook('mounted', 'window.onbeforeunload = function(e) {e = e || window.event; if (e) { e.returnValue = ""; } return ""; };');
+            echo $formItems->getVueHooks();
             ?>
         });
     </script>
