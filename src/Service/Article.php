@@ -180,7 +180,6 @@ class Article
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
-                'min_score' => 0.01,
                 'query' => [
                     'bool' => [
                         'filter' => [
@@ -203,6 +202,7 @@ class Article
         if ($keywords === '') {
             $query['body']['min_score'] = 0;
         } else {
+            $query['body']['min_score'] = 0.01;
             $query['body']['query']['bool']['should'] = [
                 [
                     'match' => [

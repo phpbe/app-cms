@@ -1,6 +1,6 @@
 <be-page-content>
     <div id="app" v-cloak>
-        <div class="be-p-200">
+        <div class="be-p-150 be-bc-fff">
             <div class="be-row be-lh-250 be-bb be-pb-50">
                 <div class="be-col-auto">接口开关：</div>
                 <div class="be-col-auto be-px-100">
@@ -14,7 +14,7 @@
                     <?php echo $this->config->token; ?>
                 </div>
                 <div class="be-col-auto">
-                    <el-link type="primary" icon="el-icon-refresh" :underline="false" href="<?php echo beAdminUrl('Cms.CollectLocoy.resetToken'); ?>">重新生成</el-link>
+                    <el-link type="primary" icon="el-icon-refresh" :underline="false" href="<?php echo beAdminUrl('Cms.CollectArticleApi.resetToken'); ?>">重新生成</el-link>
                 </div>
             </div>
 
@@ -23,7 +23,7 @@
                 <div class="be-col-auto">接口网址：</div>
                 <div class="be-col-auto be-px-100">
                     <el-tag>
-                        <?php echo beUrl('Cms.Api.locoy', ['token' => $this->config->token]); ?>
+                        <?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token]); ?>
                     </el-tag>
                 </div>
 
@@ -113,7 +113,7 @@
             methods: {
                 toggleEnable() {
                     let _this = this;
-                    _this.$http.get("<?php echo beAdminUrl('Cms.CollectLocoy.toggleEnable'); ?>", {
+                    _this.$http.get("<?php echo beAdminUrl('Cms.CollectArticleApi.toggleEnable'); ?>", {
                         formData: _this.formData
                     }).then(function (response) {
                         if (response.status === 200) {
@@ -135,7 +135,7 @@
                 copyUrl: function () {
                     let _this = this;
                     let input = document.createElement('input');
-                    input.value = "<?php echo beUrl('Cms.Api.locoy', ['token' => $this->config->token]); ?>";
+                    input.value = "<?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token]); ?>";
                     document.body.appendChild(input);
                     input.select();
                     try {

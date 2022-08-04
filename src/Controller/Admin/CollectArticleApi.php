@@ -9,14 +9,14 @@ use Be\Be;
  * @BeMenuGroup("采集")
  * @BePermissionGroup("采集")
  */
-class CollectLocoy extends Auth
+class CollectArticleApi extends Auth
 {
 
     /**
-     * 火车采集器接口
+     * 采集接口
      *
-     * @BeMenu("火车采集器接口", icon="el-icon-fa fa-train", ordering="2.3")
-     * @BePermission("火车采集器接口", ordering="2.3")
+     * @BeMenu("采集接口", icon="el-icon-fa fa-train", ordering="2.3")
+     * @BePermission("采集接口", ordering="2.3")
      */
     public function config()
     {
@@ -29,12 +29,10 @@ class CollectLocoy extends Auth
         $response->display();
     }
 
-
-
     /**
-     * 火车采集器接口 切换启用状态
+     * 采集接口 切换启用状态
      *
-     * @BePermission("火车采集器接口", ordering="2.3")
+     * @BePermission("采集接口", ordering="2.3")
      */
     public function toggleEnable()
     {
@@ -52,11 +50,10 @@ class CollectLocoy extends Auth
         }
     }
 
-
     /**
-     * 火车采集器接口 重设 Token
+     * 采集接口 重设Token
      *
-     * @BePermission("火车采集器接口", ordering="2.3")
+     * @BePermission("采集接口", ordering="2.3")
      */
     public function resetToken()
     {

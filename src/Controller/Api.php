@@ -11,11 +11,11 @@ class Api
 {
 
     /**
-     * 火车采集器接口
+     * 采集接口
      *
-     * @BeRoute("/cms/api/locoy")
+     * @BeRoute("/cms/api/collect/article")
      */
-    public function locoy()
+    public function CollectArticle()
     {
         $request = Be::getRequest();
         $response = Be::getResponse();

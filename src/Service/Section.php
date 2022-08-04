@@ -53,8 +53,6 @@ class Section
             $html .= '</div>';
         }
 
-        $html .= $section->pageTemplate->tag1('be-section-content', true);
-
         if ($moreLink !== null && isset($section->config->more) && $section->config->more !== '') {
             $html .= '<div class="be-mt-100 be-bt-eee be-pt-100 be-ta-right">';
             $html .= '<a href="' . $moreLink . '"';
@@ -64,6 +62,8 @@ class Section
             $html .= '>' . $section->config->more . '</a>';
             $html .= '</div>';
         }
+
+        $html .= $section->pageTemplate->tag1('be-section-content', true);
 
         if ($section->position === 'middle' && $section->config->width === 'default') {
             $html .= '</div>';
