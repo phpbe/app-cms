@@ -82,7 +82,7 @@ class Config
      *     description = "上右下左（CSS margin 语法）"
      * )
      */
-    public string $marginMobile = '1.5rem 0';
+    public string $marginMobile = '1rem 0';
 
     /**
      * @BeConfigItem("外边距（平板端）",
@@ -90,7 +90,7 @@ class Config
      *     description = "上右下左（CSS margin 语法）"
      * )
      */
-    public string $marginTablet = '1.75rem 0';
+    public string $marginTablet = '1.5rem 0';
 
     /**
      * @BeConfigItem("外边距（电脑端）",
