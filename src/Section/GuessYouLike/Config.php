@@ -45,14 +45,13 @@ class Config
      */
     public string $backgroundColor = '#FFFFFF';
 
-
     /**
      * @BeConfigItem("内边距（手机端）",
      *     driver = "FormItemInput",
      *     description = "上右下左（CSS padding 语法）"
      * )
      */
-    public string $paddingMobile = '1.5rem';
+    public string $paddingMobile = '1rem 0.5rem';
 
     /**
      * @BeConfigItem("内边距（平板端）",
@@ -60,7 +59,7 @@ class Config
      *     description = "上右下左（CSS padding 语法）"
      * )
      */
-    public string $paddingTablet = '1.75rem';
+    public string $paddingTablet = '1.5rem 1rem';
 
     /**
      * @BeConfigItem("内边距（电脑端）",
