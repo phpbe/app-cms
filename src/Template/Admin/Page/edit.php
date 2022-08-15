@@ -312,9 +312,9 @@
 
                     if (this.formData.seo_description_custom === 0) {
                         let seoDescription = this.formData.description;
-                        seoDescription = seoDescription.replace(/<[^>]+>/g,"");
-                        seoDescription = seoDescription.replace("\r", " ");
-                        seoDescription = seoDescription.replace("\n", " ");
+                        seoDescription = seoDescription.replaceAll(/<[^>]+>/g,"");
+                        seoDescription = seoDescription.replaceAll("\r", " ");
+                        seoDescription = seoDescription.replaceAll("\n", " ");
                         if (seoDescription.length > 500) {
                             seoDescription = seoDescription.substr(0, 500);
                         }
