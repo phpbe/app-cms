@@ -69,13 +69,9 @@ class Category extends Auth
                     'items' => [
                         [
                             'label' => '批量删除',
-                            'task' => 'fieldEdit',
+                            'action' => 'delete',
                             'target' => 'ajax',
                             'confirm' => '确认要删除吗？',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => '1',
-                            ],
                             'ui' => [
                                 'icon' => 'el-icon-delete',
                                 'type' => 'danger'
@@ -166,13 +162,9 @@ class Category extends Auth
                             [
                                 'label' => '',
                                 'tooltip' => '删除',
-                                'task' => 'fieldEdit',
+                                'action' => 'delete',
                                 'confirm' => '确认要删除么？',
                                 'target' => 'ajax',
-                                'postData' => [
-                                    'field' => 'is_delete',
-                                    'value' => 1,
-                                ],
                                 'ui' => [
                                     'type' => 'danger',
                                     ':underline' => 'false',
@@ -243,45 +235,6 @@ class Category extends Auth
                     ]
                 ],
             ],
-
-            'fieldEdit' => [
-                'events' => [
-                    'before' => function ($tuple) {
-                        $postData = Be::getRequest()->json();
-                        $field = $postData['postData']['field'];
-                        if ($field === 'is_delete') {
-                            $value = $postData['postData']['value'];
-                            if ($value === 1) {
-                                $tuple->url = $tuple->url . '-' . $tuple->id;
-                            }
-                        }
-
-                        $tuple->update_time = date('Y-m-d H:i:s');
-                    },
-                    'success' => function () {
-                        $postData = Be::getRequest()->json();
-
-                        $categoryIds = [];
-                        if (isset($postData['selectedRows'])) {
-                            foreach ($postData['selectedRows'] as $row) {
-                                $categoryIds[] = $row['id'];
-                            }
-                        } elseif (isset($postData['row'])) {
-                            $categoryIds[] = $postData['row']['id'];
-                        }
-
-                        $articleIds = Be::getTable('cms_article_category')
-                            ->where('category_id', 'IN',  $categoryIds)
-                            ->getValues('article_id');
-                        if (count($articleIds) > 0) {
-                            Be::getService('App.Cms.Admin.Article')->onUpdate($articleIds);
-                        }
-
-                        Be::getService('App.Cms.Admin.Category')->onUpdate($categoryIds);
-                    },
-                ],
-            ],
-
         ])->execute();
     }
 
@@ -316,7 +269,7 @@ class Category extends Auth
     /**
      * 编辑
      *
-     * @BePermission("编辑", ordering="1.32")
+     * @BePermission("编辑", ordering="1.22")
      */
     public function edit()
     {
@@ -352,9 +305,45 @@ class Category extends Auth
     }
 
     /**
+     * 删除
+     *
+     * @BePermission("删除", ordering="1.23")
+     */
+    public function delete()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $postData = $request->json();
+
+            $categoryIds = [];
+            if (isset($postData['selectedRows'])) {
+                foreach ($postData['selectedRows'] as $row) {
+                    $categoryIds[] = $row['id'];
+                }
+            } elseif (isset($postData['row'])) {
+                $categoryIds[] = $postData['row']['id'];
+            }
+
+            if (count($categoryIds) > 0) {
+                Be::getService('App.Cms.Admin.Category')->delete($categoryIds);
+            }
+
+            $response->set('success', true);
+            $response->set('message', '删除成功！');
+            $response->json();
+        } catch (\Throwable $t) {
+            $response->set('success', false);
+            $response->set('message', $t->getMessage());
+            $response->json();
+        }
+    }
+
+    /**
      * 预览
      *
-     * @return void
+     * @BePermission("*")
      */
     public function preview() {
         $request = Be::getRequest();
@@ -372,7 +361,7 @@ class Category extends Auth
     /**
      * 指定文章分类下的文章分类文章管理
      *
-     * @BePermission("文章分类文章管理", ordering="1.33")
+     * @BePermission("文章分类下文章管理", ordering="1.24")
      */
     public function goArticles()
     {
@@ -391,7 +380,7 @@ class Category extends Auth
     /**
      * 指定文章分类下的文章分类文章管理
      *
-     * @BePermission("文章分类文章管理")
+     * @BePermission("文章分类下文章管理")
      */
     public function articles()
     {
@@ -487,7 +476,7 @@ class Category extends Auth
                             ],
                             'value' => function($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl(). '/article/images//no-image.jpg';
                                 }
                                 return $row['image'];
                             },
@@ -543,7 +532,7 @@ class Category extends Auth
     /**
      * 指定文章分类下的文章 - 添加
      *
-     * @BePermission("文章分类文章管理")
+     * @BePermission("文章分类下文章管理")
      */
     public function addArticle()
     {
@@ -616,7 +605,7 @@ class Category extends Auth
                             ],
                             'value' => function($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl(). '/article/images//no-image.jpg';
                                 }
                                 return $row['image'];
                             },
@@ -635,7 +624,7 @@ class Category extends Auth
     /**
      * 指定文章分类下的文章 - 添加
      *
-     * @BePermission("文章分类文章管理")
+     * @BePermission("文章分类下文章管理")
      */
     public function addArticleSave()
     {
@@ -669,7 +658,7 @@ class Category extends Auth
     /**
      * 指定文章分类下的文章 - 删除
      *
-     * @BePermission("文章分类文章管理")
+     * @BePermission("文章分类下文章管理")
      */
     public function deleteArticle()
     {
