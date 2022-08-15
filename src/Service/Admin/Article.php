@@ -120,6 +120,7 @@ class Article
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
             $data['seo_description'] = '';
         }
+        $data['seo_description'] = strip_tags($data['seo_description']);
 
         if (!isset($data['seo_description_custom']) || !is_numeric($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
             $data['seo_description_custom'] = 0;

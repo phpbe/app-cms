@@ -154,6 +154,7 @@ class Category
         if (!isset($data['seo_description']) || !is_string($data['seo_description'])) {
             $data['seo_description'] = $data['description'];
         }
+        $data['seo_description'] = strip_tags($data['seo_description']);
 
         if (!isset($data['seo_description_custom']) || $data['seo_description_custom'] !== 1) {
             $data['seo_description_custom'] = 0;
@@ -226,12 +227,12 @@ class Category
     {
         if (count($categoryIds) === 0) return;
 
-        $db = Be::getDb('shopfai');
+        $db = Be::getDb();
         $db->startTransaction();
         try {
             $now = date('Y-m-d H:i:s');
             foreach ($categoryIds as $categoryId) {
-                $tupleCategory = Be::getTuple('cms_article_category', 'shopfai');
+                $tupleCategory = Be::getTuple('cms_article_category');
                 try {
                     $tupleCategory->loadBy([
                         'id' => $categoryId,
@@ -241,15 +242,15 @@ class Category
                     throw new ServiceException('分类（# ' . $categoryId . '）不存在！');
                 }
 
-                $articleIds = Be::getTable('cms_article_category', 'shopfai')
+                $articleIds = Be::getTable('cms_article_category')
                     ->where('category_id', '=', $categoryId)
                     ->getValues('article_id');
                 if (count($articleIds) > 0) {
-                    Be::getTable('cms_article', 'shopfai')
+                    Be::getTable('cms_article')
                         ->where('id', 'IN', $articleIds)
                         ->update(['update_time' =>  $now]);
 
-                    Be::getTable('cms_article_categoryd', 'shopfai')
+                    Be::getTable('cms_article_categoryd')
                         ->where('category_id', '=', $categoryId)
                         ->delete();
                 }
@@ -269,7 +270,7 @@ class Category
             throw new ServiceException('删除分类发生异常！');
         }
 
-        Be::getService('App.System.Task')->trigger('Cms.CategorySyncEsAndCache');
+        Be::getService('App.System.Task')->trigger('Cms.CategorySyncCache');
         Be::getService('App.System.Task')->trigger('Cms.ArticleSyncEsAndCache');
     }
 
@@ -283,7 +284,7 @@ class Category
     public function addArticle(string $categoryId, array $articleIds): bool
     {
         try {
-            Be::getTuple('cms_category', 'shopfai')
+            Be::getTuple('cms_category')
                 ->loadBy([
                     'id' => $categoryId,
                     'is_delete' => 0
@@ -349,7 +350,7 @@ class Category
     public function deleteArticle(string $categoryId, array $articleIds)
     {
         try {
-            Be::getTuple('cms_category', 'shopfai')
+            Be::getTuple('cms_category')
                 ->loadBy([
                     'id' => $categoryId,
                     'is_delete' => 0
@@ -362,13 +363,13 @@ class Category
         $db->startTransaction();
         try {
 
-            Be::getTable('cms_article_category', 'shopfai')
+            Be::getTable('cms_article_category')
                 ->where('category_id', $categoryId)
                 ->where('article_id', 'IN', $articleIds)
                 ->delete();
 
             $now = date('Y-m-d H:i:s');
-            Be::getTable('cms_article', 'shopfai')
+            Be::getTable('cms_article')
                 ->where('id', 'IN', $articleIds)
                 ->update(['update_time' => $now]);
 
