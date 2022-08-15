@@ -157,7 +157,7 @@ class CollectArticle extends Auth
                             ],
                             'value' => function ($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl(). '/article/images//no-image.jpg';
                                 }
                                 return $row['image'];
                             },
@@ -282,7 +282,7 @@ class CollectArticle extends Auth
                             'driver' => DetailItemImage::class,
                             'value' => function ($row) {
                                 if ($row['image'] === '') {
-                                    return Be::getProperty('App.Cms')->getUrl() . '/Template/Article/images/no-image.jpg';
+                                    return Be::getProperty('App.Cms')->getWwwUrl(). '/article/images//no-image.jpg';
                                 }
                                 return $row['image'];
                             },
