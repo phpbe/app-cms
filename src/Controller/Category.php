@@ -27,6 +27,13 @@ class Category
                 throw new ControllerException('文章分类不存在！');
             }
 
+            $category = Be::getService('App.Cms.Category')->getCategory($id);
+
+            $response->set('title', $category->seo_title);
+            $response->set('metaKeywords', $category->seo_keywords);
+            $response->set('metaDescription', $category->seo_description);
+            $response->set('pageTitle', $category->name);
+
             $page = $request->get('page', 1);
             $result = Be::getService('App.Cms.Article')->search('', [
                 'categoryId' => $id,

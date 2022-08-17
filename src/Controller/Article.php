@@ -132,8 +132,10 @@ class Article
 
             $article = $service->hit($id);
             $response->set('title', $article->seo_title);
-            $response->set('meta_keywords', $article->seo_keywords);
-            $response->set('meta_description', $article->seo_description);
+            $response->set('metaKeywords', $article->seo_keywords);
+            $response->set('metaDescription', $article->seo_description);
+            $response->set('pageTitle', $article->title);
+
             $response->set('article', $article);
 
             $configArticle = Be::getConfig('App.Cms.Article');

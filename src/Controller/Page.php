@@ -30,8 +30,10 @@ class Page
             $servicePage = Be::getService('App.Cms.Page');
             $page = $servicePage->getPage($pageId);
             $response->set('title', $page->seo_title);
-            $response->set('meta_keywords', $page->seo_keywords);
-            $response->set('meta_description', $page->seo_description);
+            $response->set('metaKeywords', $page->seo_keywords);
+            $response->set('metaDescription', $page->seo_description);
+            $response->set('pageTitle', $page->title);
+            
             $response->set('page', $page);
 
             $configPage = Be::getConfig('App.Cms.Page');
