@@ -15,7 +15,7 @@ CREATE TABLE `cms_article` (
 `seo_keywords` varchar(60) NOT NULL DEFAULT '' COMMENT 'SEO关键词',
 `ordering` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
 `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量 ',
-`collect_blog_id` varchar(36) NOT NULL DEFAULT '' COMMENT '采集的文章ID',
+`collect_article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '采集的文章ID',
 `is_push_home` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否推送到首页',
 `is_on_top` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否置项',
 `is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用',
