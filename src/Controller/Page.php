@@ -33,7 +33,7 @@ class Page
             $response->set('metaKeywords', $page->seo_keywords);
             $response->set('metaDescription', $page->seo_description);
             $response->set('pageTitle', $page->title);
-            
+
             $response->set('page', $page);
 
             $configPage = Be::getConfig('App.Cms.Page');

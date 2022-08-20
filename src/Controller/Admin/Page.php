@@ -246,9 +246,10 @@ class Page extends Auth
 
         if ($request->isAjax()) {
             try {
-                Be::getService('App.Cms.Admin.Page')->edit($request->json('formData'));
+                $page = Be::getService('App.Cms.Admin.Page')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '新建自定义页面成功！');
+                $response->set('page', $page);
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);
@@ -279,9 +280,10 @@ class Page extends Auth
 
         if ($request->isAjax()) {
             try {
-                Be::getService('App.Cms.Admin.Page')->edit($request->json('formData'));
+                $page = Be::getService('App.Cms.Admin.Page')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '编辑自定义页面成功！');
+                $response->set('page', $page);
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);

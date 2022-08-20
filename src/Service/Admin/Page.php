@@ -62,12 +62,12 @@ class Page
      * 编辑自定义页面
      *
      * @param array $data 自定义页面数据
-     * @return bool
+     * @return object
      * @throws DbException
      * @throws RuntimeException
      * @throws ServiceException
      */
-    public function edit(array $data): bool
+    public function edit(array $data): object
     {
         $db = Be::getDb();
 
@@ -195,7 +195,7 @@ class Page
             throw new ServiceException(($isNew ? '新建' : '编辑') . '自定义页面发生异常！');
         }
 
-        return true;
+        return $tuplePage->toObject();
     }
 
     /**

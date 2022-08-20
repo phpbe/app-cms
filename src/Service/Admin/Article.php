@@ -7,7 +7,6 @@ use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\App\ServiceException;
 use Be\Be;
 use Be\Db\DbException;
-use Be\Db\Tuple;
 use Be\Runtime\RuntimeException;
 use Be\Util\Str\Pinyin;
 
@@ -18,11 +17,11 @@ class Article
      * 编辑文章
      *
      * @param array $data 文章数据
-     * @return Tuple
+     * @return object
      * @throws ServiceException
      * @throws DbException|RuntimeException
      */
-    public function edit(array $data): Tuple
+    public function edit(array $data): object
     {
         $db = Be::getDb();
 
@@ -266,7 +265,7 @@ class Article
             throw new ServiceException(($isNew ? '新建' : '编辑') . '文章发生异常！');
         }
 
-        return $tupleArticle;
+        return $tupleArticle->toObject();
     }
 
     /**

@@ -362,9 +362,10 @@ class CollectArticle extends Auth
         $response = Be::getResponse();
         if ($request->isAjax()) {
             try {
-                Be::getService('App.Cms.Admin.CollectArticle')->edit($request->json('formData'));
+                $article = Be::getService('App.Cms.Admin.CollectArticle')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '编辑采集的文章成功！');
+                $response->set('article', $article);
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);

@@ -250,9 +250,10 @@ class Category extends Auth
 
         if ($request->isAjax()) {
             try {
-                Be::getService('App.Cms.Admin.Category')->edit($request->json('formData'));
+                $category = Be::getService('App.Cms.Admin.Category')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '新建文章分类成功！');
+                $response->set('category', $category);
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);
@@ -278,9 +279,10 @@ class Category extends Auth
 
         if ($request->isAjax()) {
             try {
-                Be::getService('App.Cms.Admin.Category')->edit($request->json('formData'));
+                $category = Be::getService('App.Cms.Admin.Category')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '编辑文章分类成功！');
+                $response->set('category', $category);
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);
