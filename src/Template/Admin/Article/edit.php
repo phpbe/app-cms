@@ -141,7 +141,7 @@
                                     placeholder="请输入标题"
                                     v-model = "formData.title"
                                     size="medium"
-                                    maxlength="200"
+                                    maxlength="120"
                                     show-word-limit
                                     @change="seoUpdate">
                             </el-input>
@@ -393,7 +393,7 @@
                         placeholder="请输入SEO标题"
                         v-model = "formData.seo_title"
                         size="medium"
-                        maxlength="200"
+                        maxlength="120"
                         show-word-limit
                         :disabled="formData.seo_title_custom === 0">
                 </el-input>
@@ -448,7 +448,7 @@
                         placeholder="请输入SEO友好链接"
                         v-model = "formData.url"
                         size="medium"
-                        maxlength="200"
+                        maxlength="150"
                         show-word-limit
                         :disabled="formData.url_custom === 0">
                     <template slot="prepend"><?php echo $rootUrl; ?>/article/</template>
@@ -596,9 +596,9 @@
                     if (this.formData.url_custom === 0) {
                         let title = this.formData.title.toLowerCase();
                         let url = Pinyin.convert(title, "-");
-                        if (url.length > 200) {
+                        if (url.length > 150) {
                             url = Pinyin.convert(title, "-", true);
-                            if (url.length > 200) {
+                            if (url.length > 150) {
                                 url = Pinyin.convert(title, "", true);
                             }
                         }

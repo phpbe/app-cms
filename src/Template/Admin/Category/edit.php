@@ -228,7 +228,7 @@
                         placeholder="请输入SEO友好链接"
                         v-model = "formData.url"
                         size="medium"
-                        maxlength="200"
+                        maxlength="150"
                         show-word-limit
                         :disabled="formData.url_custom === 0">
                     <template slot="prepend"><?php echo $rootUrl; ?>/articles/</template>
@@ -353,9 +353,9 @@
                     if (this.formData.url_custom === 0) {
                         let name = this.formData.name.toLowerCase();
                         let url = Pinyin.convert(name, "-");
-                        if (url.length > 200) {
+                        if (url.length > 150) {
                             url = Pinyin.convert(name, "-", true);
-                            if (url.length > 200) {
+                            if (url.length > 150) {
                                 url = Pinyin.convert(name, "", true);
                             }
                         }
