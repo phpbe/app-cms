@@ -1047,8 +1047,8 @@ class Article
      */
     public function getArticleUrl(array $params = []): string
     {
-        $page = $this->getArticle($params['id']);
-        return '/article/' . $page->url;
+        $article = $this->getArticle($params['id']);
+        return '/article/' . $article->url;
     }
 
     /**
