@@ -33,12 +33,12 @@ class Section
         }
 
         if ($section->config->title !== '') {
-            $html .= $section->pageTemplate->tag0('be-section-title', true);
+            $html .= $section->page->tag0('be-section-title', true);
             $html .= $section->config->title;
-            $html .= $section->pageTemplate->tag1('be-section-title', true);
+            $html .= $section->page->tag1('be-section-title', true);
         }
 
-        $html .= $section->pageTemplate->tag0('be-section-content', true);
+        $html .= $section->page->tag0('be-section-content', true);
 
         $isMobile = \Be\Be::getRequest()->isMobile();
         foreach ($articles as $article) {
@@ -63,7 +63,7 @@ class Section
             $html .= '</div>';
         }
 
-        $html .= $section->pageTemplate->tag1('be-section-content', true);
+        $html .= $section->page->tag1('be-section-content', true);
 
         if ($section->position === 'middle' && $section->config->width === 'default') {
             $html .= '</div>';

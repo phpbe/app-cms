@@ -25,11 +25,11 @@ class Template extends Section
         }
 
         // 无文章数据时不显示
-        if (!isset($this->pageTemplate->article) || !$this->pageTemplate->article) {
+        if (!isset($this->page->article) || !$this->page->article) {
             return;
         }
 
-        $article = $this->pageTemplate->article;
+        $article = $this->page->article;
 
         $articles = Be::getService('App.Cms.Article')->getSimilarArticles($article->id, $article->title, $this->config->quantity);
         if (count($articles) === 0) {
