@@ -22,6 +22,14 @@ class Article
         $request = Be::getRequest();
         $response = Be::getResponse();
 
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
+
+        $response->set('title', $pageConfig->title ?: '');
+        $response->set('metaKeywords', $pageConfig->metaDescription ?: '');
+        $response->set('metaDescription', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
+
         $page = $request->get('page', 1);
         $result = Be::getService('App.Cms.Article')->search('', [
             'isPushHome' => 1,
@@ -47,6 +55,14 @@ class Article
         $request = Be::getRequest();
         $response = Be::getResponse();
 
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
+
+        $response->set('title', $pageConfig->title ?: '');
+        $response->set('metaKeywords', $pageConfig->metaDescription ?: '');
+        $response->set('metaDescription', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
+
         $page = $request->get('page', 1);
         $result = Be::getService('App.Cms.Article')->search('', [
             'orderBy' => 'publish_time',
@@ -71,6 +87,14 @@ class Article
     {
         $request = Be::getRequest();
         $response = Be::getResponse();
+
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
+
+        $response->set('title', $pageConfig->title ?: '');
+        $response->set('metaKeywords', $pageConfig->metaDescription ?: '');
+        $response->set('metaDescription', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
 
         $page = $request->get('page', 1);
         $result = Be::getService('App.Cms.Article')->search('', [
@@ -172,8 +196,10 @@ class Article
             $article = $service->getArticleFromDb($id);
 
             $response->set('title', $article->seo_title);
-            $response->set('meta_keywords', $article->seo_keywords);
-            $response->set('meta_description', $article->seo_description);
+            $response->set('metaKeywords', $article->seo_keywords);
+            $response->set('metaDescription', $article->seo_description);
+            $response->set('pageTitle', $article->title);
+
             $response->set('article', $article);
 
             $configArticle = Be::getConfig('App.Cms.Article');
