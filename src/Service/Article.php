@@ -248,6 +248,25 @@ class Article
             ];
         }
 
+        if (isset($params['tag']) && $params['tag']) {
+            $query['body']['query']['bool']['filter'][] = [
+                'nested' => [
+                    'path' => 'tags',
+                    'query' => [
+                        'bool' => [
+                            'filter' => [
+                                [
+                                    'term' => [
+                                        'tags.tag' => $params['tag'],
+                                    ],
+                                ],
+                            ]
+                        ],
+                    ],
+                ]
+            ];
+        }
+
         if (isset($params['orderBy'])) {
             if (is_array($params['orderBy'])) {
                 $len1 = count($params['orderBy']);
@@ -255,7 +274,7 @@ class Article
                     $len2 = count($params['orderByDir']);
                     if ($len1 === $len2) {
                         $query['body']['sort'] = [];
-                        for ($i = 0; $i< $len1; $i++) {
+                        for ($i = 0; $i < $len1; $i++) {
                             $orderByDir = 'desc';
                             if (in_array($params['orderByDir'][$i], ['asc', 'desc'])) {
                                 $orderByDir = $params['orderByDir'][$i];
@@ -360,6 +379,16 @@ class Article
             }
         }
 
+        if (isset($params['tag']) && $params['tag']) {
+            $sql = 'SELECT article_id FROM cms_article_tag WHERE tag = ?';
+            $productIds = $db->getValues($sql, [$params['tag']]);
+            if (count($productIds) > 0) {
+                $tableArticle->where('id', 'IN', $productIds);
+            } else {
+                $tableArticle->where('id', '');
+            }
+        }
+
         $total = $tableArticle->count();
 
         if (isset($params['orderBy']) && in_array($params['orderBy'], ['hits', 'publish_time'])) {
@@ -381,7 +410,7 @@ class Article
                     $len2 = count($params['orderByDir']);
                     if ($len1 === $len2) {
                         $orderByStrings = [];
-                        for ($i = 0; $i< $len1; $i++) {
+                        for ($i = 0; $i < $len1; $i++) {
                             $orderByDir = 'desc';
                             if (in_array($params['orderByDir'][$i], ['asc', 'desc'])) {
                                 $orderByDir = $params['orderByDir'][$i];
@@ -1058,6 +1087,44 @@ class Article
     {
         $article = $this->getArticle($params['id']);
         return '/article/' . $article->url;
+    }
+
+
+    /**
+     * 获取标签
+     *
+     * @param int $n
+     * @return array
+     */
+    public function getTags(int $n): array
+    {
+        $cache = Be::getCache();
+
+        $key = 'Cms:Article:tags' . $n;
+        $tags = $cache->get($key);
+        if ($tags === false) {
+            try {
+                $tags = $this->getTagsFromDb($n);
+            } catch (\Throwable $t) {
+                $tags = [];
+            }
+            $cache->set($key, $tags, 600);
+        }
+
+        return $tags;
+    }
+
+    /**
+     * 从数据库获取标签
+     *
+     * @param int $n
+     * @return array
+     */
+    public function getTagsFromDb(int $n): array
+    {
+        $db = Be::getDb();
+        $sql = 'SELECT tag FROM (SELECT tag, COUNT(*) AS cnt FROM `cms_article_tag` GROUP  BY tag) t ORDER BY cnt DESC LIMIT ' . $n;
+        return $db->getValues($sql);
     }
 
     /**
