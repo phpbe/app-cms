@@ -30,8 +30,8 @@ class Category
             $category = Be::getService('App.Cms.Category')->getCategory($id);
 
             $response->set('title', $category->seo_title);
-            $response->set('metaKeywords', $category->seo_keywords);
             $response->set('metaDescription', $category->seo_description);
+            $response->set('metaKeywords', $category->seo_keywords);
             $response->set('pageTitle', $category->name);
 
             $page = $request->get('page', 1);

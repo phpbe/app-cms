@@ -26,8 +26,8 @@ class Article
         $response->set('pageConfig', $pageConfig);
 
         $response->set('title', $pageConfig->title ?: '');
-        $response->set('metaKeywords', $pageConfig->metaDescription ?: '');
-        $response->set('metaDescription', $pageConfig->metaKeywords ?: '');
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
         $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
 
         $page = $request->get('page', 1);
@@ -59,8 +59,8 @@ class Article
         $response->set('pageConfig', $pageConfig);
 
         $response->set('title', $pageConfig->title ?: '');
-        $response->set('metaKeywords', $pageConfig->metaDescription ?: '');
-        $response->set('metaDescription', $pageConfig->metaKeywords ?: '');
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
         $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
 
         $page = $request->get('page', 1);
@@ -92,8 +92,8 @@ class Article
         $response->set('pageConfig', $pageConfig);
 
         $response->set('title', $pageConfig->title ?: '');
-        $response->set('metaKeywords', $pageConfig->metaDescription ?: '');
-        $response->set('metaDescription', $pageConfig->metaKeywords ?: '');
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
         $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
 
         $page = $request->get('page', 1);
@@ -156,8 +156,8 @@ class Article
 
             $article = $service->hit($id);
             $response->set('title', $article->seo_title);
-            $response->set('metaKeywords', $article->seo_keywords);
             $response->set('metaDescription', $article->seo_description);
+            $response->set('metaKeywords', $article->seo_keywords);
             $response->set('pageTitle', $article->title);
 
             $response->set('article', $article);
@@ -196,8 +196,8 @@ class Article
             $article = $service->getArticleFromDb($id);
 
             $response->set('title', $article->seo_title);
-            $response->set('metaKeywords', $article->seo_keywords);
             $response->set('metaDescription', $article->seo_description);
+            $response->set('metaKeywords', $article->seo_keywords);
             $response->set('pageTitle', $article->title);
 
             $response->set('article', $article);
