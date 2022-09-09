@@ -21,7 +21,16 @@ class Article
 
         $key = 'Cms:Article:' . $articleId;
         $article = $cache->get($key);
-        if (!$article) {
+        if ($article === false) {
+            try {
+                $article = $this->getArticleFromDb($articleId);
+            } catch (\Throwable $t) {
+                $article = -1;
+            }
+            $cache->set($key, $article, 600);
+        }
+
+        if ($article === -1) {
             throw new ServiceException('文章不存在！');
         }
 
