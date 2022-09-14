@@ -37,12 +37,12 @@ class ArticleSyncEsAndCache extends TaskInterval
         $service = Be::getService('App.Cms.Admin.TaskArticle');
         $db = Be::getDb();
         $sql = 'SELECT * FROM cms_article WHERE is_enable != -1 AND update_time >= ? AND update_time < ?';
-        $blogs = $db->getYieldObjects($sql, [$d1, $d2]);
+        $objs = $db->getYieldObjects($sql, [$d1, $d2]);
 
         $batch = [];
         $i = 0;
-        foreach ($blogs as $blog) {
-            $batch[] = $blog;
+        foreach ($objs as $obj) {
+            $batch[] = $obj;
 
             $i++;
             if ($i >= 100) {
@@ -64,6 +64,41 @@ class ArticleSyncEsAndCache extends TaskInterval
 
             $service->syncCache($batch);
         }
+
+
+
+
+        $service = Be::getService('App.Cms.Admin.TaskArticleComment');
+        $db = Be::getDb();
+        $sql = 'SELECT * FROM cms_article_comment WHERE is_enable != -1 AND update_time >= ? AND update_time < ?';
+        $objs = $db->getYieldObjects($sql, [$d1, $d2]);
+
+        $batch = [];
+        $i = 0;
+        foreach ($objs as $obj) {
+            $batch[] = $obj;
+
+            $i++;
+            if ($i >= 100) {
+                if ($configEs->enable) {
+                    $service->syncEs($batch);
+                }
+
+                $service->syncCache($batch);
+
+                $batch = [];
+                $i = 0;
+            }
+        }
+
+        if ($i > 0) {
+            if ($configEs->enable) {
+                $service->syncEs($batch);
+            }
+
+            $service->syncCache($batch);
+        }
+
 
         $this->breakpoint = $d2;
     }

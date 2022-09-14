@@ -1,17 +1,8 @@
-<be-head>
-    <style type="text/css">
-        .article-image {
-            width: 200px;
-            text-align: center;
-        }
-
-        .article-image img {
-            max-width: 100%;
-        }
-    </style>
-</be-head>
-
 <be-page-content>
+    <style type="text/css">
+        .article-image { width: 200px; text-align: center; }
+        .article-image img { max-width: 100%; }
+    </style>
     <?php
     $isMobile = \Be\Be::getRequest()->isMobile();
     $i = 0;
@@ -41,10 +32,10 @@
                         <?php echo $article->summary; ?>
                     </div>
                     <div class="be-mt-100 be-c-999">
-                        <span><?php echo date('Y年n月j日', strtotime($article->publish_time)); ?></span>
+                        <span><?php echo date(beLang('App.Cms', 'ARTICLE.PUBLISH_TIME_YYYY_MM_DD'), strtotime($article->publish_time)); ?></span>
                         <?php
                         if ($article->author !== '') {
-                            echo '<span class="be-ml-100">作者：' . $article->author . '</span>';
+                            echo '<span class="be-ml-100">' . beLang('App.Cms', 'ARTICLE.AUTHOR') . ': ' .   $article->author . '</span>';
                         }
                         ?>
                     </div>
@@ -74,9 +65,9 @@
         if ($page > 1) {
             $url = $paginationUrl;
             $url .= http_build_query(['page' => ($page - 1)]);
-            $html .= '<a href="' . $url . '">上一页</a>';
+            $html .= '<a href="' . $url . '">' . beLang('App.Cms', 'PAGINATION.PREVIOUS'). '</a>';
         } else {
-            $html .= '<span>上一页</span>';
+            $html .= '<span>' . beLang('App.Cms', 'PAGINATION.PREVIOUS'). '</span>';
         }
         $html .= '</li>';
 
@@ -123,9 +114,9 @@
         if ($page < $pages) {
             $url = $paginationUrl;
             $url .= http_build_query(['page' => ($page + 1)]);
-            $html .= '<a href="' . $url . '">下一页</a>';
+            $html .= '<a href="' . $url . '">' . beLang('App.Cms', 'PAGINATION.NEXT'). '</a>';
         } else {
-            $html .= '<span>下一页</span>';
+            $html .= '<span>' . beLang('App.Cms', 'PAGINATION.NEXT'). '</span>';
         }
         $html .= '</li>';
         $html .= '</ul>';

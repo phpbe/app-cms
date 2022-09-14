@@ -31,7 +31,7 @@ class Article
         }
 
         if ($article === -1) {
-            throw new ServiceException('文章不存在！');
+            throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
         }
 
         return $article;
@@ -51,7 +51,7 @@ class Article
         $sql = 'SELECT * FROM `cms_article` WHERE id=?';
         $article = $db->getObject($sql, [$articleId]);
         if (!$article) {
-            throw new ServiceException('文章不存在！');
+            throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
         }
 
         $article->url_custom = (int)$article->url_custom;
@@ -391,18 +391,6 @@ class Article
 
         $total = $tableArticle->count();
 
-        if (isset($params['orderBy']) && in_array($params['orderBy'], ['hits', 'publish_time'])) {
-            $orderByDir = 'desc';
-            if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
-                $orderByDir = $params['orderByDir'];
-            }
-
-            $tableArticle->orderBy($params['orderBy'], $orderByDir);
-        } else {
-            $tableArticle->orderBy('is_on_top DESC, publish_time DESC');
-        }
-
-
         if (isset($params['orderBy'])) {
             if (is_array($params['orderBy'])) {
                 $len1 = count($params['orderBy']);
@@ -423,14 +411,15 @@ class Article
                 }
             } elseif (is_string($params['orderBy']) && in_array($params['orderBy'], ['hits', 'publish_time'])) {
                 $orderByDir = 'desc';
-                if (in_array($params['orderByDir'], ['asc', 'desc'])) {
+                if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
                     $orderByDir = $params['orderByDir'];
                 }
 
                 $tableArticle->orderBy($params['orderBy'], strtoupper($orderByDir));
             }
+        } else {
+            $tableArticle->orderBy('is_on_top DESC, publish_time DESC');
         }
-
 
         // 分页
         $pageSize = null;
@@ -1013,7 +1002,6 @@ class Article
         return $article;
     }
 
-
     /**
      * 从搜索历史出提取热门搜索词
      *
@@ -1096,7 +1084,7 @@ class Article
      * @param int $n
      * @return array
      */
-    public function getTags(int $n): array
+    public function getTopTags(int $n): array
     {
         $cache = Be::getCache();
 
@@ -1104,7 +1092,7 @@ class Article
         $tags = $cache->get($key);
         if ($tags === false) {
             try {
-                $tags = $this->getTagsFromDb($n);
+                $tags = $this->getTopTagsFromDb($n);
             } catch (\Throwable $t) {
                 $tags = [];
             }
@@ -1120,80 +1108,12 @@ class Article
      * @param int $n
      * @return array
      */
-    public function getTagsFromDb(int $n): array
+    public function getTopTagsFromDb(int $n): array
     {
         $db = Be::getDb();
         $sql = 'SELECT tag FROM (SELECT tag, COUNT(*) AS cnt FROM `cms_article_tag` GROUP  BY tag) t ORDER BY cnt DESC LIMIT ' . $n;
         return $db->getValues($sql);
     }
 
-    /**
-     * 顶
-     *
-     * @param string $articleId 文章ID
-     * @param int $value 值
-     *
-     * @throws \Exception
-     */
-    public function like($articleId, int $value = 1)
-    {
-        $my = Be::getUser();
-        if ($my->isGuest()) {
-            throw new \Exception('请先登陆！');
-        }
-
-        $tupleArticle = Be::getTuple('cms_article');
-        try {
-            $tupleArticle->load($articleId);
-        } catch (\Throwable $t) {
-            throw new \Exception('文章不存在！');
-        }
-
-        $tupleArticleVoteLog = Be::getTuple('cms_article_vote_log');
-        try {
-            $tupleArticleVoteLog->loadBy([
-                'article_id' => $articleId,
-                'user_id' => $my->id
-            ]);
-        } catch (\Throwable $t) {
-        }
-
-        if ($tupleArticleVoteLog->isLoaded()) {
-            throw new \Exception('您已经表过态啦！');
-        }
-
-        $db = Be::getDb();
-        $db->beginTransaction();
-        try {
-
-            $tupleArticleVoteLog->article_id = $articleId;
-            $tupleArticleVoteLog->user_id = $my->id;
-            $tupleArticleVoteLog->value = $value;
-            $tupleArticleVoteLog->insert();
-
-            if ($value === 1) {
-                $tupleArticle->increment('like', $value);
-            } elseif ($value === -1) {
-                $tupleArticle->decrement('like', $value);
-            }
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * 踩
-     *
-     * @param string $articleId 文章编号
-     * @throws \Exception
-     */
-    public function dislike($articleId)
-    {
-        $this->like($articleId, -1);
-    }
 
 }

@@ -31,6 +31,13 @@ class Es
      */
     public string $indexArticleSearchHistory = 'cms.article_search_history';
 
+    /**
+     * @BeConfigItem("存储文章评论的索引名",
+     *     driver="FormItemInput",
+     *     ui="return ['form-item' => ['v-show' => 'formData.enable === 1']];"
+     * )
+     */
+    public string $indexArticleComment = 'cms.article_comment';
 
 }
 

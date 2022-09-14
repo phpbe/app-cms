@@ -38,6 +38,7 @@ class Article
             'page' => $page,
         ]);
         $response->set('result', $result);
+
         $paginationUrl = beUrl('Cms.Article.home');
         $response->set('paginationUrl', $paginationUrl);
 
@@ -131,7 +132,7 @@ class Article
         $paginationUrl = beUrl('Cms.Article.hottest');
         $response->set('paginationUrl', $paginationUrl);
 
-        $response->set('title', '搜索 ' . $keyword . ' 的结果');
+        $response->set('title', beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $keyword));
 
         $response->display('App.Cms.Article.articles');
     }
@@ -151,19 +152,17 @@ class Article
             $service = Be::getService('App.Cms.Article');
             $id = $request->get('id', '');
             if ($id === '') {
-                throw new ControllerException('文章不存在！');
+                throw new ControllerException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
             }
 
             $article = $service->hit($id);
+
             $response->set('title', $article->seo_title);
             $response->set('metaDescription', $article->seo_description);
             $response->set('metaKeywords', $article->seo_keywords);
             $response->set('pageTitle', $article->title);
 
             $response->set('article', $article);
-
-            $configArticle = Be::getConfig('App.Cms.Article');
-            $response->set('configArticle', $configArticle);
 
             $response->display();
         } catch (\Throwable $t) {
@@ -190,7 +189,7 @@ class Article
             $service = Be::getService('App.Cms.Article');
             $id = $request->get('id', '');
             if ($id === '') {
-                throw new ControllerException('文章不存在！');
+                throw new ControllerException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
             }
 
             $article = $service->getArticleFromDb($id);
@@ -202,12 +201,12 @@ class Article
 
             $response->set('article', $article);
 
-            $configArticle = Be::getConfig('App.Cms.Article');
-            $response->set('configArticle', $configArticle);
-
             $response->display('App.Cms.Article.detail');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
         }
     }
+
+
+
 }

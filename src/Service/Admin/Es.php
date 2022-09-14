@@ -28,6 +28,11 @@ class Es
                          'name' => 'articleSearchHistory',
                          'label' => '文章搜索记录索引',
                          'value' => $configEs->indexArticleSearchHistory,
+                     ],
+                     [
+                         'name' => 'articleComment',
+                         'label' => '文章评论',
+                         'value' => $configEs->indexArticleComment,
                      ]
                  ] as $index) {
             $params = [
@@ -37,10 +42,10 @@ class Es
                 $index['exists'] = true;
 
                 $mapping = $es->indices()->getMapping($params);
-                $index['mapping'] = $mapping[$configEs->indexArticle]['mappings'] ?? [];
+                $index['mapping'] = $mapping[$index['value']]['mappings'] ?? [];
 
                 $settings = $es->indices()->getSettings($params);
-                $index['settings'] = $settings[$configEs->indexArticle]['settings'] ?? [];
+                $index['settings'] = $settings[$index['value']]['settings'] ?? [];
 
                 $count = $es->count($params);
                 $index['count'] = $count['count'] ?? 0;
@@ -156,6 +161,42 @@ class Es
                         'properties' => [
                             'keyword' => [
                                 'type' => 'keyword',
+                            ],
+                        ]
+                    ];
+                    break;
+                case 'articleComment':
+                    $mapping = [
+                        'properties' => [
+                            'id' => [
+                                'type' => 'keyword',
+                            ],
+                            'article_id' => [
+                                'type' => 'keyword',
+                            ],
+                            'name' => [
+                                'type' => 'keyword',
+                            ],
+                            'email' => [
+                                'type' => 'keyword',
+                            ],
+                            'content' => [
+                                'type' => 'text',
+                                'analyzer' => 'ik_max_word',
+                            ],
+                            'is_enable' => [
+                                'type' => 'boolean'
+                            ],
+                            'is_delete' => [
+                                'type' => 'boolean'
+                            ],
+                            'create_time' => [
+                                'type' => 'date',
+                                'format' => 'yyyy-MM-dd HH:mm:ss',
+                            ],
+                            'update_time' => [
+                                'type' => 'date',
+                                'format' => 'yyyy-MM-dd HH:mm:ss',
                             ],
                         ]
                     ];

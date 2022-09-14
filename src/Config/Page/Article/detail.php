@@ -17,6 +17,12 @@ class detail
             'name' => 'be-page-content',
         ],
         [
+            'name' => 'App.Cms.ArticleComments',
+        ],
+        [
+            'name' => 'App.Cms.ArticleCommentForm',
+        ],
+        [
             'name' => 'App.Cms.Similar',
         ],
     ];

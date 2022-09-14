@@ -13,8 +13,8 @@
 
         <script src="<?php echo $wwwUrl; ?>/lib/clipboard/clipboard.min.js"></script>
 
-        <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/article/css/detail.code.css">
-        <script src="<?php echo $wwwUrl; ?>/article/js/detail.code.js"></script>
+        <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/css/article/detail.code.css">
+        <script src="<?php echo $wwwUrl; ?>/js/article/detail.code.js"></script>
         <?php
     }
     ?>
@@ -26,14 +26,26 @@
         <?php
         if ($this->article->author !== '') {
             ?>
-            <span>作者：<?php echo $this->article->author; ?></span>
+            <span><?php echo beLang('App.Cms', 'ARTICLE.AUTHOR') . ': ' .  $this->article->author; ?></span>
             <?php
         }
         ?>
-        <span class="be-ml-100">发布时间：<?php echo date('Y年n月j日 H:i', strtotime($this->article->publish_time)); ?></span>
-        <span class="be-ml-100">浏览：<?php echo $this->article->hits; ?></span>
+        <span class="be-ml-100"><?php echo beLang('App.Cms', 'ARTICLE.PUBLISH_TIME') . ': '. date(beLang('App.Cms', 'ARTICLE.PUBLISH_TIME_YYYY_MM_DD_HH_II'), strtotime($this->article->publish_time)); ?></span>
+        <span class="be-ml-100"><?php echo beLang('App.Cms', 'ARTICLE.HITS') . ': '. $this->article->hits; ?></span>
     </div>
-    <div class="be-mt-200 be-lh-<?php echo $this->configArticle->detailLineHeight; ?> be-fs-<?php echo $this->configArticle->detailFontSize; ?>">
+    <div class="be-mt-200 be-lh-200 be-fs-110">
         <?php echo $this->article->description; ?>
+    </div>
+
+    <div class="be-mt-200 be-bt-eee be-pt-100">
+        <?php
+        foreach ($this->article->tags as $tag) {
+            ?>
+            <a class="be-mt-50 be-mr-50 be-btn be-btn-main be-btn-outline be-btn-sm" href="<?php echo beUrl('Cms.Article.search', ['tag'=> $tag]); ?>" title="<?php echo $tag; ?>">
+                #<?php echo $tag; ?>
+            </a>
+            <?php
+        }
+        ?>
     </div>
 </be-page-content>

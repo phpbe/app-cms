@@ -8,6 +8,11 @@ class Article
 {
 
     /**
+     * @BeConfigItem("文章列表查询缓存时间（秒）", driver="FormItemInputNumberInt")
+     */
+    public int $articlesCacheExpire = 600;
+
+    /**
      * @BeConfigItem("默认分页条数", driver="FormItemInputNumberInt")
      */
     public int $pageSize = 15;
@@ -21,6 +26,11 @@ class Article
      * @BeConfigItem("评论是否默认公开", description="不公开时，需要管理员审核", driver="FormItemSwitch")
      */
     public int $commentPublic = 1;
+
+    /**
+     * @BeConfigItem("评论列表查询缓存时间（秒）", driver="FormItemInputNumberInt")
+     */
+    public int $commentsCacheExpire = 600;
 
     /**
      * @BeConfigItem("TinyMCE 默认风格",
@@ -41,22 +51,6 @@ class Article
      */
     public array $tinymceOption = [
     ];
-
-    /**
-     * @BeConfigItem("文章详情页文字大小",
-     *     driver="FormItemSelect",
-     *     keyValues = "return ['100' => '1rem', '110' => '1.1rem', '120' => '1.2rem', '125' => '1.25rem', '150' => '1.5rem', '175' => '1.75rem', '200' => '2rem'];")
-     * )
-     */
-    public string $detailFontSize = '110';
-
-    /**
-     * @BeConfigItem("文章详情页行高",
-     *     driver="FormItemSelect",
-     *     keyValues = "return ['150' => '1.5rem', '175' => '1.75rem', '200' => '2rem', '250' => '2.5rem', '300' => '3rem', '400' => '4rem'];")
-     * )
-     */
-    public string $detailLineHeight = '200';
 
     /**
      * @BeConfigItem("记录最近访问的文章数（个）",

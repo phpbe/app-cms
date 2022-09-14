@@ -1,227 +1,246 @@
 <?php
 namespace Be\App\Cms\Service;
 
+use Be\App\ControllerException;
+use Be\App\ServiceException;
 use Be\Be;
-use Be\Service;
 
-class ArticleComment extends Service
+class ArticleComment
 {
 
     /**
-     * 获取评论列表
+     * 获取文章评论
      *
-     * @param array $conditions 查询条件
+     * @param string $articleId
+     * @param array $params
      * @return array
      */
-    public function getComments($conditions = [])
+    public function getComments(string $articleId, array $params = []): array
     {
-        $tableArticleComment= Be::getTable('cms_article_comment');
+        $configArticle = Be::getConfig('App.Cms.Article');
+        if ($configArticle->commentsCacheExpire > 0) {
+            $cache = Be::getCache();
+            $cacheKey = 'Cms:Article:Comments:' . $articleId . ':' . md5(serialize($params));
+            $comments = $cache->get($cacheKey);
+            if ($comments !== false) {
+                return $comments;
+            }
+        }
 
-        $where = $this->createCommentWhere($conditions);
-        $tableArticleComment->where($where);
-
-        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
-            $tableArticleComment->orderBy($conditions['orderByString']);
+        $configEs = Be::getConfig('App.Cms.Es');
+        if (!$configEs->enable) {
+            $comments =  $this->getCommentsFromDb($articleId, $params);
         } else {
-            $orderBy = 'create_time';
-            $orderByDir = 'DESC';
-            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
-            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
-            $tableArticleComment->orderBy($orderBy, $orderByDir);
+            $es = Be::getEs();
+
+            $query = [
+                'index' => $configEs->indexArticleComment,
+                'body' => [
+                    'query' => [
+                        'bool' => [
+                            'filter' => [
+                                [
+                                    'term' => [
+                                        'article_id' => $articleId,
+                                    ],
+                                ],
+                                [
+                                    'term' => [
+                                        'is_enable' => true,
+                                    ],
+                                ],
+                                [
+                                    'term' => [
+                                        'is_delete' => false,
+                                    ],
+                                ],
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+
+            if (isset($params['orderBy'])) {
+                if (is_array($params['orderBy'])) {
+                    $len1 = count($params['orderBy']);
+                    if ($len1 > 0 && is_array($params['orderByDir'])) {
+                        $len2 = count($params['orderByDir']);
+                        if ($len1 === $len2) {
+                            $query['body']['sort'] = [];
+                            for ($i = 0; $i < $len1; $i++) {
+                                $orderByDir = 'desc';
+                                if (in_array($params['orderByDir'][$i], ['asc', 'desc'])) {
+                                    $orderByDir = $params['orderByDir'][$i];
+                                }
+                                $query['body']['sort'][] = [
+                                    $params['orderBy'][$i] => [
+                                        'order' => $orderByDir
+                                    ]
+                                ];
+                            }
+                        }
+                    }
+                } elseif (is_string($params['orderBy'])) {
+                    $orderByDir = 'desc';
+                    if (in_array($params['orderByDir'], ['asc', 'desc'])) {
+                        $orderByDir = $params['orderByDir'];
+                    }
+
+                    $query['body']['sort'] = [
+                        [
+                            $params['orderBy'] => [
+                                'order' => $orderByDir
+                            ]
+                        ],
+                    ];
+                }
+            }
+
+            // 分页
+            $pageSize = null;
+            if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
+                $pageSize = $params['pageSize'];
+            } else {
+                $pageSize = $configArticle->pageSize;
+            }
+
+            if ($pageSize > 200) {
+                $pageSize = 200;
+            }
+
+            $page = null;
+            if (isset($params['page']) && is_numeric($params['page']) && $params['page'] > 0) {
+                $page = $params['page'];
+            } else {
+                $page = 1;
+            }
+
+            $query['body']['size'] = $pageSize;
+            $query['body']['from'] = ($page - 1) * $pageSize;
+
+            $results = $es->search($query);
+
+            $total = 0;
+            if (isset($results['hits']['total']['value'])) {
+                $total = $results['hits']['total']['value'];
+            }
+
+            $rows = [];
+            foreach ($results['hits']['hits'] as $x) {
+                $rows[] = (object)$x['_source'];
+            }
+
+            $comments = [
+                'total' => $total,
+                'pageSize' => $pageSize,
+                'page' => $page,
+                'rows' => $rows,
+            ];
         }
 
-        if (isset($conditions['offset']) && $conditions['offset']) $tableArticleComment->offset($conditions['offset']);
-        if (isset($conditions['limit']) && $conditions['limit']) $tableArticleComment->limit($conditions['limit']);
+        if ($configArticle->commentsCacheExpire > 0) {
+            $cache->set($cacheKey, $comments, $configArticle->commentsCacheExpire);
+        }
 
-        return $tableArticleComment->getObjects();
+        return $comments;
     }
 
-    /**
-     * 获取评论总数
-     *
-     * @param array $conditions 查询条件
-     * @return int
-     */
-    public function getCommentCount($conditions = [])
-    {
-        return Be::getTable('cms_article_comment')
-            ->where($this->createCommentWhere($conditions))
-            ->count();
-    }
 
     /**
-     * 生成评论条件where
+     * 获取文章评论
      *
-     * @param array $conditions 查询条件
+     * @param string $articleId
      * @return array
      */
-    private function createCommentWhere($conditions = [])
+    public function getCommentsFromDb(string $articleId, array $params = []): array
     {
-        $where = [];
+        $configArticle = Be::getConfig('App.Cms.Article');
+        $tableArticleComment = Be::getTable('cms_article_comment');
+        $tableArticleComment->where('article_id', $articleId);
+        $tableArticleComment->where('is_enable', 1);
+        $tableArticleComment->where('is_delete', 0);
 
-        if (isset($conditions['articleId']) && is_numeric($conditions['articleId']) && $conditions['articleId'] > 0) {
-            $where[] = ['article_id', $conditions['articleId']];
+        $total = $tableArticleComment->count();
+
+        if (isset($params['orderBy'])) {
+            $orderByDir = 'desc';
+            if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
+                $orderByDir = $params['orderByDir'];
+            }
+            $tableArticleComment->orderBy($params['orderBy'], $orderByDir);
+        } else {
+            $tableArticleComment->orderBy('create_time DESC');
         }
 
-        if (isset($conditions['userId']) && is_numeric($conditions['userId'])) {
-            $where[] = ['user_id', $conditions['userId']];
+        // 分页
+        $pageSize = null;
+        if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
+            $pageSize = $params['pageSize'];
+        } else {
+            $pageSize = $configArticle->pageSize;
         }
 
-        if (isset($conditions['key']) && $conditions['key']) {
-            $where[] = ['title', 'like', '\'%' . $conditions['key'] . '%\''];
+        if ($pageSize > 200) {
+            $pageSize = 200;
+        }
+        $tableArticleComment->limit($pageSize);
+
+        $page = null;
+        if (isset($params['page']) && is_numeric($params['page']) && $params['page'] > 0) {
+            $page = $params['page'];
+        } else {
+            $page = 1;
         }
 
-        if (isset($conditions['block']) && is_numeric($conditions['block']) && $conditions['block'] != -1) {
-            $where[] = ['block', $conditions['block']];
-        }
+        $tableArticleComment->offset(($page - 1) * $pageSize);
 
-        return $where;
+        $rows = $tableArticleComment->getObjects();
+
+        return [
+            'total' => $total,
+            'pageSize' => $pageSize,
+            'page' => $page,
+            'rows' => $rows,
+        ];
     }
 
     /**
      * 提交评论
      *
-     * @param int $articleId 文章编号
-     * @param string $commentBody 评论内容
+     * @param array $formData 表单数据
      * @throws \Exception
      */
-    public function comment($articleId, $commentBody)
+    public function create(array $formData = [])
     {
-        $my = Be::getUser();
-        if ($my->id == 0) {
-            throw new \Exception('请先登陆！');
+        $articleId = $formData['article_id'] ?? '';
+        if ($articleId === '') {
+            throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
         }
 
         $tupleArticle = Be::getTuple('cms_article');
-        $tupleArticle->load($articleId);
-        if ($tupleArticle->id == 0 || $tupleArticle->block == 1) {
-            throw new \Exception('文章不存在！');
+        try {
+            $tupleArticle->load($articleId);
+        } catch (\Throwable $t) {
+            throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
         }
 
-        $commentBody = trim($commentBody);
-        $commentBodyLength = strlen($commentBody);
-        if ($commentBodyLength == 0) {
-            throw new \Exception('请输入评论内容！');
-        }
-
-        if ($commentBodyLength > 2000) {
-            throw new \Exception('评论内容过长！');
-        }
+        $request = Be::getRequest();
+        $now = date('Y-m-d H:i:s');
+        $configArticle = Be::getConfig('App.Cms.Article');
 
         $tupleArticleComment = Be::getTuple('cms_article_comment');
         $tupleArticleComment->article_id = $articleId;
-        $tupleArticleComment->user_id = $my->id;
-        $tupleArticleComment->user_name = $my->name;
-        $tupleArticleComment->body = $commentBody;
-        $tupleArticleComment->ip = $_SERVER['REMOTE_ADDR'];
-        $tupleArticleComment->create_time = time();
+        $tupleArticleComment->name = $formData['name'] ?? '';
+        $tupleArticleComment->email = $formData['email'] ?? '';
+        $tupleArticleComment->content = $formData['content'] ?? '';
+        $tupleArticleComment->ip = $request->getIp();
+        $tupleArticleComment->is_enable = ($configArticle->commentPublic === 1 ? 1 : -1);
+        $tupleArticleComment->is_delete = 0;
+        $tupleArticleComment->create_time = $now;
+        $tupleArticleComment->update_time = $now;
 
-        $configArticle = Be::getConfig('Cms.Article');
-        $tupleArticleComment->block = ($configArticle->commentPublic == 1 ? 0 : 1);
-
-        $tupleArticleComment->save();
+        $tupleArticleComment->insert();
     }
 
-    /**
-     * 顶
-     *
-     * @param int $commentId 文章评论编号
-     * @throws \Exception
-     */
-    public function commentLike($commentId)
-    {
-
-        $my = Be::getUser();
-        if ($my->id == 0) {
-            throw new \Exception('请先登陆！');
-        }
-
-        $tupleArticleComment = Be::getTuple('cms_article_comment');
-        $tupleArticleComment->load($commentId);
-        if ($tupleArticleComment->id == 0 || $tupleArticleComment->block == 1) {
-            throw new \Exception('评论不存在！');
-        }
-
-        $tupleArticleVoteLog = Be::getTuple('cms_article_vote_log');
-        $tupleArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
-        if ($tupleArticleVoteLog->id > 0) {
-            throw new \Exception('您已经表过态啦！');
-        }
-
-        $db = Be::getDb();
-        $db->beginTransaction();
-        try {
-
-            $tupleArticleVoteLog->comment_id = $commentId;
-            $tupleArticleVoteLog->userId = $my->id;
-            $tupleArticleVoteLog->save();
-
-            $tupleArticleComment->increment('like', 1);
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            throw $e;
-        }
-    }
-
-    /**
-     * 踩
-     *
-     * @param int $commentId 文章评论编号
-     * @throws \Exception
-     */
-    public function commentDislike($commentId)
-    {
-        $my = Be::getUser();
-        if ($my->id == 0) {
-            throw new \Exception('请先登陆！');
-        }
-
-        $tupleArticleComment = Be::getTuple('cms_article_comment');
-        $tupleArticleComment->load($commentId);
-        if ($tupleArticleComment->id == 0 || $tupleArticleComment->block == 1) {
-            throw new \Exception('评论不存在！');
-        }
-
-        $tupleArticleVoteLog = Be::getTuple('cms_article_vote_log');
-        $tupleArticleVoteLog->load(['comment_id' => $commentId, 'user_id' => $my->id]);
-        if ($tupleArticleVoteLog->id > 0) {
-            throw new \Exception('您已经表过态啦！');
-        }
-
-        $db = Be::getDb();
-        $db->beginTransaction();
-        try {
-
-            $tupleArticleVoteLog->comment_id = $commentId;
-            $tupleArticleVoteLog->userId = $my->id;
-            $tupleArticleVoteLog->save();
-
-            $tupleArticleComment->increment('dislike', 1);
-
-            $db->commit();
-        } catch (\Exception $e) {
-            $db->rollback();
-
-            throw $e;
-        }
-    }
-
-    public function commentsUnblock($ids)
-    {
-        Be::getTable('cms_article_comment')->where('id', 'in', explode(',', $ids))->update(['block' => 0]);
-    }
-
-    public function commentsBlock($ids)
-    {
-        Be::getTable('cms_article_comment')->where('id', 'in', explode(',', $ids))->update(['block' => 1]);
-    }
-
-    public function commentsDelete($ids)
-    {
-        Be::getTable('cms_article_comment')->where('id', 'in', explode(',', $ids))->delete();
-    }
 
 }
