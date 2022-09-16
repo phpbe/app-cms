@@ -1,8 +1,8 @@
 <?php
 
-namespace Be\App\Cms\Config\Page\Article;
+namespace Be\App\Cms\Config\Page\Home;
 
-class home
+class index
 {
 
     public int $west = 0;
