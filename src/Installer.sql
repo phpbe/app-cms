@@ -24,6 +24,19 @@ CREATE TABLE `cms_article` (
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章';
 
+CREATE TABLE `cms_article_comment` (
+`id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
+`article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '文章ID',
+`name` varchar(60) NOT NULL DEFAULT '' COMMENT '名称',
+`email` varchar(120) NOT NULL DEFAULT '' COMMENT '邮箱',
+`content` varchar(500) NOT NULL DEFAULT '' COMMENT '评论内容',
+`ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'IP地址',
+`is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否公开',
+`is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
+`create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章评论';
+
 CREATE TABLE `cms_article_category` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '文章ID',
@@ -88,6 +101,9 @@ ADD PRIMARY KEY (`id`),
 ADD KEY `url` (`url`),
 ADD KEY `update_time` (`update_time`);
 
+ALTER TABLE `cms_article_comment`
+ADD PRIMARY KEY (`id`),
+ADD KEY `article_id` (`article_id`);
 
 ALTER TABLE `cms_article_category`
 ADD PRIMARY KEY (`id`),
