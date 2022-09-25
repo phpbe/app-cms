@@ -15,7 +15,7 @@ class CollectArticleApi extends Auth
     /**
      * 采集接口
      *
-     * @BeMenu("采集接口", icon="el-icon-fa fa-train", ordering="2.3")
+     * @BeMenu("采集接口", icon="bi-bounding-box", ordering="2.3")
      * @BePermission("采集接口", ordering="2.3")
      */
     public function config()
