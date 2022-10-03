@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\App\Cms\Controller\Admin;
 
 use Be\AdminPlugin\Detail\Item\DetailItemHtml;
@@ -9,6 +10,7 @@ use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
+use Be\AdminPlugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
 use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
@@ -16,8 +18,8 @@ use Be\Request;
 use Be\Response;
 
 /**
- * @BeMenuGroup("内容管理", icon="el-icon-document-copy", ordering="1")
- * @BePermissionGroup("内容管理", icon="el-icon-document-copy", ordering="1")
+ * @BeMenuGroup("文章", icon="el-icon-tickets", ordering="1")
+ * @BePermissionGroup("文章", icon="el-icon-tickets", ordering="1")
  */
 class Article extends Auth
 {
@@ -25,8 +27,8 @@ class Article extends Auth
     /**
      * 文章
      *
-     * @BeMenu("文章", icon="el-icon-tickets", ordering="1.1")
-     * @BePermission("文章", ordering="1.1")
+     * @BeMenu("文章列表", icon="el-icon-document-copy", ordering="1.1")
+     * @BePermission("文章列表", ordering="1.1")
      */
     public function articles()
     {
@@ -37,10 +39,11 @@ class Article extends Auth
             'table' => 'cms_article',
 
             'grid' => [
-                'title' => '文章',
+                'title' => '文章列表',
 
                 'filter' => [
                     ['is_delete', '=', '0'],
+                    ['is_enable', '!=', '-1'],
                 ],
 
                 'orderBy' => 'create_time',
@@ -48,11 +51,11 @@ class Article extends Auth
 
                 'tab' => [
                     'name' => 'is_enable',
-                    'value' => Be::getRequest()->request('is_enable', '-1'),
-                    'nullValue' => '-1',
+                    'value' => Be::getRequest()->request('is_enable', '-100'),
+                    'nullValue' => '-100',
                     'counter' => true,
                     'keyValues' => [
-                        '-1' => '全部',
+                        '-100' => '全部',
                         '1' => '已发布',
                         '0' => '未发布',
                     ],
@@ -65,7 +68,7 @@ class Article extends Auth
                             'label' => '分类',
                             'driver' => FormItemSelect::class,
                             'keyValues' => $categoryKeyValues,
-                            'buildSql' => function($dbName, $formData) {
+                            'buildSql' => function ($dbName, $formData) {
                                 if (isset($formData['category_id']) && $formData['category_id']) {
                                     $articleIds = Be::getTable('cms_article_category', $dbName)
                                         ->where('category_id', $formData['category_id'])
@@ -192,6 +195,26 @@ class Article extends Auth
                                 'type' => 'danger'
                             ]
                         ],
+                        [
+                            'label' => '批量编辑',
+                            'driver' => ToolbarItemButtonDropDown::class,
+                            'ui' => [
+                                'class' => 'be-ml-50',
+                                'icon' => 'el-icon-edit',
+                                'type' => 'primary'
+                            ],
+                            'menus' => [
+                                [
+                                    'label' => '分类',
+                                    'url' => beAdminUrl('Cms.Article.bulkEditCategory'),
+                                    'target' => 'drawer',
+                                    'drawer' => [
+                                        'title' => '批量编辑文章分类',
+                                        'width' => '80%'
+                                    ],
+                                ],
+                            ]
+                        ],
                     ]
                 ],
 
@@ -212,7 +235,7 @@ class Article extends Auth
                             'ui' => [
                                 'style' => 'max-width: 60px; max-height: 60px'
                             ],
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 if ($row['image'] === '') {
                                     return Be::getProperty('App.Cms')->getWwwUrl() . '/article/images/no-image-s.jpg';
                                 }
@@ -330,7 +353,7 @@ class Article extends Auth
                             'name' => 'image',
                             'label' => '封面图片',
                             'driver' => DetailItemImage::class,
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 if ($row['image'] === '') {
                                     return Be::getProperty('App.Cms')->getWwwUrl() . '/Template/Article/images/no-image.jpg';
                                 }
@@ -382,7 +405,7 @@ class Article extends Auth
                                         ->where('id', 'IN', $categoryIds)
                                         ->getValues('name');
 
-                                    return '<span class="el-tag el-tag--primary el-tag--light">'. implode('</span> <span class="el-tag el-tag--primary el-tag--light">', $categoryNames) . '</span>';
+                                    return '<span class="el-tag el-tag--primary el-tag--light">' . implode('</span> <span class="el-tag el-tag--primary el-tag--light">', $categoryNames) . '</span>';
                                 }
 
                                 return '';
@@ -397,7 +420,7 @@ class Article extends Auth
                                     ->where('article_id', $row['id'])
                                     ->getValues('tag');
                                 if (count($tags) > 0) {
-                                    return '<span class="el-tag el-tag--primary el-tag--light">'. implode('</span> <span class="el-tag el-tag--primary el-tag--light">', $tags) . '</span>';
+                                    return '<span class="el-tag el-tag--primary el-tag--light">' . implode('</span> <span class="el-tag el-tag--primary el-tag--light">', $tags) . '</span>';
                                 }
                                 return '';
                             }
@@ -496,6 +519,9 @@ class Article extends Auth
             $configArticle = Be::getConfig('App.Cms.Article');
             $response->set('configArticle', $configArticle);
 
+            $response->set('backUrl', beAdminUrl('Cms.Article.articles'));
+            $response->set('formActionUrl', beAdminUrl('Cms.Article.create'));
+
             $response->display('App.Cms.Admin.Article.edit');
         }
     }
@@ -530,8 +556,8 @@ class Article extends Auth
                 }
             }
         } else {
-            $productId = $request->get('id', '');
-            $article = Be::getService('App.Cms.Admin.Article')->getArticle($productId, [
+            $articleId = $request->get('id', '');
+            $article = Be::getService('App.Cms.Admin.Article')->getArticle($articleId, [
                 'categories' => 1,
                 'tags' => 1,
             ]);
@@ -545,7 +571,67 @@ class Article extends Auth
             $configArticle = Be::getConfig('App.Cms.Article');
             $response->set('configArticle', $configArticle);
 
+            $response->set('backUrl', beAdminUrl('Cms.Article.articles'));
+            $response->set('formActionUrl', beAdminUrl('Cms.Article.edit'));
+
             $response->display();
+        }
+    }
+
+    /**
+     * 批量编辑文章分类
+     *
+     * @BePermission("编辑", ordering="1.12")
+     */
+    public function bulkEditCategory()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $data = $request->post('data', '', '');
+        $data = json_decode($data, true);
+
+        $articles = $data['selectedRows'];
+        if (count($articles) === 0) {
+            $response->error('您未选择文章！');
+            return;
+        }
+
+        foreach ($articles as &$article) {
+            $article['category_ids'] = [];
+        }
+        unset($article);
+
+        $response->set('title', '批量编辑文章分类');
+        $response->set('articles', $articles);
+
+        $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
+        $response->set('categoryKeyValues', $categoryKeyValues);
+
+        $response->display(null, 'Blank');
+    }
+
+    /**
+     * 批量编辑文章分类保存
+     *
+     * @BePermission("编辑", ordering="1.12")
+     */
+    public function bulkEditCategorySave()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $formData = $request->json('formData');
+            $articles = $formData['articles'];
+            Be::getService('App.Cms.Admin.Article')->bulkEditCategory($articles);
+            $response->set('success', true);
+            $response->set('message', '批量编辑文章分类成功！');
+            $response->json();
+        } catch (\Throwable $t) {
+            $response->set('success', false);
+            $response->set('message', $t->getMessage());
+            $response->json();
         }
     }
 
@@ -561,9 +647,6 @@ class Article extends Auth
         $data = json_decode($data, true);
         Be::getResponse()->redirect(beUrl('Cms.Article.preview', ['id' => $data['row']['id']]));
     }
-
-
-
 
 
     public function comments()
@@ -630,7 +713,7 @@ class Article extends Auth
             $serviceArticle = Be::getService('Cms.Article');
             $serviceArticle->commentsUnblock($ids);
             Response::success('公开评论成功！');
-             Be::getService('System.AdminLog')->addLog('公开文章评论：#' . $ids);
+            Be::getService('System.AdminLog')->addLog('公开文章评论：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -647,7 +730,7 @@ class Article extends Auth
             $serviceArticle = Be::getService('Cms.Article');
             $serviceArticle->commentsBlock($ids);
             Response::success('屏蔽评论成功！');
-             Be::getService('System.AdminLog')->addLog('屏蔽文章评论：#' . $ids);
+            Be::getService('System.AdminLog')->addLog('屏蔽文章评论：#' . $ids);
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -664,7 +747,7 @@ class Article extends Auth
             $serviceArticle = Be::getService('Cms.Article');
             $serviceArticle->commentsDelete($ids);
             Response::success('删除评论成功！');
-             Be::getService('System.AdminLog')->addLog('删除文章评论：#' . $ids . ')');
+            Be::getService('System.AdminLog')->addLog('删除文章评论：#' . $ids . ')');
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }

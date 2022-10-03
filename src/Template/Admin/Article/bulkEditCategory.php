@@ -1,6 +1,6 @@
 <be-head>
     <style>
-        .collect-article-header {
+        .article-header {
             color: #666;
             background-color: #EBEEF5;
             height: 3rem;
@@ -8,7 +8,7 @@
             margin-bottom: .5rem;
         }
 
-        .collect-article-op {
+        .article-op {
             color: #666;
             background-color: #EBEEF5;
             height: 3rem;
@@ -16,7 +16,7 @@
             margin-bottom: .5rem;
         }
 
-        .collect-article {
+        .article {
             line-height: 2.5rem;
             border-bottom: #EBEEF5 1px solid;
             padding-top: .5rem;
@@ -29,21 +29,21 @@
 <be-page-content>
     <?php
     $rootUrl = \Be\Be::getRequest()->getRootUrl();
-    $formData = ['collectArticles' => $this->collectArticles];
+    $formData = ['articles' => $this->articles];
     ?>
 
     <div id="app" v-cloak>
         <div style="position: absolute; left: 0; right: 0; top: 0; bottom: 6rem; overflow-y: auto;">
-            <div class="be-row collect-article-header">
+            <div class="be-row article-header">
                 <div class="be-col-12 be-fw-bold be-pl-100">
-                    采集的文章
+                    文章
                 </div>
                 <div class="be-col-12 be-fw-bold be-ta-center">
                     设置分类
                 </div>
             </div>
 
-            <div class="be-row collect-article-op">
+            <div class="be-row article-op">
                 <div class="be-col-12 be-pl-100">
                     批量设置
                 </div>
@@ -65,13 +65,13 @@
             </div>
 
 
-            <div class="be-row collect-article" v-for="collectArticle, collectArticleIndex in formData.collectArticles" :key="collectArticle.id">
+            <div class="be-row collect-article" v-for="article, articleIndex in formData.articles" :key="article.id">
                 <div class="be-col-12 be-pl-100">
-                    {{collectArticle.title}}
+                    {{article.title}}
                 </div>
                 <div class="be-col-12 be-ta-center">
                     <el-select
-                            v-model="collectArticle.category_ids"
+                            v-model="article.category_ids"
                             multiple
                             placeholder="请选择分类"
                             size="medium" style="min-width: 90%">
@@ -88,7 +88,7 @@
         <div class="be-row be-bt" style="position: absolute; left: 0; right: 0; bottom: 0; height: 5rem; line-height: 4rem;">
             <div class="be-col"></div>
             <div class="be-col-auto">
-                <el-button type="primary" icon="el-icon-check" @click="importConfirm" :disable="loading">确认导入</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="save" :disable="loading">确认保存</el-button>
             </div>
         </div>
 
@@ -104,10 +104,10 @@
                 t: false
             },
             methods: {
-                importConfirm: function () {
+                save: function () {
                     let _this = this;
                     _this.loading = true;
-                    _this.$http.post("<?php echo beAdminUrl('Cms.CollectArticle.importSave'); ?>", {
+                    _this.$http.post("<?php echo beAdminUrl('Cms.Article.bulkEditCategorySave'); ?>", {
                         formData: _this.formData
                     }).then(function (response) {
                         _this.loading = false;
@@ -133,7 +133,7 @@
                     });
                 },
                 setCategoryIds(val) {
-                    for (let article of this.formData.collectArticles) {
+                    for (let article of this.formData.articles) {
                         article.category_ids = val;
                     }
                 }

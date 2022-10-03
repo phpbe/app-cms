@@ -13,8 +13,8 @@ use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
- * @BeMenuGroup("内容管理")
- * @BePermissionGroup("内容管理")
+ * @BeMenuGroup("文章")
+ * @BePermissionGroup("文章")
  */
 class Category extends Auth
 {
@@ -22,8 +22,8 @@ class Category extends Auth
     /**
      * 文章分类
      *
-     * @BeMenu("文章分类", icon="el-icon-folder", ordering="1.2")
-     * @BePermission("文章分类", ordering="1.2")
+     * @BeMenu("分类", icon="el-icon-folder", ordering="1.3")
+     * @BePermission("分类", ordering="1.3")
      */
     public function categories()
     {
@@ -241,7 +241,7 @@ class Category extends Auth
     /**
      * 新建文章分类
      *
-     * @BePermission("新建", ordering="1.21")
+     * @BePermission("新建", ordering="1.31")
      */
     public function create()
     {
@@ -270,7 +270,7 @@ class Category extends Auth
     /**
      * 编辑
      *
-     * @BePermission("编辑", ordering="1.22")
+     * @BePermission("编辑", ordering="1.32")
      */
     public function edit()
     {
@@ -309,7 +309,7 @@ class Category extends Auth
     /**
      * 删除
      *
-     * @BePermission("删除", ordering="1.23")
+     * @BePermission("删除", ordering="1.33")
      */
     public function delete()
     {
@@ -363,7 +363,7 @@ class Category extends Auth
     /**
      * 指定文章分类下的文章分类文章管理
      *
-     * @BePermission("文章分类下文章管理", ordering="1.24")
+     * @BePermission("文章分类下文章管理", ordering="1.34")
      */
     public function goArticles()
     {

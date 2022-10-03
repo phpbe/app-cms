@@ -10,8 +10,7 @@ use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
- * @BeMenuGroup("内容管理")
- * @BePermissionGroup("内容管理")
+ * 自定义页面
  */
 class Page extends Auth
 {
@@ -19,8 +18,8 @@ class Page extends Auth
     /**
      * 自定义页面列表
      *
-     * @BeMenu("自定义页面", icon="el-icon-document", ordering="1.3")
-     * @BePermission("自定义页面", ordering="1.3")
+     * @BeMenu("自定义页面", icon="el-icon-document", ordering="3")
+     * @BePermission("自定义页面", ordering="3")
      */
     public function pages()
     {
@@ -237,7 +236,7 @@ class Page extends Auth
     /**
      * 新建自定义页面
      *
-     * @BePermission("新建", ordering="1.31")
+     * @BePermission("新建", ordering="3.11")
      */
     public function create()
     {
@@ -271,7 +270,7 @@ class Page extends Auth
     /**
      * 编辑
      *
-     * @BePermission("编辑", ordering="1.32")
+     * @BePermission("编辑", ordering="3.12")
      */
     public function edit()
     {
@@ -315,6 +314,7 @@ class Page extends Auth
     /**
      * 预览
      *
+     * @BePermission("*")
      * @return void
      */
     public function preview()

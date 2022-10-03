@@ -6,14 +6,14 @@ use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
- * @BeMenuGroup("控制台", icon="el-icon-monitor", ordering="3")
- * @BePermissionGroup("控制台", icon="el-icon-monitor", ordering="3")
+ * @BeMenuGroup("控制台")
+ * @BePermissionGroup("控制台")
  */
 class Task extends Auth
 {
     /**
-     * @BeMenu("计划任务", icon="el-icon-timer", ordering="3.2")
-     * @BePermission("计划任务", ordering="3.2")
+     * @BeMenu("计划任务", icon="el-icon-timer", ordering="4.2")
+     * @BePermission("计划任务", ordering="4.2")
      */
     public function dashboard()
     {

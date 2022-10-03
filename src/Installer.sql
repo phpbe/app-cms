@@ -68,13 +68,8 @@ CREATE TABLE `cms_category` (
 
 CREATE TABLE `cms_collect_article` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
-`unique_key` varchar(200) NOT NULL DEFAULT '' COMMENT '唯一键',
-`image` varchar(200) NOT NULL DEFAULT '' COMMENT '封面图片',
-`title` varchar(120) NOT NULL DEFAULT '' COMMENT '标题',
-`summary` varchar(500) NOT NULL DEFAULT '' COMMENT '摘要',
-`description` mediumtext NOT NULL COMMENT '描述',
-`article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '导入到的文章ID',
-`is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
+`unique_key` varchar(200) NOT NULL COMMENT '唯一键',
+`article_id` varchar(36) NOT NULL COMMENT '文章ID',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集的文章';
@@ -120,7 +115,8 @@ ADD UNIQUE KEY `url` (`url`) USING BTREE;
 
 ALTER TABLE `cms_collect_article`
 ADD PRIMARY KEY (`id`),
-ADD KEY `unique_key` (`unique_key`);
+ADD UNIQUE KEY `article_id` (`article_id`),
+ADD KEY `unique_key` (`unique_key`) USING BTREE;
 
 ALTER TABLE `cms_page`
 ADD PRIMARY KEY (`id`),

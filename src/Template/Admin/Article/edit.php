@@ -85,7 +85,7 @@
         <div class="be-row">
             <div class="be-col">
                 <div style="padding: 1.25rem 0 0 2rem;">
-                    <el-link icon="el-icon-back" href="<?php echo beAdminUrl('Cms.Article.articles'); ?>">返回文章列表</el-link>
+                    <el-link icon="el-icon-back" href="<?php echo $this->backUrl; ?>">返回文章列表</el-link>
                 </div>
             </div>
             <div class="be-col-auto">
@@ -131,7 +131,7 @@
             ?>
 
             <div class="be-row">
-                <div class="be-col-24 be-md-col-18">
+                <div class="be-col-24 be-xl-col">
                     <div class="be-p-150 be-bc-fff">
 
                         <div><span class="be-c-red">*</span> 标题：</div>
@@ -185,41 +185,53 @@
                     </div>
                 </div>
 
+                <div class="be-col-24 be-xl-col-auto">
+                    <div class="be-pl-200 be-pt-200"></div>
+                </div>
 
-                <div class="be-col-24 be-md-col-6 be-pl-150">
-                    <div class="be-p-150 be-bc-fff">
-
-                        <div class="be-row">
-                            <div class="be-col">是否推送到首页：</div>
-                            <div class="be-col-auto">
-                                <el-form-item prop="is_push_home">
-                                    <el-switch v-model.number="formData.is_push_home" :active-value="1" :inactive-value="0" size="medium"></el-switch>
-                                </el-form-item>
+                <div class="be-col-24 be-xl-col-auto">
+                    <div class="be-p-150 be-bc-fff" style="max-width: 400px;">
+                        <?php
+                        if ($this->article && $this->article->is_enable === -1) {
+                            $formData['is_enable'] = -1;
+                            $formData['is_push_home'] = 1;
+                            $formData['is_on_top'] = 0;
+                        } else {
+                            ?>
+                            <div class="be-row">
+                                <div class="be-col">是否发布：</div>
+                                <div class="be-col-auto">
+                                    <el-form-item prop="is_enable">
+                                        <el-switch v-model.number="formData.is_enable" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </el-form-item>
+                                </div>
                             </div>
-                        </div>
-                        <?php $formData['is_push_home'] = ($this->article ? $this->article->is_push_home : 1); ?>
+                            <?php $formData['is_enable'] = ($this->article ? $this->article->is_enable : 0); ?>
 
-                        <div class="be-row be-mt-150">
-                            <div class="be-col">是否置项：</div>
-                            <div class="be-col-auto">
-                                <el-form-item prop="is_on_top">
-                                    <el-switch v-model.number="formData.is_on_top" :active-value="1" :inactive-value="0" size="medium"></el-switch>
-                                </el-form-item>
+                            <div class="be-row be-mt-100">
+                                <div class="be-col">是否推送到首页：</div>
+                                <div class="be-col-auto">
+                                    <el-form-item prop="is_push_home">
+                                        <el-switch v-model.number="formData.is_push_home" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </el-form-item>
+                                </div>
                             </div>
-                        </div>
-                        <?php $formData['is_on_top'] = ($this->article ? $this->article->is_on_top : 0); ?>
+                            <?php $formData['is_push_home'] = ($this->article ? $this->article->is_push_home : 1); ?>
 
-                        <div class="be-row be-mt-150">
-                            <div class="be-col">是否发布：</div>
-                            <div class="be-col-auto">
-                                <el-form-item prop="is_enable">
-                                    <el-switch v-model.number="formData.is_enable" :active-value="1" :inactive-value="0" size="medium"></el-switch>
-                                </el-form-item>
+                            <div class="be-row be-mt-100">
+                                <div class="be-col">是否置项：</div>
+                                <div class="be-col-auto">
+                                    <el-form-item prop="is_on_top">
+                                        <el-switch v-model.number="formData.is_on_top" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </el-form-item>
+                                </div>
                             </div>
-                        </div>
-                        <?php $formData['is_enable'] = ($this->article ? $this->article->is_enable : 0); ?>
+                            <?php $formData['is_on_top'] = ($this->article ? $this->article->is_on_top : 0); ?>
+                            <?php
+                        }
+                        ?>
 
-                        <div class="be-mt-150">封面图片：</div>
+                        <div class="be-mt-100">封面图片：</div>
                         <div class="be-row be-mt-50">
                             <div class="be-col-auto">
                                 <div v-if="formData.image !== ''" :key="formData.image" class="image">
@@ -251,7 +263,7 @@
                         </el-dialog>
 
 
-                        <div class="be-mt-150">
+                        <div class="be-mt-100">
                             分类：
                         </div>
                         <el-form-item class="be-mt-50" prop="category_ids">
@@ -271,7 +283,7 @@
                         $formData['category_ids'] = ($this->article ? $this->article->category_ids : []);
                         ?>
 
-                        <div class="be-mt-150">
+                        <div class="be-mt-100">
                             标签：
                         </div>
                         <div v-if="formData.tags">
@@ -303,7 +315,7 @@
                         ]);
                         ?>
 
-                        <div class="be-mt-150">
+                        <div class="be-mt-100">
                             作者：
                         </div>
                         <el-form-item class="be-mt-50" prop="author">
@@ -315,7 +327,7 @@
                         $formData['author'] = ($this->article ? $this->article->author : \Be\Be::getAdminUser()->name);
                         ?>
 
-                        <div class="be-mt-150">
+                        <div class="be-mt-100">
                             发布时间：
                         </div>
                         <el-form-item class="be-mt-50" prop="publish_time">
@@ -327,7 +339,7 @@
                         $formData['publish_time'] = ($this->article ? $this->article->publish_time : date('Y-m-d H:i:s'));
                         ?>
 
-                        <div class="be-row be-mt-150">
+                        <div class="be-row be-mt-100">
                             <div class="be-col be-lh-250">排序：</div>
                             <div class="be-col-auto">
                                 <el-form-item prop="ordering">
@@ -342,7 +354,7 @@
 
                     </div>
 
-                    <div class="be-p-150 be-bc-fff be-mt-150">
+                    <div class="be-p-150 be-bc-fff be-mt-200"  style="max-width: 400px;">
 
                         <div class="be-row">
                             <div class="be-col">
@@ -376,10 +388,7 @@
 
                 <div class="be-row">
                     <div class="be-col-auto">
-                        SEO标题
-                        <el-tooltip effect="dark" content="标题是SEO最重要的部分，该标题会显示在搜索引擎的搜索结果中。" placement="top">
-                            <i class="el-icon-fa fa-question-circle-o"></i>
-                        </el-tooltip>：
+                        SEO标题：
                     </div>
                     <div class="be-col">
                         <div class="be-pl-100">
@@ -404,10 +413,7 @@
 
                 <div class="be-row be-mt-150">
                     <div class="be-col-auto">
-                        SEO描述
-                        <el-tooltip effect="dark" content="这是该文章的整体SEO描述，使文章在搜索引擎中获得更高的排名。" placement="top">
-                            <i class="el-icon-fa fa-question-circle-o"></i>
-                        </el-tooltip>：
+                        SEO描述：
                     </div>
                     <div class="be-col">
                         <div class="be-pl-100">
@@ -459,10 +465,7 @@
                 ?>
 
                 <div class="be-mt-150">
-                    SEO关键词
-                    <el-tooltip effect="dark" content="关键词可以提高搜索结果排名，建议1-2个关键词即可，堆砌关键词可能会降低排名！" placement="top">
-                        <i class="el-icon-fa fa-question-circle-o"></i>
-                    </el-tooltip>
+                    SEO关键词：
                 </div>
                 <el-input
                         class="be-mt-50"
@@ -517,7 +520,7 @@
                         if (valid) {
                             _this.loading = true;
                             vueNorth.loading = true;
-                            _this.$http.post("<?php echo beAdminUrl('Cms.Article.' . ($this->article ? 'edit' :'create')); ?>", {
+                            _this.$http.post("<?php echo $this->formActionUrl; ?>", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.loading = false;
@@ -533,7 +536,7 @@
                                         } else {
                                             setTimeout(function () {
                                                 window.onbeforeunload = null;
-                                                window.location.href = "<?php echo beAdminUrl('Cms.Article.articles'); ?>";
+                                                window.location.href = responseData.redirectUrl;
                                             }, 1000);
                                         }
                                     } else {
@@ -556,7 +559,7 @@
                 },
                 cancel: function () {
                     window.onbeforeunload = null;
-                    window.location.href = "<?php echo beAdminUrl('Cms.Article.articles'); ?>";
+                    window.location.href = "<?php echo $this->backUrl; ?>";
                 },
 
                 addTag: function () {

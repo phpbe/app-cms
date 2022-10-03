@@ -6,15 +6,15 @@ use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
 
 /**
- * @BeMenuGroup("控制台")
- * @BePermissionGroup("控制台")
+ * @BeMenuGroup("控制台", icon="el-icon-monitor", ordering="4")
+ * @BePermissionGroup("控制台", icon="el-icon-monitor", ordering="4")
  */
 class Es extends Auth
 {
 
     /**
-     * @BeMenu("ES搜索引擎", icon="el-icon-search", ordering="3.1")
-     * @BePermission("ES搜索引擎 - 查看", ordering="3.1")
+     * @BeMenu("ES搜索引擎", icon="el-icon-search", ordering="4.1")
+     * @BePermission("ES搜索引擎 - 查看", ordering="4.1")
      */
     public function dashboard()
     {
@@ -34,7 +34,7 @@ class Es extends Auth
     /**
      * 创建索引
      *
-     * @BePermission("ES搜索引擎 - 创建索引", ordering="3.11")
+     * @BePermission("ES搜索引擎 - 创建索引", ordering="4.11")
      */
     public function createIndex()
     {
@@ -54,7 +54,7 @@ class Es extends Auth
     /**
      * 删除索引
      *
-     * @BePermission("ES搜索引擎 - 删除索引", ordering="3.12")
+     * @BePermission("ES搜索引擎 - 删除索引", ordering="4.12")
      */
     public function deleteIndex()
     {

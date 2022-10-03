@@ -2,14 +2,14 @@
     <div id="app" v-cloak>
         <div class="be-p-150 be-bc-fff">
             <div class="be-row be-lh-250 be-bb be-pb-50">
-                <div class="be-col-auto">接口开关：</div>
+                <div class="be-col-auto">接收器开关：</div>
                 <div class="be-col-auto be-px-100">
                     <el-switch v-model.number="formData.enable" :active-value="1" :inactive-value="0" size="medium" @change="toggleEnable"></el-switch>
                 </div>
             </div>
 
             <div class="be-row be-lh-250 be-mt-50 be-bb be-pb-50">
-                <div class="be-col-auto">接口密钥：</div>
+                <div class="be-col-auto">接收器密钥：</div>
                 <div class="be-col-auto be-px-100">
                     <?php echo $this->config->token; ?>
                 </div>
@@ -20,7 +20,7 @@
 
 
             <div class="be-row be-lh-250  be-mt-50 be-bb be-pb-50">
-                <div class="be-col-auto">接口网址：</div>
+                <div class="be-col-auto">接收器网址：</div>
                 <div class="be-col-auto be-px-100">
                     <el-tag>
                         <?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token]); ?>
@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div class="be-lh-250 be-mt-50">接口POST数据字段说明：</div>
+            <div class="be-lh-250 be-mt-50">接收POST数据字段说明：</div>
             <div class="be-mt-50">
 
                 <el-table
@@ -76,7 +76,7 @@
                     {
                         "name" : "unique_key",
                         "required" : 0,
-                        "description" : "唯一值，有传值时可用于去重，可取采集的网址，标题等，未传值时不校验是否复复导入，200个字符以内"
+                        "description" : "唯一值，有传值时可用于去重，可取采集的网址，标题等，未传值时不校验是否复复采集，200个字符以内"
                     },
                     {
                         "name" : "image",
@@ -140,7 +140,7 @@
                     input.select();
                     try {
                         document.execCommand('Copy');
-                        _this.$message.success("接口网址已复制！");
+                        _this.$message.success("接收器网址已复制！");
                     } catch {
                     }
                     document.body.removeChild(input);

@@ -137,7 +137,16 @@ class Article
             $data['is_on_top'] = 0;
         }
 
+        if (!isset($data['collect_article_id']) || !is_string($data['collect_article_id'])) {
+            $data['collect_article_id'] = '';
+        }
+
         if (!isset($data['is_enable']) || !is_numeric($data['is_enable'])) {
+            $data['is_enable'] = 0;
+        } else {
+            $data['is_enable'] = (int)$data['is_enable'];
+        }
+        if (!in_array($data['is_enable'], [-1, 0, 1])) {
             $data['is_enable'] = 0;
         }
 
@@ -159,6 +168,9 @@ class Article
             $tupleArticle->seo_keywords = $data['seo_keywords'];
             $tupleArticle->is_push_home = $data['is_push_home'];
             $tupleArticle->is_on_top = $data['is_on_top'];
+            if ($data['collect_article_id'] !== '') {
+                $tupleArticle->collect_article_id = $data['collect_article_id'];
+            }
             $tupleArticle->is_enable = $data['is_enable'];
             $tupleArticle->is_delete = 0;
             $tupleArticle->update_time = $now;
@@ -267,6 +279,65 @@ class Article
 
         return $tupleArticle->toObject();
     }
+
+    /**
+     * 批量编辑文章分类
+     *
+     * @param array $articles 要编辑的文章数据
+     * @return bool
+     */
+    public function bulkEditCategory(array $articles): bool
+    {
+        foreach ($articles as $article) {
+            $tupleArticle = Be::getTuple('cms_article');
+            try {
+                $tupleArticle->load($article['id']);
+            } catch (\Throwable $t) {
+                throw new ServiceException('文章（# ' . $article['id'] . '）不存在！');
+            }
+
+            if (!isset($article['category_ids']) || !is_array($article['category_ids'])) {
+                $article['category_ids'] = [];
+            }
+
+            $existCategoryIds = Be::getTable('cms_article_category')
+                ->where('article_id', $article['id'])
+                ->getValues('category_id');
+
+            // 需要删除的分类
+            if (count($existCategoryIds) > 0) {
+                $removeCategoryIds = array_diff($existCategoryIds, $article['category_ids']);
+                if (count($removeCategoryIds) > 0) {
+                    Be::getTable('cms_article_category')
+                        ->where('article_id', $article['id'])
+                        ->where('category_id', 'NOT IN', $removeCategoryIds)
+                        ->delete();
+                }
+            }
+
+            // 新增的分类
+            $newCategoryIds = null;
+            if (count($existCategoryIds) > 0) {
+                $newCategoryIds = array_diff($article['category_ids'], $existCategoryIds);
+            } else {
+                $newCategoryIds = $article['category_ids'];
+            }
+            if (count($newCategoryIds) > 0) {
+                foreach ($newCategoryIds as $category_id) {
+                    $tupleArticleCategory = Be::getTuple('cms_article_category');
+                    $tupleArticleCategory->article_id = $tupleArticle->id;
+                    $tupleArticleCategory->category_id = $category_id;
+                    $tupleArticleCategory->insert();
+                }
+            }
+
+            $tupleArticle->update_time = date('Y-m-d H:i:s');
+            $tupleArticle->update();
+        }
+
+        return true;
+    }
+
 
     /**
      * 获取文章

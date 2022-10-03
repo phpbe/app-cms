@@ -2,14 +2,14 @@
 namespace Be\App\Cms\Config;
 
 /**
- * @BeConfig("火车采集器接口")
+ * @BeConfig("采集接口")
  */
-class Locoy
+class CollectArticleApi
 {
 
     /**
-     * @BeConfigItem("是否启用火车采集器接口",
-     *     description="启用后，您可能将火车采集器采集的文章导入到CMS系统中",
+     * @BeConfigItem("是否启用采集接口",
+     *     description="启用后，您可以将采集器采集的文章通过接口写入到CMS系统中",
      *     driver="FormItemSwitch"
      * )
      */

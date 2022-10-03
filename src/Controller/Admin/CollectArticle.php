@@ -5,11 +5,11 @@ namespace Be\App\Cms\Controller\Admin;
 
 use Be\AdminPlugin\Detail\Item\DetailItemHtml;
 use Be\AdminPlugin\Detail\Item\DetailItemImage;
-use Be\AdminPlugin\Detail\Item\DetailItemToggleIcon;
 use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemToggleIcon;
+use Be\AdminPlugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
 use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
@@ -24,7 +24,7 @@ class CollectArticle extends Auth
     /**
      * 文章
      *
-     * @BeMenu("采集的文章", icon="el-icon-tickets", ordering="2.1")
+     * @BeMenu("采集的文章", icon="el-icon-document-copy", ordering="2.1")
      * @BePermission("采集的文章", ordering="2.1")
      */
     public function collectArticles()
@@ -32,31 +32,31 @@ class CollectArticle extends Auth
         Be::getAdminPlugin('Curd')->setting([
 
             'label' => '采集的文章',
-            'table' => 'cms_collect_article',
+            'table' => 'cms_article',
 
             'grid' => [
                 'title' => '采集的文章',
 
                 'filter' => [
-                    ['is_delete', '=', '0'],
+                    ['collect_article_id', '!=', ''],
                 ],
 
                 'tab' => [
                     'name' => 'status',
-                    'value' => '-1',
+                    'value' => Be::getRequest()->request('status', '-1'),
                     'nullValue' => '-1',
                     'keyValues' => [
                         '-1' => '全部',
-                        '0' => '未导入',
-                        '1' => '已导入',
+                        '0' => '未发布',
+                        '1' => '已发布',
                     ],
                     'counter' => true,
                     'buildSql' => function ($dbName, $formData) {
                         if (isset($formData['status'])) {
                             if ($formData['status'] === '0') {
-                                return ['article_id', '=', ''];
+                                return ['is_enable', '=', '-1'];
                             } elseif ($formData['status'] === '1') {
-                                return ['article_id', '!=', ''];
+                                return ['is_enable', '!=', '-1'];
                             }
                         }
                         return '';
@@ -105,12 +105,10 @@ class CollectArticle extends Auth
                 'tableToolbar' => [
                     'items' => [
                         [
-                            'label' => '批量导入',
-                            'action' => 'import',
-                            'drawer' => [
-                                'title' => '批量导入',
-                                'width' => '80%'
-                            ],
+                            'label' => '批量发布',
+                            'action' => 'publish',
+                            'target' => 'ajax',
+                            'confirm' => '确认要发布吗？',
                             'ui' => [
                                 'icon' => 'el-icon-upload2',
                                 'type' => 'success',
@@ -118,16 +116,32 @@ class CollectArticle extends Auth
                         ],
                         [
                             'label' => '批量删除',
-                            'task' => 'fieldEdit',
+                            'task' => 'delete',
                             'target' => 'ajax',
                             'confirm' => '确认要删除吗？',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => '1',
-                            ],
                             'ui' => [
                                 'icon' => 'el-icon-delete',
                                 'type' => 'danger'
+                            ]
+                        ],
+                        [
+                            'label' => '批量编辑',
+                            'driver' => ToolbarItemButtonDropDown::class,
+                            'ui' => [
+                                'class' => 'be-ml-50',
+                                'icon' => 'el-icon-edit',
+                                'type' => 'primary'
+                            ],
+                            'menus' => [
+                                [
+                                    'label' => '分类',
+                                    'url' => beAdminUrl('Cms.Article.bulkEditCategory'),
+                                    'target' => 'drawer',
+                                    'drawer' => [
+                                        'title' => '批量编辑文章分类',
+                                        'width' => '80%'
+                                    ],
+                                ],
                             ]
                         ],
                     ]
@@ -143,7 +157,7 @@ class CollectArticle extends Auth
                             'width' => '50',
                             'ui' => [
                                 'table-column' => [
-                                    ':selectable' => 'function(row, index){return row.article_id === \'\';}',
+                                    ':selectable' => 'function(row, index){return row.is_enable === \'-1\';}',
                                 ],
                             ],
                         ],
@@ -174,21 +188,15 @@ class CollectArticle extends Auth
                         ],
                         [
                             'name' => 'status',
-                            'label' => '是否已导入',
+                            'label' => '是否已发布',
                             'driver' => TableItemToggleIcon::class,
                             'width' => '90',
                             'value' => function ($row) {
-                                return $row['article_id'] === '' ? '0' : '1';
+                                return $row['is_enable'] === '-1' ? '0' : '1';
                             },
                             'exportValue' => function ($row) {
-                                return $row['article_id'] === '' ? '未导入' : '已导入';
+                                return $row['is_enable'] === '-1' ? '未发布' : '已发布';
                             },
-                        ],
-                        [
-                            'name' => 'create_time',
-                            'label' => '创建时间',
-                            'width' => '180',
-                            'sortable' => true,
                         ],
                         [
                             'name' => 'update_time',
@@ -210,23 +218,21 @@ class CollectArticle extends Auth
                                     'type' => 'success',
                                     ':underline' => 'false',
                                     'style' => 'font-size: 20px;',
-                                    ':disabled' => 'scope.row.article_id !== \'\'',
+                                    ':disabled' => 'scope.row.is_enable !== \'-1\'',
                                     'icon' => 'el-icon-view',
                                 ],
                             ],
                             [
                                 'label' => '',
-                                'tooltip' => '导入',
-                                'action' => 'import',
-                                'drawer' => [
-                                    'title' => '导入',
-                                    'width' => '80%'
-                                ],
+                                'tooltip' => '发布',
+                                'action' => 'publish',
+                                'target' => 'ajax',
+                                'confirm' => '确认要发布吗？',
                                 'ui' => [
                                     'type' => 'warning',
                                     ':underline' => 'false',
                                     'style' => 'font-size: 20px;',
-                                    ':disabled' => 'scope.row.article_id !== \'\'',
+                                    ':disabled' => 'scope.row.is_enable !== \'-1\'',
                                     'icon' => 'el-icon-upload2',
                                 ],
                             ],
@@ -238,20 +244,16 @@ class CollectArticle extends Auth
                                 'ui' => [
                                     ':underline' => 'false',
                                     'style' => 'font-size: 20px;',
-                                    ':disabled' => 'scope.row.article_id !== \'\'',
+                                    ':disabled' => 'scope.row.is_enable !== \'-1\'',
                                     'icon' => 'el-icon-edit',
                                 ],
                             ],
                             [
                                 'label' => '',
                                 'tooltip' => '删除',
-                                'task' => 'fieldEdit',
+                                'task' => 'delete',
                                 'confirm' => '确认要删除么？',
                                 'target' => 'ajax',
-                                'postData' => [
-                                    'field' => 'is_delete',
-                                    'value' => 1,
-                                ],
                                 'ui' => [
                                     'type' => 'danger',
                                     ':underline' => 'false',
@@ -313,20 +315,20 @@ class CollectArticle extends Auth
                         ],
                         [
                             'name' => 'article_id',
-                            'label' => '导入的文章',
+                            'label' => '发布的文章',
                             'driver' => DetailItemHtml::class,
                             'value' => function ($row) {
                                 if ($row['article_id'] === '') {
-                                    return '尚未导入';
+                                    return '尚未发布';
                                 } else {
                                     try {
                                         $article = Be::getService('App.Cms.Admin.Article')->getArticle($row['article_id']);
                                         return 'ID：' . $row['article_id'] . '<br>标题：' . $article->title;
                                     } catch (\Throwable $t) {
-                                        return '导入的文章已删除！';
+                                        return '发布的文章已删除！';
                                     }
                                 }
-                            }
+                            },
                         ],
                         [
                             'name' => 'create_time',
@@ -339,15 +341,6 @@ class CollectArticle extends Auth
                     ]
                 ],
             ],
-
-            'fieldEdit' => [
-                'events' => [
-                    'before' => function ($tuple) {
-                        $tuple->update_time = date('Y-m-d H:i:s');
-                    },
-                ],
-            ],
-
         ])->execute();
     }
 
@@ -362,10 +355,11 @@ class CollectArticle extends Auth
         $response = Be::getResponse();
         if ($request->isAjax()) {
             try {
-                $article = Be::getService('App.Cms.Admin.CollectArticle')->edit($request->json('formData'));
+                $article = Be::getService('App.Cms.Admin.Article')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '编辑采集的文章成功！');
                 $response->set('article', $article);
+                $response->set('redirectUrl', beAdminUrl('Cms.CollectArticle.collectArticles'));
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);
@@ -381,17 +375,68 @@ class CollectArticle extends Auth
                 }
             }
         } else {
-            $collectArticleId = $request->get('id', '');
-            $collectArticle = Be::getService('App.Cms.Admin.CollectArticle')->getCollectArticle($collectArticleId);
+            $articleId = $request->get('id', '');
+            $article = Be::getService('App.Cms.Admin.Article')->getArticle($articleId, [
+                'categories' => 1,
+                'tags' => 1,
+            ]);
+            $response->set('article', $article);
 
-            if ($collectArticle->article_id !== '') {
-                $response->error('已导入的文章禁止编辑！');
+            if ($article->is_enable !== -1) {
+                $response->error('已发布的博客禁止编辑！');
                 return;
             }
 
-            $response->set('collectArticle', $collectArticle);
+            $response->set('article', $article);
+
+            $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
+            $response->set('categoryKeyValues', $categoryKeyValues);
+
+            $configArticle = Be::getConfig('App.Cms.Article');
+            $response->set('configArticle', $configArticle);
+
+            $response->set('backUrl', beAdminUrl('Cms.CollectArticle.collectArticles'));
+            $response->set('formActionUrl', beAdminUrl('Cms.CollectArticle.edit'));
+
             $response->set('title', '编辑采集的文章');
-            $response->display();
+
+            $response->display('App.Cms.Admin.Article.edit');
+        }
+    }
+
+    /**
+     * 删除采集的文章
+     *
+     * @BePermission("删除", ordering="2.13")
+     */
+    public function delete()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $postData = $request->json();
+
+            $articleIds = [];
+            if (isset($postData['selectedRows'])) {
+                foreach ($postData['selectedRows'] as $row) {
+                    $articleIds[] = $row['id'];
+                }
+            } elseif (isset($postData['row'])) {
+                $articleIds[] = $postData['row']['id'];
+            }
+
+            if (count($articleIds) > 0) {
+                Be::getService('App.Cms.CollectArticle')->delete($articleIds);
+            }
+
+            $response->set('success', true);
+            $response->set('message', '删除成功！');
+            $response->json();
+        } catch (\Throwable $t) {
+            $response->set('success', false);
+            $response->set('message', $t->getMessage());
+            $response->json();
         }
     }
 
@@ -405,72 +450,40 @@ class CollectArticle extends Auth
         $request = Be::getRequest();
         $data = $request->post('data', '', '');
         $data = json_decode($data, true);
-        Be::getResponse()->redirect(beUrl('Cms.CollectArticle.detail', ['id' => $data['row']['id']]));
+        Be::getResponse()->redirect(beUrl('Cms.Article.preview', ['id' => $data['row']['id']]));
     }
 
     /**
-     * 导入
+     * 发布
      *
-     * @BePermission("导入", ordering="2.13")
+     * @BePermission("发布", ordering="2.14")
      */
-    public function import()
+    public function publish()
     {
         $request = Be::getRequest();
         $response = Be::getResponse();
 
-        $data = $request->post('data', '', '');
-        $data = json_decode($data, true);
+        $postData = $request->json();
 
-        $collectArticles = [];
-        if (isset($data['row'])) {
-            $collectArticles[] = $data['row'];
-        } elseif (isset($data['selectedRows'])) {
-            $collectArticles = $data['selectedRows'];
+        $articles = [];
+        if (isset($postData['selectedRows'])) {
+            $articles = $postData['selectedRows'];
+        } elseif (isset($postData['row'])) {
+            $articles[] = $postData['row'];
         }
 
-        if (count($collectArticles) === 0) {
+        if (count($articles) === 0) {
             $response->error('您未选择文章！');
             return;
         }
 
-        foreach ($collectArticles as &$collectArticle) {
-            $collectArticle['category_ids'] = [];
-        }
-        unset($article);
-
-        $response->set('title', '导入');
-        $response->set('collectArticles', $collectArticles);
-
-        $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
-        $response->set('categoryKeyValues', $categoryKeyValues);
-
-        $response->display(null, 'Blank');
-    }
-
-    /**
-     * 导入
-     *
-     * @BePermission("导入", ordering="2.13")
-     */
-    public function importSave()
-    {
-        $request = Be::getRequest();
-        $response = Be::getResponse();
-
         try {
-            $formData = $request->json('formData');
-            $collectArticles = $formData['collectArticles'];
-            Be::getService('App.Cms.Admin.CollectArticle')->import($collectArticles);
-            $response->set('success', true);
-            $response->set('message', '导入成功！');
-            $response->json();
+            Be::getService('App.Cms.Admin.CollectArticle')->publish($articles);
+            $response->success('发布成功！');
         } catch (\Throwable $t) {
-            $response->set('success', false);
-            $response->set('message', $t->getMessage());
-            $response->json();
+            $response->error($t->getMessage());
         }
     }
-
 
 
 }
