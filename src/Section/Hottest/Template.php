@@ -21,7 +21,7 @@ class Template extends Section
             return;
         }
 
-        $moreLink = beUrl('Cms.Article.Hottest');
+        $moreLink = beUrl('Cms.Article.hottest');
         echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'hottest', $articles, $moreLink);
     }
 }

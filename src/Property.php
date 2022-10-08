@@ -6,7 +6,7 @@ namespace Be\App\Cms;
 class Property extends \Be\App\Property
 {
 
-    protected string $label = '内容';
+    protected string $label = 'CMS';
     protected string $icon = 'el-icon-document-copy';
     protected string $description = '内容管理系统';
 

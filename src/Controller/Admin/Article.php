@@ -498,10 +498,10 @@ class Article extends Auth
 
         if ($request->isAjax()) {
             try {
-                $article = Be::getService('App.Cms.Admin.Article')->edit($request->json('formData'));
+                Be::getService('App.Cms.Admin.Article')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '新建文章成功！');
-                $response->set('article', $article);
+                $response->set('redirectUrl', beAdminUrl('Cms.Article.articles'));
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);
@@ -537,10 +537,10 @@ class Article extends Auth
         $response = Be::getResponse();
         if ($request->isAjax()) {
             try {
-                $article = Be::getService('App.Cms.Admin.Article')->edit($request->json('formData'));
+                Be::getService('App.Cms.Admin.Article')->edit($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '编辑文章成功！');
-                $response->set('article', $article);
+                $response->set('redirectUrl', beAdminUrl('Cms.Article.articles'));
                 $response->json();
             } catch (\Throwable $t) {
                 $response->set('success', false);
