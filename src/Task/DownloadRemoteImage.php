@@ -5,12 +5,12 @@ use Be\Be;
 use Be\Task\TaskInterval;
 
 /**
- * @BeTask("自动下载远程图片")
+ * @BeTask("自动下载远程图片", schedule="20 * * * *")
  */
 class DownloadRemoteImage extends TaskInterval
 {
 
-    protected $schedule = '*/10 * * * *';
+    protected $parallel = false;
 
     // 时间间隔：1天
     protected $step = 86400;
