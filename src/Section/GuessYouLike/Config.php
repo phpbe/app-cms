@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\GuessYouLike;
 
 /**
- * @BeConfig("猜你喜欢", icon="el-icon-star-on")
+ * @BeConfig("猜你喜欢", icon="bi-hand-thumbs-up")
  */
 class Config
 {

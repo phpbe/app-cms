@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Hottest;
 
 /**
- * @BeConfig("热门文章", icon="el-icon-star-on")
+ * @BeConfig("热门文章", icon="bi-hand-index")
  */
 class Config
 {

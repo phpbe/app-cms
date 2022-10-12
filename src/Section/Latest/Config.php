@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Latest;
 
 /**
- * @BeConfig("最新文章", icon="el-icon-star-on")
+ * @BeConfig("最新文章", icon="bi-star")
  */
 class Config
 {

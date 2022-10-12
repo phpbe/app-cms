@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\TopSearch;
 
 /**
- * @BeConfig("热门搜索", icon="el-icon-star-on")
+ * @BeConfig("热门搜索", icon="bi-search-heart")
  */
 class Config
 {

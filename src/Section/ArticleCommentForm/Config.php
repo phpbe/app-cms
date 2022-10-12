@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\ArticleCommentForm;
 
 /**
- * @BeConfig("文章评论", icon="el-icon-star-on")
+ * @BeConfig("文章评论", icon="bi-chat-left")
  */
 class Config
 {
