@@ -15,6 +15,7 @@ CREATE TABLE `cms_article` (
 `seo_keywords` varchar(60) NOT NULL DEFAULT '' COMMENT 'SEO关键词',
 `ordering` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
 `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量 ',
+`download_remote_image` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否下载远程图片（0-不下载/1-下载/2-已下载完成/-1-下载失败）',
 `collect_article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '采集的文章ID',
 `is_push_home` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否推送到首页',
 `is_on_top` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否置项',
@@ -23,6 +24,7 @@ CREATE TABLE `cms_article` (
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章';
+
 
 CREATE TABLE `cms_article_comment` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',

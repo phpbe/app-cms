@@ -12,15 +12,15 @@ use Be\Task\TaskInterval;
 class ArticleSyncEsAndCache extends TaskInterval
 {
 
-    // 默认断点
-    protected $breakpoint = '2022-05-01 00:00:00';
-
     // 时间间隔：1天
     protected $step = 86400;
 
     public function execute()
     {
-        $configEs = Be::getConfig('App.Cms.Es');
+
+        if (!$this->breakpoint) {
+            $this->breakpoint = date('Y-m-d h:i:s', time() - $this->step);
+        }
 
         $t0 = time();
         $t1 = strtotime($this->breakpoint);
@@ -34,9 +34,10 @@ class ArticleSyncEsAndCache extends TaskInterval
         $d1 = date('Y-m-d H:i:s', $t1 - 60);
         $d2 = date('Y-m-d H:i:s', $t2);
 
+        $configEs = Be::getConfig('App.Cms.Es');
         $service = Be::getService('App.Cms.Admin.TaskArticle');
         $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_article WHERE is_enable != -1 AND update_time >= ? AND update_time < ?';
+        $sql = 'SELECT * FROM cms_article WHERE is_enable != -1 AND update_time >= ? AND update_time <= ?';
         $objs = $db->getYieldObjects($sql, [$d1, $d2]);
 
         $batch = [];

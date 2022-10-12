@@ -182,6 +182,17 @@
 
                         $uiItems->add($driver);
                         ?>
+
+                        <div class="be-row be-mt-100">
+                            <div class="be-col-auto">自动下载远程图片：</div>
+                            <div class="be-col-auto">
+                                <el-form-item prop="download_remote_image">
+                                    <el-switch v-model.number="formData.download_remote_image" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                </el-form-item>
+                            </div>
+                        </div>
+                        <?php $formData['download_remote_image'] = ($this->article && $this->article->download_remote_image !== 0 ? 1 : 0); ?>
+
                     </div>
                 </div>
 

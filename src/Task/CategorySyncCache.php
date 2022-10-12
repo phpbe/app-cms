@@ -10,14 +10,15 @@ use Be\Task\TaskInterval;
 class CategorySyncCache extends TaskInterval
 {
 
-    // 默认断点
-    protected $breakpoint = '2022-05-01 00:00:00';
-
     // 时间间隔：1天
     protected $step = 86400;
 
     public function execute()
     {
+        if (!$this->breakpoint) {
+            $this->breakpoint = date('Y-m-d h:i:s', time() - $this->step);
+        }
+
         $t0 = time();
         $t1 = strtotime($this->breakpoint);
         $t2 = $t1 + $this->step;
@@ -32,7 +33,7 @@ class CategorySyncCache extends TaskInterval
 
         $service = Be::getService('App.Cms.Admin.TaskCategory');
         $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_category WHERE update_time >= ? AND update_time < ?';
+        $sql = 'SELECT * FROM cms_category WHERE update_time >= ? AND update_time <= ?';
         $categories = $db->getYieldObjects($sql, [$d1, $d2]);
 
         $batch = [];

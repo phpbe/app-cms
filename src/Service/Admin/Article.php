@@ -137,6 +137,16 @@ class Article
             $data['is_on_top'] = 0;
         }
 
+        if (!isset($data['download_remote_image']) || !is_numeric($data['download_remote_image'])) {
+            $data['download_remote_image'] = 1;
+        } else {
+            $data['download_remote_image'] = (int)$data['download_remote_image'];
+        }
+
+        if ($data['download_remote_image'] !== 0) {
+            $data['download_remote_image'] = 1;
+        }
+
         if (!isset($data['collect_article_id']) || !is_string($data['collect_article_id'])) {
             $data['collect_article_id'] = '';
         }
@@ -168,6 +178,7 @@ class Article
             $tupleArticle->seo_keywords = $data['seo_keywords'];
             $tupleArticle->is_push_home = $data['is_push_home'];
             $tupleArticle->is_on_top = $data['is_on_top'];
+            $tupleArticle->download_remote_image = $data['download_remote_image'];
             if ($data['collect_article_id'] !== '') {
                 $tupleArticle->collect_article_id = $data['collect_article_id'];
             }

@@ -5,10 +5,12 @@ use Be\Be;
 use Be\Task\TaskInterval;
 
 /**
- * @BeTask("自定义页面增量同步到Cache", schedule="* * * * *")
+ * @BeTask("自动下载远程图片")
  */
-class PageSyncCache extends TaskInterval
+class DownloadRemoteImage extends TaskInterval
 {
+
+    protected $schedule = '*/10 * * * *';
 
     // 时间间隔：1天
     protected $step = 86400;
@@ -31,32 +33,18 @@ class PageSyncCache extends TaskInterval
         $d1 = date('Y-m-d H:i:s', $t1 - 60);
         $d2 = date('Y-m-d H:i:s', $t2);
 
-        $service = Be::getService('App.Cms.Admin.TaskPage');
-
+        $service = Be::getService('App.Cms.Admin.TaskArticle');
         $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_page WHERE update_time >= ? AND update_time <= ?';
-        $pages = $db->getYieldObjects($sql, [$d1, $d2]);
+        $sql = 'SELECT * FROM cms_article WHERE update_time >= ? AND update_time <= ? AND (download_remote_image = 1 OR download_remote_image = -1)';
+        $articles = $db->getYieldObjects($sql, [$d1, $d2]);
 
-        $batch = [];
-        $i = 0;
-        foreach ($pages as $page) {
-            $batch[] = $page;
-
-            $i++;
-            if ($i >= 100) {
-                $service->syncCache($batch);
-
-                $batch = [];
-                $i = 0;
-            }
-        }
-
-        if ($i > 0) {
-            $service->syncCache($batch);
+        foreach ($articles as $article) {
+            $service->downloadRemoteImages($article);
         }
 
         $this->breakpoint = $d2;
     }
+
 
 
 }
