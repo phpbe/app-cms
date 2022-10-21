@@ -38,7 +38,7 @@ class Home
         ]);
         $response->set('result', $result);
 
-        $paginationUrl = beUrl('Cms.Article.home');
+        $paginationUrl = beUrl('Cms.Home.index');
         $response->set('paginationUrl', $paginationUrl);
 
         $response->display('App.Cms.Article.articles');
