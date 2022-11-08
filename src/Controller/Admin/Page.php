@@ -116,8 +116,8 @@ class Page extends Auth
                             [
                                 'label' => '',
                                 'tooltip' => '预览',
-                                'task' => 'preview',
-                                'target' => '_blank',
+                                'action' => 'preview',
+                                'target' => 'blank',
                                 'ui' => [
                                     'type' => 'success',
                                     ':underline' => 'false',
@@ -285,10 +285,33 @@ class Page extends Auth
         $page = Be::getService('App.Cms.Admin.Page')->getPage($pageId);
         $response->set('page', $page);
 
+        $themeKeyValues = Be::getService('App.System.Admin.Theme')->getThemeKeyValues();
+        $response->set('themeKeyValues', $themeKeyValues);
+
         $pageDefault = Be::getService('App.System.Admin.Theme')->getPage(Be::getConfig('App.System.Theme')->default, 'default');
         $response->set('pageDefault', $pageDefault);
 
         $response->display();
+    }
+
+    /**
+     * 修改主题
+     *
+     * @BePermission("编辑", ordering="3.12")
+     */
+    public function changeTheme()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $pageId = $request->get('pageId', '');
+        $themeType = $request->json('themeType', '');
+        $theme = $request->json('theme', '');
+
+        $service = Be::getService('App.Cms.Admin.Page');
+        $service->changeTheme($pageId, $themeType, $theme);
+
+        $response->success('修改主题成功！');
     }
 
     /**
@@ -679,6 +702,5 @@ class Page extends Auth
             }
         }
     }
-
 
 }

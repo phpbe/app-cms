@@ -14,7 +14,23 @@
 
             <div style="display: flex; padding: 5px 10px; box-shadow: 0 0 2px 2px #eee; ">
 
-                <div style="flex: 1 1 auto; text-align: center;">
+                <div style="flex: 0 0 auto;line-height: 40px;">
+                    主题：
+                    <el-radio v-model="themeType" label="0" @change="changeTheme">跟随系统主题设置</el-radio>
+                    <el-radio v-model="themeType" label="1">指定主题</el-radio>
+                </div>
+
+                <div style="flex: 0 0 auto;line-height: 40px;" v-if="themeType === '1'">
+                    <el-select v-model="theme" size="medium" class="be-pl-100" @change="changeTheme">
+                        <?php
+                        foreach ($this->themeKeyValues as $key => $val) {
+                            echo '<el-option value="'. $key .'" key="'. $key .'" label="' .$val . '"></el-option>';
+                        }
+                        ?>
+                    </el-select>
+                </div>
+
+                <div style="flex: 1 1 auto;">
 
                 </div>
 
@@ -340,6 +356,10 @@
             data: {
                 pageId : "<?php echo $this->pageId; ?>",
                 page : <?php echo json_encode($this->page); ?>,
+
+                themeType: "<?php echo $this->page->theme === '' ? 0 : 1; ?>",
+                theme: "<?php echo $this->page->theme; ?>",
+
                 currentPosition: "",
 
                 sectionDrawerToggle: <?php echo json_encode($sectionDrawerToggle); ?>,
@@ -378,21 +398,25 @@
                 reloadPreviewFrameSection: function($section) {
 
                 },
-                changePage: function(value) {
-                    if (value.length === 1) {
-                        window.location.href = this.pageTree[0].url;
-                    } else {
-                        for(let page of this.pageTree) {
-                            if (page.value === value[0]) {
-                                for(let p of page.children) {
-                                    if (p.value === value[1]) {
-                                        window.location.href = p.url;
-                                        return;
-                                    }
-                                }
+                changeTheme: function (theme) {
+                    var _this = this;
+                    var loading = _this.$loading();
+                    _this.$http.post("<?php echo beAdminUrl('Cms.Page.changeTheme', ['pageId' => $this->pageId]); ?>", {
+                        themeType: _this.themeType,
+                        theme: theme
+                    }).then(function (response) {
+                        loading.close();
+                        if (response.status === 200) {
+                            if (response.data.success) {
+                                _this.reloadPreviewFrame();
+                            } else {
+                                _this.$message.error(response.data.message);
                             }
                         }
-                    }
+                    }).catch(function (error) {
+                        loading.close();
+                        _this.$message.error(error);
+                    });
                 },
                 togglePosition: function (position, url) {
                     this.currentPosition = position;

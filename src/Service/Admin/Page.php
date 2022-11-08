@@ -613,6 +613,36 @@ class Page
     }
 
     /**
+     * 修改主题
+     *
+     * @param string $pageId 页面ID
+     * @param string $themeType 主题类型
+     * @param string $theme 主题
+     */
+    public function changeTheme(string $pageId, string $themeType, string $theme)
+    {
+        $page = $this->getPage($pageId);
+        $configPage = $page->config;
+
+        if ($themeType === '0') {
+            $page->theme = '';
+        } else if ($themeType === '1') {
+            if ($theme === '') {
+                throw new ServiceException('未选择有效的主题！');
+            }
+
+            $configTheme = Be::getConfig('App.System.Theme');
+            if (!in_array($theme, $configTheme->available)) {
+                throw new ServiceException('未选择有效的主题！！');
+            }
+
+            $page->theme = $theme;
+        }
+
+        $this->save($page, $configPage);
+    }
+
+    /**
      * 保存页面配置信息
      *
      * @param string $pageId 页面名
