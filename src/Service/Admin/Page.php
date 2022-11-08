@@ -1149,7 +1149,7 @@ class Page
                     $url = Pinyin::convert($urlTitle, '', true);
                 }
             }
-            $configPage->url = $url;
+            //$configPage->url = $url;
         } else {
             $url = $configPage->url;
         }
