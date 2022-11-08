@@ -25,9 +25,17 @@ class TaskPage
             if ($page->is_delete === 1) {
                 $cache->delete($key);
             } else {
-                $page->url_custom = (int)$page->url_custom;
-                $page->seo_title_custom = (int)$page->seo_title_custom;
-                $page->seo_description_custom = (int)$page->seo_description_custom;
+                if ($page->config) {
+                    $config = unserialize($page->config);
+                    if ($config) {
+                        $page->config = $config;
+                    } else {
+                        $page->config = false;
+                    }
+                } else {
+                    $page->config = false;
+                }
+
                 $keyValues[$key] = $page;
             }
         }
@@ -36,5 +44,6 @@ class TaskPage
             $cache->setMany($keyValues);
         }
     }
+
 
 }

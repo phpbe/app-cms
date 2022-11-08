@@ -29,17 +29,17 @@ class Page
 
             $servicePage = Be::getService('App.Cms.Page');
             $page = $servicePage->getPage($pageId);
-            $response->set('title', $page->seo_title);
-            $response->set('metaDescription', $page->seo_description);
-            $response->set('metaKeywords', $page->seo_keywords);
-            $response->set('pageTitle', $page->title);
-
             $response->set('page', $page);
 
-            $configPage = Be::getConfig('App.Cms.Page');
-            $response->set('configPage', $configPage);
+            $pageConfig = $page->config;
+            $response->set('pageConfig', $pageConfig);
 
-            $response->display();
+            $response->set('title', $pageConfig->title ?: '');
+            $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+            $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
+            $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
+
+            $response->display(null, $page->theme);
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
         }
