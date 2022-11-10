@@ -128,6 +128,7 @@ class Page
         }
 
         $page->name = 'Cms.Page.detail';
+        $page->editPageUrl = beAdminUrl('Cms.Page.editPage', ['pageId' => $pageId]);
         $page->desktopPreviewUrl = beUrl('Cms.Page.detail', ['id' => $pageId]);
         $page->mobilePreviewUrl = beUrl('Cms.Page.detail', ['id' => $pageId, 'be-is-mobile' => 1]);
 

@@ -312,7 +312,13 @@
             </div>
 
             <div style="position: absolute;left:0; right:0; bottom:0; height: 35px; line-height: 35px; background-color: #fff; ">
-
+                <ul class="west-links">
+                    <li>
+                        <a href="javascript:void(0);" @click="editItem(page.editPageUrl, '', '')" :class="activeUrl === page.editPageUrl ? 'active' : ''" style=" padding-left: 20px;">
+                            页面设置
+                        </a>
+                    </li>
+                </ul>
             </div>
         </aside>
 
@@ -365,7 +371,7 @@
                 sectionDrawerToggle: <?php echo json_encode($sectionDrawerToggle); ?>,
                 sectionItemsToggle: <?php echo json_encode($sectionItemsToggle); ?>,
 
-                activeUrl: "<?php echo beAdminUrl('Cms.Page.editPage', ['pageId' => $this->pageId]); ?>",
+                activeUrl: "<?php echo $this->page->editPageUrl; ?>",
                 previewUrl: "<?php echo $this->page->desktopPreviewUrl; ?>",
                 previewUrlTag: "",
                 screen: "desktop"
