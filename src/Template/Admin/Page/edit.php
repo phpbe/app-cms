@@ -74,7 +74,7 @@
                         _this.loading = false;
                         if (response.status === 200) {
                             if (response.data.success) {
-                                parent.reload();
+                                parent.reloadPreviewFrame();
                             } else {
                                 alert(response.data.message);
                             }
