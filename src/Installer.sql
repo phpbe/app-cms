@@ -79,14 +79,9 @@ CREATE TABLE `cms_collect_article` (
 CREATE TABLE `cms_page` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `title` varchar(120) NOT NULL DEFAULT '' COMMENT '标题',
-`description` mediumtext NOT NULL COMMENT '描述',
 `url` varchar(150) NOT NULL DEFAULT '' COMMENT '自定义网址',
-`url_custom` tinyint(4) NOT NULL DEFAULT '0' COMMENT '网址是否启用自定义',
-`seo_title` varchar(120) NOT NULL DEFAULT '' COMMENT 'SEO标题',
-`seo_title_custom` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'SEO标题是否启用自定义',
-`seo_description` varchar(500) NOT NULL DEFAULT '' COMMENT 'SEO描述',
-`seo_description_custom` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'SEO描述是否启用自定义',
-`seo_keywords` varchar(60) NOT NULL DEFAULT '' COMMENT 'SEO关键词',
+`config` MEDIUMTEXT NOT NULL COMMENT '配置',
+`theme` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '主题',
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
