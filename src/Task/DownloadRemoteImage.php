@@ -35,7 +35,7 @@ class DownloadRemoteImage extends TaskInterval
 
         $service = Be::getService('App.Cms.Admin.TaskArticle');
         $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_article WHERE update_time >= ? AND update_time <= ? AND (download_remote_image = 1 OR download_remote_image = -1)';
+        $sql = 'SELECT * FROM cms_article WHERE update_time >= ? AND update_time <= ? AND download_remote_image = 1';
         $articles = $db->getYieldObjects($sql, [$d1, $d2]);
 
         foreach ($articles as $article) {

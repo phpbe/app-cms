@@ -13,16 +13,25 @@ class DownloadRemoteImage
      *     driver="FormItemInput"
      * )
      */
-    public string $filePath = '/cms/article/auto-download/';
+    public string $rootPath = '/cms/article/auto-download/';
+
+    /**
+     * @BeConfigItem("文件夹命名",,
+     *     description="转小写，移除特殊字符",
+     *     driver="FormItemSelect",
+     *     keyValues = "return ['id' => '文章ID', 'url' => '伪静态网址'];")
+     * )
+     */
+    public string $dirname = 'url';
 
     /**
      * @BeConfigItem("文件命名",
      *     description="远程文件下载到服务器时使用的名称",
      *     driver="FormItemSelect",
-     *     keyValues = "return ['original' => '原始名称', 'md5' => '文件哈希（md5）', 'sha1' => '文件哈希（sha1）'];")
+     *     keyValues = "return ['original' => '原始名称', 'md5' => '文件哈希（md5）', 'sha1' => '文件哈希（sha1）', 'timestamp' => '时间戳命名'];")
      * )
      */
-    public string $fileName = 'original';
+    public string $fileName = 'md5';
 
     /**
      * @BeConfigItem("下载间隔最小值（秒）",

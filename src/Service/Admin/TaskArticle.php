@@ -248,6 +248,7 @@ class TaskArticle
         }
 
         if ($hasChange) {
+            $updateObj->download_remote_image = 2;
             $updateObj->update_time = date('Y-m-d H:i:s');
             Be::getDb()->update('cms_article', $updateObj, 'id');
         }
@@ -327,6 +328,16 @@ class TaskArticle
                 throw new ServiceException('禁止上传的图像类型：' . $ext . '！');
             }
 
+            $dirName = '';
+            switch ($configDownloadRemoteImage->dirname) {
+                case 'id':
+                    $dirName = $article->id;
+                    break;
+                case 'url':
+                    $dirName = $article->url;
+                    break;
+            };
+            
             $fileName = '';
             switch ($configDownloadRemoteImage->fileName) {
                 case 'original':
@@ -338,10 +349,13 @@ class TaskArticle
                 case 'sha1':
                     $fileName = sha1_file($tmpFile) . '.' . $ext;
                     break;
+                case 'timestamp':
+                    $fileName = uniqid(date('Ymdhis') . '-' . rand(1, 999999) . '-', true) . '.' . $ext;
+                    break;
             };
 
             $storage = Be::getStorage();
-            $object = $configDownloadRemoteImage->filePath . $article->id . '/' . $fileName;
+            $object = $configDownloadRemoteImage->rootPath . $dirName . '/' . $fileName;
             if ($storage->isFileExist($object)) {
                 $url = $storage->getFileUrl($object);
             } else {

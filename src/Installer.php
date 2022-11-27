@@ -17,8 +17,8 @@ class Installer extends \Be\App\Installer
 	{
         $db = Be::getDb();
         $tableNames = $db->getTableNames();
-        if (in_array('cms_', $tableNames)) {
-            if (in_array('cms_', $tableNames)) {
+        if (in_array('cms_article', $tableNames)) {
+            if (in_array('cms_page', $tableNames)) {
                 return;
             } else {
                 throw new RuntimeException('剑测到部分数据表已存在，请检查数据库！');
