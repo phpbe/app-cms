@@ -16,7 +16,7 @@ class UnInstaller extends \Be\App\UnInstaller
 	{
         $db = Be::getDb();
 
-        $sql = file_get_contents(__DIR__ . '/UnInstaller.sql');
+        $sql = file_get_contents(__DIR__ . '/exe/uninstall/uninstall.sql');
         $sqls = preg_split('/; *[\r\n]+/', $sql);
         foreach ($sqls as $sql) {
             $sql = trim($sql);

@@ -25,7 +25,7 @@ class Installer extends \Be\App\Installer
             }
         }
 
-        $sql = file_get_contents(__DIR__ . '/Installer.sql');
+        $sql = file_get_contents(__DIR__ . '/exe/install/install.sql');
         $sqls = preg_split('/; *[\r\n]+/', $sql);
         foreach ($sqls as $sql) {
             $sql = trim($sql);

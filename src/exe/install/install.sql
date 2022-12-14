@@ -23,7 +23,7 @@ CREATE TABLE `cms_article` (
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='文章';
 
 
 CREATE TABLE `cms_article_comment` (
@@ -37,19 +37,19 @@ CREATE TABLE `cms_article_comment` (
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章评论';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='文章评论';
 
 CREATE TABLE `cms_article_category` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '文章ID',
 `category_id` varchar(36) NOT NULL DEFAULT '' COMMENT '文章分类ID'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章的分类';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='文章的分类';
 
 CREATE TABLE `cms_article_tag` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '文章ID',
 `tag` varchar(60) NOT NULL DEFAULT '' COMMENT '标签'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='文章标签';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='文章标签';
 
 CREATE TABLE `cms_category` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
@@ -66,7 +66,7 @@ CREATE TABLE `cms_category` (
 `is_delete` int(11) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='分类';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='分类';
 
 CREATE TABLE `cms_collect_article` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
@@ -74,7 +74,7 @@ CREATE TABLE `cms_collect_article` (
 `article_id` varchar(36) NOT NULL COMMENT '文章ID',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='采集的文章';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='采集的文章';
 
 CREATE TABLE `cms_page` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
@@ -85,7 +85,7 @@ CREATE TABLE `cms_page` (
 `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='页面';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='页面';
 
 
 ALTER TABLE `cms_article`
