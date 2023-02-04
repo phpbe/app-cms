@@ -91,8 +91,8 @@
             <div class="be-col-auto">
                 <div style="padding: .75rem 2rem 0 0;">
                     <el-button size="medium" :disabled="loading" @click="vueCenter.cancel();">取消</el-button>
-                    <el-button type="success" size="medium" :disabled="loading" @click="vueCenter.save('');">仅保存</el-button>
-                    <el-button type="primary" size="medium" :disabled="loading" @click="vueCenter.save('stay');">保存并返回</el-button>
+                    <el-button type="success" size="medium" :disabled="loading" @click="vueCenter.save('stay');">仅保存</el-button>
+                    <el-button type="primary" size="medium" :disabled="loading" @click="vueCenter.save('');">保存并返回</el-button>
                 </div>
             </div>
         </div>
