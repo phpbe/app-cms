@@ -21,12 +21,21 @@ class Page
         if (isset($params['url'])) {
             return '/page/' . $params['url'];
         } else {
-            $cache = Be::getCache();
+            if (strlen($params['id']) !== 36) {
+                throw new ServiceException('页面不存在！');
+            }
 
+            $cache = Be::getCache();
+            
             $key = 'Cms:Page:' . $params['id'];
             $page = $cache->get($key);
             if (!$page) {
-                throw new ServiceException('页面不存在！');
+                $tuplePage = Be::getTuple('cms_page');
+                try {
+                    $tuplePage->load($params['id']);
+                } catch (\Throwable $t) {
+                    throw new ServiceException('页面不存在！');
+                }
             }
 
             return '/page/' . $page->url;
@@ -42,12 +51,40 @@ class Page
      */
     public function getPage(string $pageId): object
     {
+        if (strlen($pageId) !== 36) {
+            throw new ServiceException('页面不存在！');
+        }
+
         $cache = Be::getCache();
 
         $key = 'Cms:Page:' . $pageId;
         $page = $cache->get($key);
         if (!$page) {
-            throw new ServiceException('页面不存在！');
+            $tuplePage = Be::getTuple('cms_page');
+            try {
+                $tuplePage->load($pageId);
+            } catch (\Throwable $t) {
+                throw new ServiceException('页面不存在！');
+            }
+
+            $page = $tuplePage->toObject();
+
+            $page->is_delete = (int)$page->is_delete;
+
+            if ($page->is_delete === 1) {
+                throw new ServiceException('页面不存在！');
+            } else {
+                if ($page->config) {
+                    $config = unserialize($page->config);
+                    if ($config) {
+                        $page->config = $config;
+                    } else {
+                        $page->config = false;
+                    }
+                } else {
+                    $page->config = false;
+                }
+            }
         }
 
         $configTheme = Be::getConfig('App.System.Theme');
@@ -107,5 +144,6 @@ class Page
 
         return $page;
     }
+
 
 }
