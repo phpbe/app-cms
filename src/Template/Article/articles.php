@@ -9,7 +9,7 @@
     foreach ($this->result['rows'] as $article) {
         ?>
         <div class="be-row<?php echo $i === 0 ? '': ' be-mt-300';?>">
-            <div class="be-col-auto">
+            <div class="be-col-24 be-md-col-auto">
                 <div class="article-image">
                     <a class="be-d-inline-block" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
                     <img src="<?php
@@ -23,25 +23,26 @@
                 </div>
             </div>
 
-            <div class="be-col">
-                <div class="be-pl-100">
-                    <a class="be-fs-150 be-fw-bold be-lh-200" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
-                        <?php echo $article->title; ?>
-                    </a>
-                    <div class="be-mt-100 be-lh-150 be-c-666">
-                        <?php echo $article->summary; ?>
-                    </div>
-                    <div class="be-mt-100 be-c-999">
-                        <span><?php echo date(beLang('App.Cms', 'ARTICLE.PUBLISH_TIME_YYYY_MM_DD'), strtotime($article->publish_time)); ?></span>
-                        <?php
-                        if ($article->author !== '') {
-                            echo '<span class="be-ml-100">' . beLang('App.Cms', 'ARTICLE.AUTHOR') . ': ' .   $article->author . '</span>';
-                        }
-                        ?>
-                    </div>
-                </div>
+            <div class="be-col-24 be-md-col-auto">
+                <div class="be-pl-100 be-pt-100"></div>
             </div>
 
+            <div class="be-col-24 be-md-col">
+                <a class="be-fs-150 be-fw-bold be-lh-200" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
+                    <?php echo $article->title; ?>
+                </a>
+                <div class="be-mt-100 be-lh-150 be-c-666">
+                    <?php echo $article->summary; ?>
+                </div>
+                <div class="be-mt-100 be-c-999">
+                    <span><?php echo date(beLang('App.Cms', 'ARTICLE.PUBLISH_TIME_YYYY_MM_DD'), strtotime($article->publish_time)); ?></span>
+                    <?php
+                    if ($article->author !== '') {
+                        echo '<span class="be-ml-100">' . beLang('App.Cms', 'ARTICLE.AUTHOR') . ': ' .   $article->author . '</span>';
+                    }
+                    ?>
+                </div>
+            </div>
         </div>
         <?php
 
