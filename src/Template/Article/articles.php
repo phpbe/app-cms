@@ -1,7 +1,9 @@
 <be-page-content>
     <style type="text/css">
-        .article-image { width: 200px; text-align: center; }
-        .article-image img { max-width: 100%; }
+        .article-image {width: 100%;}
+        @media (min-width: 768px) {
+            .article-image {width: 200px;}
+        }
     </style>
     <?php
     $isMobile = \Be\Be::getRequest()->isMobile();
