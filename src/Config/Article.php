@@ -33,6 +33,11 @@ class Article
     public int $commentsCacheExpire = 600;
 
     /**
+     * @BeConfigItem("网址前缀", driver="FormItemInput", description="以 / 开头，以 / 结尾，谨慎改动。")
+     */
+    public string $urlPrefix = '/article/';
+
+    /**
      * @BeConfigItem("TinyMCE 默认风格",
      *     description="用来控制 TinyMCE 启用的插件和功能",
      *     driver="FormItemSelect",

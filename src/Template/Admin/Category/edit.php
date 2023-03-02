@@ -128,7 +128,7 @@
                             </div>
                         </div>
 
-                        <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl; ?>/articles/{{formData.url}}</div>
+                        <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl . $this->configCategory->urlPrefix; ?>{{formData.url}}</div>
                         <div class="be-mt-100">{{formData.seo_title}}</div>
                         <div class="be-mt-100 be-t-ellipsis-2">{{formData.seo_description}}</div>
                     </div>
@@ -222,7 +222,7 @@
                         maxlength="150"
                         show-word-limit
                         :disabled="formData.url_custom === 0">
-                    <template slot="prepend"><?php echo $rootUrl; ?>/articles/</template>
+                    <template slot="prepend"><?php echo $rootUrl . $this->configCategory->urlPrefix; ?></template>
                 </el-input>
                 <?php
                 $formData['url'] = ($this->category ? $this->category->url : '');

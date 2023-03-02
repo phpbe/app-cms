@@ -18,8 +18,9 @@ class Page
      */
     public function getPageUrl(array $params = []): string
     {
+        $configPage = Be::getConfig('App.Cms.Page');
         if (isset($params['url'])) {
-            return '/page/' . $params['url'];
+            return $configPage->urlPrefix .  $params['url'];
         } else {
             if (strlen($params['id']) !== 36) {
                 throw new ServiceException('页面不存在！');
@@ -38,7 +39,7 @@ class Page
                 }
             }
 
-            return '/page/' . $page->url;
+            return $configPage->urlPrefix . $page->url;
         }
     }
 

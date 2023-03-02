@@ -262,6 +262,10 @@ class Category extends Auth
             }
         } else {
             $response->set('category', false);
+
+            $configCategory = Be::getConfig('App.Cms.Category');
+            $response->set('configCategory', $configCategory);
+
             $response->set('title', '新建文章分类');
             $response->display('App.Cms.Admin.Category.edit');
         }
@@ -301,6 +305,10 @@ class Category extends Auth
             $pageId = $request->get('id', '');
             $category = Be::getService('App.Cms.Admin.Category')->getCategory($pageId);
             $response->set('category', $category);
+
+            $configCategory = Be::getConfig('App.Cms.Category');
+            $response->set('configCategory', $configCategory);
+
             $response->set('title', '编辑文章分类');
             $response->display('App.Cms.Admin.Category.edit');
         }

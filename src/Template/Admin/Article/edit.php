@@ -369,7 +369,7 @@
                             </div>
                         </div>
 
-                        <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl; ?>/article/{{formData.url}}</div>
+                        <div class="be-mt-100 be-t-break be-c-999 be-fs-80"><?php echo $rootUrl . $this->configArticle->urlPrefix; ?>{{formData.url}}</div>
                         <div class="be-mt-100">{{formData.seo_title}}</div>
                         <div class="be-mt-100 be-t-ellipsis-2">{{formData.seo_description}}</div>
 
@@ -459,7 +459,7 @@
                         maxlength="150"
                         show-word-limit
                         :disabled="formData.url_custom === 0">
-                    <template slot="prepend"><?php echo $rootUrl; ?>/article/</template>
+                    <template slot="prepend"><?php echo $rootUrl . $this->configArticle->urlPrefix; ?></template>
                 </el-input>
                 <?php
                 $formData['url'] = ($this->article ? $this->article->url : '');

@@ -1073,8 +1073,9 @@ class Article
      */
     public function getArticleUrl(array $params = []): string
     {
+        $configArticle = Be::getConfig('App.Cms.Article');
         $article = $this->getArticle($params['id']);
-        return '/article/' . $article->url;
+        return $configArticle->urlPrefix . $article->url;
     }
 
 

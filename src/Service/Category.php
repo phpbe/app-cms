@@ -17,8 +17,9 @@ class Category
      */
     public function getCategoryUrl(array $params = []): string
     {
+        $configCategory = Be::getConfig('App.Cms.Category');
         $category = $this->getCategory($params['id']);
-        return '/articles/' . $category->url;
+        return $configCategory->urlPrefix . $category->url;
     }
 
     /**
