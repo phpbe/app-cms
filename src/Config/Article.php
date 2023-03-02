@@ -33,7 +33,7 @@ class Article
     public int $commentsCacheExpire = 600;
 
     /**
-     * @BeConfigItem("网址前缀", driver="FormItemInput", description="以 / 开头，以 / 结尾，谨慎改动。")
+     * @BeConfigItem("网址前缀", driver="FormItemInput", description="以 / 开头，谨慎改动。")
      */
     public string $urlPrefix = '/article/';
 
