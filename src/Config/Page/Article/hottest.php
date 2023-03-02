@@ -2,6 +2,9 @@
 
 namespace Be\App\Cms\Config\Page\Article;
 
+/**
+ * @BeConfig("热门文章")
+ */
 class hottest
 {
 

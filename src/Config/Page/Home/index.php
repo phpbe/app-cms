@@ -2,6 +2,9 @@
 
 namespace Be\App\Cms\Config\Page\Home;
 
+/**
+ * @BeConfig("首页")
+ */
 class index
 {
 
@@ -38,7 +41,7 @@ class index
     /**
      * @BeConfigItem("Meta描述",
      *     description="填写页面内容的简单描述，用于SEO",
-     *     driver = "FormItemInput"
+     *     driver = "FormItemInputTextarea"
      * )
      */
     public string $metaDescription = '首页';
