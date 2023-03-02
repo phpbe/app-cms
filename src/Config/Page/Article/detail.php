@@ -2,9 +2,7 @@
 
 namespace Be\App\Cms\Config\Page\Article;
 
-/**
- * @BeConfig("文章详情")
- */
+
 class detail
 {
 

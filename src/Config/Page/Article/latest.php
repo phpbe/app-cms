@@ -38,7 +38,7 @@ class latest
     /**
      * @BeConfigItem("Meta描述",
      *     description="填写页面内容的简单描述，用于SEO",
-     *     driver = "FormItemInput"
+     *     driver = "FormItemInputTextArea"
      * )
      */
     public string $metaDescription = '最新文章';
