@@ -139,7 +139,7 @@ class Category extends Auth
                             [
                                 'label' => '',
                                 'tooltip' => '预览',
-                                'task' => 'preview',
+                                'action' => 'preview',
                                 'target' => '_blank',
                                 'ui' => [
                                     'type' => 'success',
