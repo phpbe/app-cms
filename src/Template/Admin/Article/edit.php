@@ -334,7 +334,7 @@
                         </div>
                         <el-form-item class="be-mt-50" prop="publish_time">
                             <el-form-item prop="publish_time">
-                                <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" placeholder="选择发布时间"></el-date-picker>
+                                <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择发布时间"></el-date-picker>
                             </el-form-item>
                         </el-form-item>
                         <?php
