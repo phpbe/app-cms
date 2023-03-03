@@ -232,7 +232,7 @@ class Category
         try {
             $now = date('Y-m-d H:i:s');
             foreach ($categoryIds as $categoryId) {
-                $tupleCategory = Be::getTuple('cms_article_category');
+                $tupleCategory = Be::getTuple('cms_category');
                 try {
                     $tupleCategory->loadBy([
                         'id' => $categoryId,
