@@ -5,6 +5,7 @@ namespace Be\App\Cms\Controller\Admin;
 
 use Be\AdminPlugin\Detail\Item\DetailItemHtml;
 use Be\AdminPlugin\Detail\Item\DetailItemImage;
+use Be\AdminPlugin\Detail\Item\DetailItemToggleIcon;
 use Be\AdminPlugin\Table\Item\TableItemImage;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
@@ -277,6 +278,10 @@ class CollectArticle extends Auth
                         [
                             'name' => 'unique_key',
                             'label' => '唯一键',
+                            'value' => function ($row) {
+                                $sql = 'SELECT unique_key FROM cms_collect_article WHERE article_id = ?';
+                                return Be::getDb()->getValue($sql, [$row['id']]);
+                            },
                         ],
                         [
                             'name' => 'image',
@@ -314,20 +319,14 @@ class CollectArticle extends Auth
                             'label' => '发布时间',
                         ],
                         [
-                            'name' => 'article_id',
-                            'label' => '发布的文章',
-                            'driver' => DetailItemHtml::class,
+                            'name' => 'status',
+                            'label' => '是否已发布',
+                            'driver' => DetailItemToggleIcon::class,
                             'value' => function ($row) {
-                                if ($row['article_id'] === '') {
-                                    return '尚未发布';
-                                } else {
-                                    try {
-                                        $article = Be::getService('App.Cms.Admin.Article')->getArticle($row['article_id']);
-                                        return 'ID：' . $row['article_id'] . '<br>标题：' . $article->title;
-                                    } catch (\Throwable $t) {
-                                        return '发布的文章已删除！';
-                                    }
-                                }
+                                return $row['is_enable'] === '-1' ? '0' : '1';
+                            },
+                            'exportValue' => function ($row) {
+                                return $row['is_enable'] === '-1' ? '未发布' : '已发布';
                             },
                         ],
                         [
