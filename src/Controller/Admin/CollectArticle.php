@@ -117,7 +117,7 @@ class CollectArticle extends Auth
                         ],
                         [
                             'label' => '批量删除',
-                            'task' => 'delete',
+                            'action' => 'delete',
                             'target' => 'ajax',
                             'confirm' => '确认要删除吗？',
                             'ui' => [
@@ -252,7 +252,7 @@ class CollectArticle extends Auth
                             [
                                 'label' => '',
                                 'tooltip' => '删除',
-                                'task' => 'delete',
+                                'action' => 'delete',
                                 'confirm' => '确认要删除么？',
                                 'target' => 'ajax',
                                 'ui' => [

@@ -66,10 +66,7 @@ class CollectArticle
             foreach ($articleIds as $articleId) {
                 $tupleArticle = Be::getTuple('cms_article');
                 try {
-                    $tupleArticle->loadBy([
-                        'id' => $articleId,
-                        'is_delete' => 0,
-                    ]);
+                    $tupleArticle->load($articleId);
                 } catch (\Throwable $t) {
                     throw new ServiceException('采集的文章（# ' . $articleId . '）不存在！');
                 }
