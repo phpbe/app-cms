@@ -30,7 +30,7 @@
             </div>
 
             <div class="be-col-24 be-md-col">
-                <a class="be-fs-150 be-fw-bold be-lh-200" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
+                <a class="be-fs-125 be-fw-bold be-lh-200" href="<?php echo beUrl('Cms.Article.detail', ['id'=> $article->id]); ?>" title="<?php echo $article->title; ?>"<?php echo $isMobile ? '' : ' target="_blank"';?>>
                     <?php echo $article->title; ?>
                 </a>
                 <div class="be-mt-100 be-lh-150 be-c-666">

@@ -1027,15 +1027,6 @@ class Article
             'index' => $configEs->indexArticleSearchHistory,
             'body' => [
                 'size' => 0,
-                'query' => [
-                    'bool' => [
-                        'filter' => [
-                            [
-
-                            ],
-                        ]
-                    ]
-                ],
                 'aggs' => [
                     'topN' => [
                         'terms' => [
