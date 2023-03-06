@@ -110,6 +110,39 @@ class Article
     }
 
     /**
+     * 搜索
+     *
+     * @BeMenu("搜索")
+     * @BeRoute("/article/tag")
+     */
+    public function tag()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $tag = $request->get('tag', '');
+        $tag = trim($tag);
+        if ($tag === '') {
+            $response->error('请输入标签！');
+            return;
+        }
+
+        $page = $request->get('page', 1);
+        $result = Be::getService('App.Cms.Article')->search('', [
+            'tag' => $tag,
+            'page' => $page,
+        ]);
+        $response->set('result', $result);
+
+        $paginationUrl = beUrl('Cms.Article.tag', ['tag' => $tag]);
+        $response->set('paginationUrl', $paginationUrl);
+
+        $response->set('title', beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $tag));
+
+        $response->display('App.Cms.Article.articles');
+    }
+
+    /**
      * 文章明细
      *
      * @BeMenu("指定一篇文章", picker="return \Be\Be::getService('App.Cms.Admin.Article')->getArticleMenuPicker()")
