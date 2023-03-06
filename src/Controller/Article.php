@@ -89,13 +89,19 @@ class Article
         $response = Be::getResponse();
 
         $keyword = $request->get('keyword', '');
+        $keyword = trim($keyword);
+        if ($keyword === '') {
+            $response->error('请输入关键词！');
+            return;
+        }
+
         $page = $request->get('page', 1);
         $result = Be::getService('App.Cms.Article')->search($keyword, [
             'page' => $page,
         ]);
         $response->set('result', $result);
 
-        $paginationUrl = beUrl('Cms.Article.hottest');
+        $paginationUrl = beUrl('Cms.Article.search', ['keyword' => $keyword]);
         $response->set('paginationUrl', $paginationUrl);
 
         $response->set('title', beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $keyword));

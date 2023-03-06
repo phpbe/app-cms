@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\GuessYouLike;
 
 /**
- * @BeConfig("猜你喜欢", icon="bi-hand-thumbs-up")
+ * @BeConfig("猜您喜欢", icon="bi-hand-thumbs-up")
  */
 class Config
 {
@@ -19,7 +19,7 @@ class Config
      *     driver = "FormItemInput"
      * )
      */
-    public $title = '猜你喜欢';
+    public $title = '猜您喜欢';
 
     /**
      * @BeConfigItem("展示多少个文章?",
