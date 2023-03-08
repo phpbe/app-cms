@@ -41,7 +41,7 @@
         <?php
         foreach ($this->article->tags as $tag) {
             ?>
-            <a class="be-mt-50 be-mr-50 be-btn be-btn-main be-btn-outline be-btn-sm" href="<?php echo beUrl('Cms.Article.search', ['tag'=> $tag]); ?>" title="<?php echo $tag; ?>">
+            <a class="be-mt-50 be-mr-50 be-btn be-btn-main be-btn-outline be-btn-sm" href="<?php echo beUrl('Cms.Article.tag', ['tag'=> $tag]); ?>" title="<?php echo $tag; ?>">
                 #<?php echo $tag; ?>
             </a>
             <?php

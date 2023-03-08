@@ -8,7 +8,7 @@ use Be\Theme\Section;
 class Template extends Section
 {
 
-    public array $positions = ['middle', 'west', 'center', 'east'];
+    public array $positions = ['middle', 'center'];
 
     public function display()
     {
@@ -16,13 +16,22 @@ class Template extends Section
             return;
         }
 
-        $articles = Be::getService('App.Cms.Article')->getLatestArticles($this->config->quantity);
-        if (count($articles) === 0) {
-            return;
+        $request = Be::getRequest();
+        $page = $request->get('page', 1);
+        $params = [
+            'orderBy' => 'publish_time',
+            'orderByDir' => 'desc',
+            'page' => $page,
+        ];
+
+        if ($this->config->pageSize > 0) {
+            $params['pageSize'] = $this->config->pageSize;
         }
 
-        $moreLink = beUrl('Cms.Article.latest');
-        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'latest', $articles, $moreLink);
+        $result = Be::getService('App.Cms.Article')->search('', $params);
+
+        $paginationUrl = $request->getUrl();
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-latest', $result, $paginationUrl);
     }
 }
 

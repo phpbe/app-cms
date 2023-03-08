@@ -2,8 +2,9 @@
 
 namespace Be\App\Cms\Config\Page\Article;
 
-class search
+class tag
 {
+
 
 
     public int $west = 0;
@@ -16,7 +17,7 @@ class search
             'name' => 'App.Cms.PageTitle',
         ],
         [
-            'name' => 'App.Cms.Search',
+            'name' => 'App.Cms.Tag',
         ],
     ];
 
@@ -40,6 +41,5 @@ class search
             'name' => 'App.Cms.SideTopTags',
         ],
     ];
-
 
 }

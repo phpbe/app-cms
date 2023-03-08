@@ -12,16 +12,13 @@ class detail
 
     public array $centerSections = [
         [
-            'name' => 'Theme.System.PageTitle',
+            'name' => 'App.Cms.Detail',
         ],
         [
-            'name' => 'Theme.System.PageContent',
+            'name' => 'App.Cms.Comments',
         ],
         [
-            'name' => 'App.Cms.ArticleComments',
-        ],
-        [
-            'name' => 'App.Cms.ArticleCommentForm',
+            'name' => 'App.Cms.CommentForm',
         ],
         [
             'name' => 'App.Cms.Similar',
@@ -30,13 +27,16 @@ class detail
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.Latest',
+            'name' => 'App.Cms.SearchForm',
         ],
         [
-            'name' => 'App.Cms.Hottest',
+            'name' => 'App.Cms.SideLatest',
         ],
         [
-            'name' => 'App.Cms.GuessYouLike',
+            'name' => 'App.Cms.SideHottest',
+        ],
+        [
+            'name' => 'App.Cms.SideGuessYouLike',
         ],
     ];
 

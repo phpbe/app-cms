@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\Hottest;
+namespace Be\App\Cms\Section\Home;
 
 /**
- * @BeConfig("热门文章", icon="bi-hand-index")
+ * @BeConfig("首页文章", icon="bi-home")
  */
 class Config
 {
@@ -141,5 +141,7 @@ class Config
      * )
      */
     public string $itemMarginDesktop = '2rem 0';
+
+
 
 }

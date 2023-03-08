@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\GuessYouLike;
+namespace Be\App\Cms\Section\TopSearch;
 
 /**
- * @BeConfig("猜您喜欢", icon="bi-hand-thumbs-up")
+ * @BeConfig("热门搜索边栏", icon="bi-search-heart")
  */
 class Config
 {
@@ -12,14 +12,14 @@ class Config
      * @BeConfigItem("是否启用",
      *     driver = "FormItemSwitch")
      */
-    public $enable = 1;
+    public int $enable = 1;
 
     /**
      * @BeConfigItem("标题",
      *     driver = "FormItemInput"
      * )
      */
-    public $title = '猜您喜欢';
+    public string $title = '热门搜索';
 
     /**
      * @BeConfigItem("展示多少个文章?",
@@ -27,7 +27,7 @@ class Config
      *     ui="return [':min' => 1, ':max' => 100];"
      * )
      */
-    public $quantity = 10;
+    public int $quantity = 10;
 
     /**
      * @BeConfigItem("宽度",

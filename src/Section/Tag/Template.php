@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\Hottest;
+namespace Be\App\Cms\Section\Tag;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -17,10 +17,21 @@ class Template extends Section
         }
 
         $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $tag = $request->get('tag', '');
+        $tag = trim($tag);
+        if ($tag === '') {
+            $response->error(beLang('App.Cms', 'ARTICLE.TAG_IS_MISSING'));
+            return;
+        }
+
         $page = $request->get('page', 1);
+        if ($page > 11) {
+            $page = 11;
+        }
         $params = [
-            'orderBy' => 'hits',
-            'orderByDir' => 'desc',
+            'tag' => $tag,
             'page' => $page,
         ];
 
@@ -31,7 +42,8 @@ class Template extends Section
         $result = Be::getService('App.Cms.Article')->search('', $params);
 
         $paginationUrl = $request->getUrl();
-        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-hottest', $result, $paginationUrl);
+
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-tag', $result, $paginationUrl);
     }
 }
 

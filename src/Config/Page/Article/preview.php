@@ -23,13 +23,19 @@ class preview
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.Latest',
+            'name' => 'App.Cms.SearchForm',
         ],
         [
-            'name' => 'App.Cms.Hottest',
+            'name' => 'App.Cms.SideLatest',
         ],
         [
-            'name' => 'App.Cms.GuessYouLike',
+            'name' => 'App.Cms.SideHottest',
+        ],
+        [
+            'name' => 'App.Cms.SideGuessYouLike',
+        ],
+        [
+            'name' => 'App.Cms.SideTopTags',
         ],
     ];
 

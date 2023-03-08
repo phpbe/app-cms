@@ -14,19 +14,25 @@ class index
 
     public array $centerSections = [
         [
-            'name' => 'Theme.System.PageContent',
+            'name' => 'App.Cms.Home',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.Hottest',
+            'name' => 'App.Cms.SearchForm',
         ],
         [
-            'name' => 'App.Cms.Latest',
+            'name' => 'App.Cms.SideHottest',
         ],
         [
-            'name' => 'App.Cms.GuessYouLike',
+            'name' => 'App.Cms.SideLatest',
+        ],
+        [
+            'name' => 'App.Cms.SideGuessYouLike',
+        ],
+        [
+            'name' => 'App.Cms.SideTopTags',
         ],
     ];
 

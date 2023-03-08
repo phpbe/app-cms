@@ -12,39 +12,6 @@ class Article
 {
 
     /**
-     * 最新文章
-     *
-     * @BeMenu("最新文章")
-     * @BeRoute("/article/latest")
-     */
-    public function latest()
-    {
-        $request = Be::getRequest();
-        $response = Be::getResponse();
-
-        $pageConfig = $response->getPageConfig();
-        $response->set('pageConfig', $pageConfig);
-
-        $response->set('title', $pageConfig->title ?: '');
-        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
-        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
-        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
-
-        $page = $request->get('page', 1);
-        $result = Be::getService('App.Cms.Article')->search('', [
-            'orderBy' => 'publish_time',
-            'orderByDir' => 'desc',
-            'page' => $page,
-        ]);
-        $response->set('result', $result);
-
-        $paginationUrl = beUrl('Cms.Article.latest');
-        $response->set('paginationUrl', $paginationUrl);
-
-        $response->display('App.Cms.Article.articles');
-    }
-
-    /**
      * 热门文章
      *
      * @BeMenu("热门文章")
@@ -63,18 +30,29 @@ class Article
         $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
         $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
 
-        $page = $request->get('page', 1);
-        $result = Be::getService('App.Cms.Article')->search('', [
-            'orderBy' => 'hits',
-            'orderByDir' => 'desc',
-            'page' => $page,
-        ]);
-        $response->set('result', $result);
+        $response->display();
+    }
 
-        $paginationUrl = beUrl('Cms.Article.hottest');
-        $response->set('paginationUrl', $paginationUrl);
+    /**
+     * 最新文章
+     *
+     * @BeMenu("最新文章")
+     * @BeRoute("/article/latest")
+     */
+    public function latest()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        $response->display('App.Cms.Article.articles');
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
+
+        $response->set('title', $pageConfig->title ?: '');
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
+
+        $response->display();
     }
 
     /**
@@ -91,22 +69,20 @@ class Article
         $keyword = $request->get('keyword', '');
         $keyword = trim($keyword);
         if ($keyword === '') {
-            $response->error('请输入关键词！');
+            $response->error(beLang('App.Cms', 'ARTICLE.SEARCH_KEYWORDS_IS_MISSING'));
             return;
         }
 
-        $page = $request->get('page', 1);
-        $result = Be::getService('App.Cms.Article')->search($keyword, [
-            'page' => $page,
-        ]);
-        $response->set('result', $result);
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
 
-        $paginationUrl = beUrl('Cms.Article.search', ['keyword' => $keyword]);
-        $response->set('paginationUrl', $paginationUrl);
+        $title = beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $keyword);
 
-        $response->set('title', beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $keyword));
-
-        $response->display('App.Cms.Article.articles');
+        $response->set('title', $title);
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $title);
+        $response->display();
     }
 
     /**
@@ -123,23 +99,20 @@ class Article
         $tag = $request->get('tag', '');
         $tag = trim($tag);
         if ($tag === '') {
-            $response->error('请输入标签！');
+            $response->error(beLang('App.Cms', 'ARTICLE.TAG_IS_MISSING'));
             return;
         }
 
-        $page = $request->get('page', 1);
-        $result = Be::getService('App.Cms.Article')->search('', [
-            'tag' => $tag,
-            'page' => $page,
-        ]);
-        $response->set('result', $result);
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
 
-        $paginationUrl = beUrl('Cms.Article.tag', ['tag' => $tag]);
-        $response->set('paginationUrl', $paginationUrl);
+        $title = beLang('App.Cms', 'ARTICLE.TAG_X_RESULT', $tag);
 
-        $response->set('title', beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $tag));
-
-        $response->display('App.Cms.Article.articles');
+        $response->set('title', $title);
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $title);
+        $response->display();
     }
 
     /**
@@ -206,7 +179,7 @@ class Article
 
             $response->set('article', $article);
 
-            $response->display('App.Cms.Article.detail');
+            $response->display();
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
         }

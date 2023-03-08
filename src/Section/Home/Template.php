@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\Hottest;
+namespace Be\App\Cms\Section\Home;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -19,8 +19,9 @@ class Template extends Section
         $request = Be::getRequest();
         $page = $request->get('page', 1);
         $params = [
-            'orderBy' => 'hits',
-            'orderByDir' => 'desc',
+            'isPushHome' => 1,
+            'orderBy' => ['is_on_top', 'publish_time'],
+            'orderByDir' => ['desc', 'desc'],
             'page' => $page,
         ];
 
@@ -31,7 +32,7 @@ class Template extends Section
         $result = Be::getService('App.Cms.Article')->search('', $params);
 
         $paginationUrl = $request->getUrl();
-        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-hottest', $result, $paginationUrl);
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-home', $result, $paginationUrl);
     }
 }
 

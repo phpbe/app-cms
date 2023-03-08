@@ -29,19 +29,7 @@ class Home
         $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
         $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
 
-        $page = $request->get('page', 1);
-        $result = Be::getService('App.Cms.Article')->search('', [
-            'isPushHome' => 1,
-            'orderBy' => ['is_on_top', 'publish_time'],
-            'orderByDir' => ['desc', 'desc'],
-            'page' => $page,
-        ]);
-        $response->set('result', $result);
-
-        $paginationUrl = beUrl('Cms.Home.index');
-        $response->set('paginationUrl', $paginationUrl);
-
-        $response->display('App.Cms.Article.articles');
+        $response->display();
     }
 
 

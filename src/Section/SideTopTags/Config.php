@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\ArticleCommentForm;
+namespace Be\App\Cms\Section\SideTopTags;
 
 /**
- * @BeConfig("文章评论", icon="bi-chat-left")
+ * @BeConfig("热门标签", icon="bi-search-heart")
  */
 class Config
 {
@@ -12,44 +12,22 @@ class Config
      * @BeConfigItem("是否启用",
      *     driver = "FormItemSwitch")
      */
-    public $enable = 1;
-
-    /**
-     * @BeConfigItem("宽度",
-     *     description="位于middle时有效",
-     *     driver="FormItemSelect",
-     *     keyValues = "return ['default' => '默认', 'fullWidth' => '全屏'];"
-     * )
-     */
-    public string $width = 'default';
+    public int $enable = 1;
 
     /**
      * @BeConfigItem("标题",
      *     driver = "FormItemInput"
      * )
      */
-    public string $title = '发表评论';
+    public string $title = '热门标签';
 
     /**
-     * @BeConfigItem("描述",
-     *     driver = "FormItemTextarea"
+     * @BeConfigItem("展示多少个标签?",
+     *     driver = "FormItemSlider",
+     *     ui="return [':min' => 1, ':max' => 100];"
      * )
      */
-    public string $description = '';
-
-    /**
-     * @BeConfigItem("名字必填",
-     *     driver="FormItemSwitch"
-     * )
-     */
-    public int $nameRequired = 1;
-
-    /**
-     * @BeConfigItem("邮箱必填",
-     *     driver="FormItemSwitch"
-     * )
-     */
-    public int $emailRequired = 1;
+    public int $quantity = 30;
 
     /**
      * @BeConfigItem("背景颜色",

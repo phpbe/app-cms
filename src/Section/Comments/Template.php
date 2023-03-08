@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\ArticleComments;
+namespace Be\App\Cms\Section\Comments;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -16,11 +16,23 @@ class Template extends Section
     private function css()
     {
         echo '<style type="text/css">';
-        echo $this->getCssBackgroundColor('article-comments');
-        echo $this->getCssPadding('article-comments');
-        echo $this->getCssMargin('article-comments');
+        echo $this->getCssBackgroundColor('app-cms-comments');
+        echo $this->getCssPadding('app-cms-comments');
+        echo $this->getCssMargin('app-cms-comments');
 
-        echo '#' . $this->id . ' .article-comments .article-comment-name {';
+
+        echo '#' . $this->id . ' .app-cms-comments {';
+        //echo 'box-shadow: 0 0 10px var(--font-color-9);';
+        echo 'box-shadow: 0 0 10px #eaf0f6;';
+        echo 'transition: all 0.3s ease;';
+        echo '}';
+
+        echo '#' . $this->id . ' .app-cms-comments:hover {';
+        //echo 'box-shadow: 0 0 15px var(--font-color-8);';
+        echo 'box-shadow: 0 0 15px #dae0e6;';
+        echo '}';
+        
+        echo '#' . $this->id . ' .app-cms-comments .comment-name {';
         echo 'width: 10rem;';
         echo '}';
 
@@ -44,7 +56,7 @@ class Template extends Section
 
         $this->css();
 
-        echo '<div class="article-comments">';
+        echo '<div class="app-cms-comments">';
 
         if ($this->position === 'middle' && $this->config->width === 'default') {
             echo '<div class="be-container">';
@@ -61,7 +73,7 @@ class Template extends Section
             ?>
             <div class="be-row<?php echo $i === 0 ? '': ' be-mt-300 be-bt-eee be-pt-50';?>">
                 <div class="be-col-auto">
-                    <div class="article-comment-name be-t-break">
+                    <div class="comment-name be-t-break">
                         <?php echo $comment->name; ?>
                     </div>
                 </div>

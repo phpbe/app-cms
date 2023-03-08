@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\Cms\Section\TopSearch;
+namespace Be\App\Cms\Section\Comments;
 
 /**
- * @BeConfig("热门搜索", icon="bi-search-heart")
+ * @BeConfig("文章评论", icon="bi-chat-left-text")
  */
 class Config
 {
@@ -15,21 +15,6 @@ class Config
     public $enable = 1;
 
     /**
-     * @BeConfigItem("标题",
-     *     driver = "FormItemInput"
-     * )
-     */
-    public $title = '热门搜索';
-
-    /**
-     * @BeConfigItem("展示多少个文章?",
-     *     driver = "FormItemSlider",
-     *     ui="return [':min' => 1, ':max' => 100];"
-     * )
-     */
-    public $quantity = 10;
-
-    /**
      * @BeConfigItem("宽度",
      *     description="位于middle时有效",
      *     driver="FormItemSelect",
@@ -37,6 +22,34 @@ class Config
      * )
      */
     public string $width = 'default';
+
+    /**
+     * @BeConfigItem("标题",
+     *     driver = "FormItemInput"
+     * )
+     */
+    public string $title = '评论';
+
+    /**
+     * @BeConfigItem("描述",
+     *     driver = "FormItemTextarea"
+     * )
+     */
+    public string $description = '';
+
+    /**
+     * @BeConfigItem("名字必填",
+     *     driver="FormItemSwitch"
+     * )
+     */
+    public int $nameRequired = 1;
+
+    /**
+     * @BeConfigItem("邮箱必填",
+     *     driver="FormItemSwitch"
+     * )
+     */
+    public int $emailRequired = 1;
 
     /**
      * @BeConfigItem("背景颜色",

@@ -28,7 +28,7 @@ class Template extends Section
             return;
         }
 
-        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'guess-you-like', $articles);
+        echo Be::getService('App.Cms.Section')->makeSideArticlesSection($this, 'app-cms-side-guess-you-like', $articles);
     }
 }
 

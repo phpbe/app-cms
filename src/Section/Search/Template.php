@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\Hottest;
+namespace Be\App\Cms\Section\Search;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -17,10 +17,17 @@ class Template extends Section
         }
 
         $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $keyword = $request->get('keyword', '');
+        $keyword = trim($keyword);
+        if ($keyword === '') {
+            $response->error(beLang('App.Cms', 'ARTICLE.SEARCH_KEYWORDS_IS_MISSING'));
+            return;
+        }
+
         $page = $request->get('page', 1);
         $params = [
-            'orderBy' => 'hits',
-            'orderByDir' => 'desc',
             'page' => $page,
         ];
 
@@ -28,10 +35,9 @@ class Template extends Section
             $params['pageSize'] = $this->config->pageSize;
         }
 
-        $result = Be::getService('App.Cms.Article')->search('', $params);
-
+        $result = Be::getService('App.Cms.Article')->search($keyword, $params);
         $paginationUrl = $request->getUrl();
-        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-hottest', $result, $paginationUrl);
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-search', $result, $paginationUrl);
     }
 }
 

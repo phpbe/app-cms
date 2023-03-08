@@ -14,16 +14,22 @@ class hottest
 
     public array $centerSections = [
         [
-            'name' => 'Theme.System.PageContent',
+            'name' => 'App.Cms.Hottest',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.Latest',
+            'name' => 'App.Cms.SearchForm',
         ],
         [
-            'name' => 'App.Cms.GuessYouLike',
+            'name' => 'App.Cms.SideLatest',
+        ],
+        [
+            'name' => 'App.Cms.SideGuessYouLike',
+        ],
+        [
+            'name' => 'App.Cms.SideTopTags',
         ],
     ];
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\ArticleCommentForm;
+namespace Be\App\Cms\Section\CommentForm;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -12,13 +12,23 @@ class Template extends Section
 
     public array $routes = ['Cms.Article.detail'];
 
-
     private function css()
     {
         echo '<style type="text/css">';
-        echo $this->getCssBackgroundColor('article-comment');
-        echo $this->getCssPadding('article-comment');
-        echo $this->getCssMargin('article-comment');
+        echo $this->getCssBackgroundColor('app-cms-comment-form');
+        echo $this->getCssPadding('app-cms-comment-form');
+        echo $this->getCssMargin('app-cms-comment-form');
+
+        echo '#' . $this->id . ' .app-cms-comment-form {';
+        //echo 'box-shadow: 0 0 10px var(--font-color-9);';
+        echo 'box-shadow: 0 0 10px #eaf0f6;';
+        echo 'transition: all 0.3s ease;';
+        echo '}';
+
+        echo '#' . $this->id . ' .app-cms-comment-form:hover {';
+        //echo 'box-shadow: 0 0 15px var(--font-color-8);';
+        echo 'box-shadow: 0 0 15px #dae0e6;';
+        echo '}';
         echo '</style>';
     }
 
@@ -30,7 +40,7 @@ class Template extends Section
 
         $this->css();
 
-        echo '<div class="article-comment">';
+        echo '<div class="app-cms-comment-form">';
 
         if ($this->position === 'middle' && $this->config->width === 'default') {
             echo '<div class="be-container">';
@@ -41,7 +51,7 @@ class Template extends Section
         echo $this->page->tag1('be-section-title');
 
         echo $this->page->tag0('be-section-content');
-        echo '<form id="form-article-comment">';
+        echo '<form id="form-app-cms-comment-form">';
         echo '<input type="hidden" name="article_id" value="' . $this->page->article->id . '" maxlength="60">';
 
         $my = Be::getUser();
@@ -65,7 +75,7 @@ class Template extends Section
         echo '</div>';
 
         echo '<div class="be-floating be-mt-150">';
-        echo '<textarea name="content" id="article-comment-content" class="be-textarea" placeholder="' . beLang('App.Cms', 'ARTICLE.COMMENT.CONTENT_PLACEHOLDER') . '" rows="6"></textarea>';
+        echo '<textarea name="content" id="app-cms-comment-form-content" class="be-textarea" placeholder="' . beLang('App.Cms', 'ARTICLE.COMMENT.CONTENT_PLACEHOLDER') . '" rows="6"></textarea>';
         echo '<label class="be-floating-label">' . beLang('App.Cms', 'ARTICLE.COMMENT.CONTENT_LABEL') . '</label>';
         echo '</div>';
 
@@ -93,7 +103,7 @@ class Template extends Section
         <script type="text/javascript" language="javascript" src="<?PHP echo \Be\Be::getProperty('App.Cms')->getWwwUrl(); ?>/js/jquery.validate.min.js"></script>
         <script>
             $(function () {
-                $("#form-article-comment").validate({
+                $("#form-app-cms-comment-form").validate({
                     rules: {
                         <?php if ($this->config->nameRequired) { ?>
                         name: {
@@ -145,7 +155,7 @@ class Template extends Section
                                 $submit.prop("disabled", false).val(sValue);
                                 alert(json.message);
                                 if (json.success) {
-                                    $("#article-comment-content").val("");
+                                    $("#app-cms-comment-form-content").val("");
                                 }
                             }
                         });
