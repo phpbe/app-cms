@@ -11,13 +11,7 @@ class preview
 
     public array $centerSections = [
         [
-            'name' => 'Theme.System.PageTitle',
-        ],
-        [
-            'name' => 'Theme.System.PageContent',
-        ],
-        [
-            'name' => 'App.Cms.Similar',
+            'name' => 'App.Cms.Detail',
         ],
     ];
 
@@ -26,10 +20,13 @@ class preview
             'name' => 'App.Cms.SearchForm',
         ],
         [
+            'name' => 'App.Cms.SideHottest',
+        ],
+        [
             'name' => 'App.Cms.SideLatest',
         ],
         [
-            'name' => 'App.Cms.SideHottest',
+            'name' => 'App.Cms.SideTopSearch',
         ],
         [
             'name' => 'App.Cms.SideGuessYouLike',

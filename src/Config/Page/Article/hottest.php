@@ -26,6 +26,9 @@ class hottest
             'name' => 'App.Cms.SideLatest',
         ],
         [
+            'name' => 'App.Cms.SideTopSearch',
+        ],
+        [
             'name' => 'App.Cms.SideGuessYouLike',
         ],
         [

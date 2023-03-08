@@ -30,13 +30,19 @@ class detail
             'name' => 'App.Cms.SearchForm',
         ],
         [
-            'name' => 'App.Cms.SideLatest',
-        ],
-        [
             'name' => 'App.Cms.SideHottest',
         ],
         [
+            'name' => 'App.Cms.SideLatest',
+        ],
+        [
+            'name' => 'App.Cms.SideTopSearch',
+        ],
+        [
             'name' => 'App.Cms.SideGuessYouLike',
+        ],
+        [
+            'name' => 'App.Cms.SideTopTags',
         ],
     ];
 

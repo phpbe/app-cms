@@ -28,10 +28,10 @@ class search
             'name' => 'App.Cms.SideHottest',
         ],
         [
-            'name' => 'App.Cms.SideTopSearch',
+            'name' => 'App.Cms.SideLatest',
         ],
         [
-            'name' => 'App.Cms.SideLatest',
+            'name' => 'App.Cms.SideTopSearch',
         ],
         [
             'name' => 'App.Cms.SideGuessYouLike',
