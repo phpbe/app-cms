@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\CategoryHottest;
+namespace Be\App\Cms\Section\CategorySideHottest;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -28,7 +28,7 @@ class Template extends Section
             return;
         }
 
-        echo Be::getService('App.Cms.Section')->makeArticlesSection($this, 'category-hottest', $articles);
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-category-hottest', $articles);
     }
 }
 

@@ -1062,11 +1062,14 @@ class Article
      * @return string
      * @throws ServiceException
      */
-    public function getArticleUrl(array $params = []): string
+    public function getArticleUrl(array $params = []): array
     {
         $configArticle = Be::getConfig('App.Cms.Article');
         $article = $this->getArticle($params['id']);
-        return $configArticle->urlPrefix . $article->url;
+
+        $params1 = ['id' => $params['id']];
+        unset($params['id']);
+        return [$configArticle->urlPrefix . $article->url, $params1, $params];
     }
 
 

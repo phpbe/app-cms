@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\CategoryHottest;
+namespace Be\App\Cms\Section\CategorySideHottest;
 
 /**
  * @BeConfig("某分类下的热门文章", icon="bi-hand-index")

@@ -36,8 +36,8 @@ class Template extends Section
         }
 
         $result = Be::getService('App.Cms.Article')->search($keyword, $params);
-        $paginationUrl = $request->getUrl();
-        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-search', $result, $paginationUrl);
+
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-search', $result);
     }
 }
 

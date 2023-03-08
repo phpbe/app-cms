@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\Tag;
+namespace Be\App\Cms\Section\CategoryArticles;
 
 use Be\Be;
 use Be\Theme\Section;
@@ -17,21 +17,11 @@ class Template extends Section
         }
 
         $request = Be::getRequest();
-        $response = Be::getResponse();
-
-        $tag = $request->get('tag', '');
-        $tag = trim($tag);
-        if ($tag === '') {
-            $response->error(beLang('App.Cms', 'ARTICLE.TAG_IS_MISSING'));
-            return;
-        }
-
         $page = $request->get('page', 1);
-        if ($page > 11) {
-            $page = 11;
-        }
         $params = [
-            'tag' => $tag,
+            'categoryId' => $this->page->category->id,
+            'orderBy' => ['is_on_top', 'publish_time'],
+            'orderByDir' => ['desc', 'desc'],
             'page' => $page,
         ];
 
@@ -41,7 +31,7 @@ class Template extends Section
 
         $result = Be::getService('App.Cms.Article')->search('', $params);
 
-        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-tag', $result);
+        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-category-articles', $result);
     }
 }
 

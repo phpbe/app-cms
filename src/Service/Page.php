@@ -16,31 +16,32 @@ class Page
      * @return string
      * @throws ServiceException
      */
-    public function getPageUrl(array $params = []): string
+    public function getPageUrl(array $params = []): array
     {
-        $configPage = Be::getConfig('App.Cms.Page');
-        if (isset($params['url'])) {
-            return $configPage->urlPrefix .  $params['url'];
-        } else {
-            if (strlen($params['id']) !== 36) {
+        if (strlen($params['id']) !== 36) {
+            throw new ServiceException('页面不存在！');
+        }
+
+        $cache = Be::getCache();
+
+        $key = 'Cms:Page:' . $params['id'];
+        $page = $cache->get($key);
+        if (!$page) {
+            $tuplePage = Be::getTuple('cms_page');
+            try {
+                $tuplePage->load($params['id']);
+            } catch (\Throwable $t) {
                 throw new ServiceException('页面不存在！');
             }
-
-            $cache = Be::getCache();
-            
-            $key = 'Cms:Page:' . $params['id'];
-            $page = $cache->get($key);
-            if (!$page) {
-                $tuplePage = Be::getTuple('cms_page');
-                try {
-                    $tuplePage->load($params['id']);
-                } catch (\Throwable $t) {
-                    throw new ServiceException('页面不存在！');
-                }
-            }
-
-            return $configPage->urlPrefix . $page->url;
+            $page = $tuplePage->toObject();
         }
+
+        $params1 = ['id' => $params['id']];
+        unset($params['id']);
+
+        $configPage = Be::getConfig('App.Cms.Page');
+
+        return [$configPage->urlPrefix . $page->url, $params1, $params];
     }
 
     /**

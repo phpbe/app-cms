@@ -11,16 +11,13 @@ class articles
 
     public array $centerSections = [
         [
-            'name' => 'Theme.System.PageContent',
+            'name' => 'App.Cms.CategoryArticles',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.CategoryHottest',
-        ],
-        [
-            'name' => 'App.Cms.GuessYouLike',
+            'name' => 'App.Cms.CategorySideHottest',
         ],
     ];
 

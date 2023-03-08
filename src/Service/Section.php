@@ -2,6 +2,8 @@
 
 namespace Be\App\Cms\Service;
 
+use Be\Be;
+
 class Section
 {
 
@@ -247,10 +249,9 @@ class Section
      * @param object $section
      * @param string $class
      * @param array $result
-     * @param string $paginationUrl
      * @return string
      */
-    public function makePagedArticlesSection(object $section, string $class, array $result, string $paginationUrl = null): string
+    public function makePagedArticlesSection(object $section, string $class, array $result): string
     {
         $html = '';
         $html .= '<style type="text/css">';
@@ -446,23 +447,22 @@ class Section
         $total = $result['total'];
         $pageSize = $result['pageSize'];
         $pages = ceil($total / $pageSize);
-        if ($paginationUrl !== null && $pages > 1) {
+        if ($pages > 1) {
 
             $page = $result['page'];
 
-            $paginationUrl = preg_replace('/[\?|\&]page=\d+/', '', $paginationUrl);
+            $request = Be::getRequest();
+            $route = $request->getRoute();
+            $params = $request->get();
 
             if ($page > $pages) $page = $pages;
-
-            $paginationUrl .= strpos($paginationUrl, '?') === false ? '?' : '&';
 
             $html .= '<nav class="be-mt-200">';
             $html .= '<ul class="be-pagination" style="justify-content: center;">';
             $html .= '<li>';
             if ($page > 1) {
-                $url = $paginationUrl;
-                $url .= http_build_query(['page' => ($page - 1)]);
-                $html .= '<a href="' . $url . '">' . beLang('App.Cms', 'PAGINATION.PREVIOUS'). '</a>';
+                $params['page'] = $page - 1;
+                $html .= '<a href="' . beUrl($route, $params) . '">' . beLang('App.Cms', 'PAGINATION.PREVIOUS'). '</a>';
             } else {
                 $html .= '<span>' . beLang('App.Cms', 'PAGINATION.PREVIOUS'). '</span>';
             }
@@ -495,10 +495,9 @@ class Section
                     $html .= '<span>' . $i . '</span>';
                     $html .= '</li>';
                 } else {
-                    $url = $paginationUrl;
-                    $url .= http_build_query(['page' => $i]);
+                    $params['page'] = $i;
                     $html .= '<li>';
-                    $html .= '<a href="' . $url . '">' . $i . '</a>';
+                    $html .= '<a href="' . beUrl($route, $params) . '">' . $i . '</a>';
                     $html .= '</li>';
                 }
             }
@@ -509,9 +508,8 @@ class Section
 
             $html .= '<li>';
             if ($page < $pages) {
-                $url = $paginationUrl;
-                $url .= http_build_query(['page' => ($page + 1)]);
-                $html .= '<a href="' . $url . '">' . beLang('App.Cms', 'PAGINATION.NEXT'). '</a>';
+                $params['page'] = $page + 1;
+                $html .= '<a href="' . beUrl($route, $params) . '">' . beLang('App.Cms', 'PAGINATION.NEXT'). '</a>';
             } else {
                 $html .= '<span>' . beLang('App.Cms', 'PAGINATION.NEXT'). '</span>';
             }

@@ -10,7 +10,7 @@ class Page
     /**
      * @BeConfigItem("网址前缀", driver="FormItemInput", description="以 / 开头，谨慎改动。")
      */
-    public string $pageUrlPrefix = '/page/';
+    public string $urlPrefix = '/page/';
 
 }
 
