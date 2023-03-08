@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\GuessYouLike;
+namespace Be\App\Cms\Section\SideGuessYouLike;
 
 use Be\Be;
 use Be\Theme\Section;
