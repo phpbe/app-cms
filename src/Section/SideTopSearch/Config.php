@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\TopSearch;
+namespace Be\App\Cms\Section\SideTopSearch;
 
 /**
  * @BeConfig("热门搜索边栏", icon="bi-search-heart")

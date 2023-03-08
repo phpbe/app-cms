@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Cms\Section\TopSearch;
+namespace Be\App\Cms\Section\SideTopSearch;
 
 use Be\Be;
 use Be\Theme\Section;
