@@ -8,11 +8,6 @@ class Article
 {
 
     /**
-     * @BeConfigItem("文章列表查询缓存时间（秒）", driver="FormItemInputNumberInt")
-     */
-    public int $articlesCacheExpire = 600;
-
-    /**
      * @BeConfigItem("默认分页条数", driver="FormItemInputNumberInt")
      */
     public int $pageSize = 15;

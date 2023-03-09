@@ -27,7 +27,9 @@ class Article
             } catch (\Throwable $t) {
                 $article = -1;
             }
-            $cache->set($key, $article, 600);
+
+            $configCache = Be::getConfig('App.Cms.Cache');
+            $cache->set($key, $article, $configCache->article);
         }
 
         if ($article === -1) {
@@ -184,6 +186,12 @@ class Article
             }
 
             $cache->set($counterKey, $counter);
+        } else {
+            $cacheKey = 'Cms:search:' . md5(serialize($params));
+            $results = $cache->get($cacheKey);
+            if ($results !== false) {
+                return $results;
+            }
         }
 
         $query = [
@@ -337,12 +345,19 @@ class Article
             $rows[] = $this->formatEsArticle($x['_source']);
         }
 
-        return [
+        $result = [
             'total' => $total,
             'pageSize' => $pageSize,
             'page' => $page,
             'rows' => $rows,
         ];
+
+        if ($keywords === '') {
+            $configCache = Be::getConfig('App.Cms.Cache');
+            $cache->set($cacheKey, $result, $configCache->articles);
+        }
+
+        return $result;
     }
 
     /**
@@ -469,6 +484,13 @@ class Article
             return $this->getTopArticlesFromDb($n, $orderBy, $orderByDir);
         }
 
+        $cache = Be::getCache();
+        $cacheKey = 'Cms:getTopArticles:' . $n . ':' . $orderBy. ':' . $orderByDir;
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
+        }
+
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
@@ -508,6 +530,9 @@ class Article
         foreach ($results['hits']['hits'] as $x) {
             $return[] = $this->formatEsArticle($x['_source']);
         }
+
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
 
         return $return;
     }
@@ -571,6 +596,13 @@ class Article
             return [];
         }
 
+        $cache = Be::getCache();
+        $cacheKey = 'Cms:getTopSearchArticles:' . $n;
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
+        }
+
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
@@ -611,6 +643,9 @@ class Article
             $return[] = $this->formatEsArticle($x['_source']);
         }
 
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
+
         return $return;
     }
 
@@ -627,6 +662,13 @@ class Article
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {
             return $this->getSimilarArticlesFromDb($articleId, $articleTitle, $n);
+        }
+
+        $cache = Be::getCache();
+        $cacheKey = 'Cms:getSimilarArticles:' . $articleId . ':' . $n;
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
         }
 
         $query = [
@@ -673,6 +715,9 @@ class Article
         foreach ($results['hits']['hits'] as $x) {
             $return[] = $this->formatEsArticle($x['_source']);
         }
+
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
 
         return $return;
     }
@@ -735,6 +780,16 @@ class Article
             return [];
         }
 
+        $cache = Be::getCache();
+        $cacheKey = 'Cms:getGuessYouLikeArticles:' . md5(serialize($keywords)) . ':' . $n;
+        if ($excludeArticleId !== null) {
+            $cacheKey .= ':' . $excludeArticleId;
+        }
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
+        }
+
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
@@ -782,6 +837,9 @@ class Article
             $return[] = $this->formatEsArticle($x['_source']);
         }
 
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
+
         return $return;
     }
 
@@ -801,6 +859,13 @@ class Article
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {
             return $this->getCategoryTopArticlesFromDb($categoryId, $n, $orderBy, $orderByDir);
+        }
+
+        $cache = Be::getCache();
+        $cacheKey = 'Cms:getCategoryTopArticles:' . $categoryId . ':' . $n . ':' . $orderBy . ':' . $orderByDir;
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
         }
 
         $query = [
@@ -858,6 +923,9 @@ class Article
         foreach ($results['hits']['hits'] as $x) {
             $return[] = $this->formatEsArticle($x['_source']);
         }
+
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
 
         return $return;
     }
@@ -922,6 +990,13 @@ class Article
             return [];
         }
 
+        $cache = Be::getCache();
+        $cacheKey = 'Cms:getCategoryTopSearchArticles:' . $categoryId . ':' . $n;
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
+        }
+
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
@@ -977,6 +1052,9 @@ class Article
         foreach ($results['hits']['hits'] as $x) {
             $return[] = $this->formatEsArticle($x['_source']);
         }
+
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
 
         return $return;
     }
@@ -1050,7 +1128,8 @@ class Article
             }
         }
 
-        $cache->set($historyKey, $hotKeywords, 600);
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($historyKey, $hotKeywords, $configCache->topKeywords);
 
         return $hotKeywords;
     }
@@ -1091,7 +1170,9 @@ class Article
             } catch (\Throwable $t) {
                 $tags = [];
             }
-            $cache->set($key, $tags, 600);
+
+            $configCache = Be::getConfig('App.Cms.Cache');
+            $cache->set($key, $tags, $configCache->tag);
         }
 
         return $tags;
