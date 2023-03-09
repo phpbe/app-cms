@@ -18,7 +18,27 @@ class Template extends Section
             return;
         }
 
-        $this->css();
+        echo '<style type="text/css">';
+        echo $this->getCssBackgroundColor('app-cms-detail');
+        echo $this->getCssPadding('app-cms-detail');
+        echo $this->getCssMargin('app-cms-detail');
+
+        echo '#' . $this->id . ' .app-cms-detail {';
+        //echo 'box-shadow: 0 0 10px var(--font-color-9);';
+        echo 'box-shadow: 0 0 10px #eaf0f6;';
+        echo 'transition: all 0.3s ease;';
+        echo '}';
+
+        echo '#' . $this->id . ' .app-cms-detail:hover {';
+        //echo 'box-shadow: 0 0 15px var(--font-color-8);';
+        echo 'box-shadow: 0 0 15px #dae0e6;';
+        echo '}';
+
+        echo '#' . $this->id . ' .app-cms-detail img {';
+        echo 'max-width: 100%;';
+        echo '}';
+
+        echo '</style>';
 
         echo '<div class="app-cms-detail">';
         if ($this->position === 'middle' && $this->config->width === 'default') {
@@ -42,7 +62,29 @@ class Template extends Section
             <span class="be-ml-100"><?php echo beLang('App.Cms', 'ARTICLE.HITS') . ': '. $this->page->article->hits; ?></span>
         </div>
         <div class="be-mt-200 be-lh-200 be-fs-110">
-            <?php echo $this->page->article->description; ?>
+            <?php
+            $hasImg = strpos($this->page->article->description, '<img ');
+            if ($hasImg !== false) {
+                preg_match_all("/<img.*?src=\"(.*?)\".*?[\/]?>/", $this->page->article->description, $matches);
+                $i = 0;
+                foreach ($matches[0] as $image) {
+
+                    $src = $matches[1][$i];
+
+                    $alt = '';
+                    if (preg_match("/alt=\"(.*?)\"/", $image, $match)) {
+                        $alt = $match[1];
+                    }
+
+                    $replace = '<a href="'.$src.'" data-lightbox="article-images" data-title="'.$alt.'">' . $image . '</a>';
+
+                    $this->page->article->description = str_replace($image, $replace, $this->page->article->description);
+                    $i++;
+                }
+            }
+
+            echo $this->page->article->description;
+            ?>
         </div>
 
         <div class="be-mt-200 be-bt-eee be-pt-50">
@@ -62,36 +104,8 @@ class Template extends Section
         }
         echo '</div>';
 
-        $this->js();
-    }
-
-
-    private function css()
-    {
-        echo '<style type="text/css">';
-        echo $this->getCssBackgroundColor('app-cms-detail');
-        echo $this->getCssPadding('app-cms-detail');
-        echo $this->getCssMargin('app-cms-detail');
-
-        echo '#' . $this->id . ' .app-cms-detail {';
-        //echo 'box-shadow: 0 0 10px var(--font-color-9);';
-        echo 'box-shadow: 0 0 10px #eaf0f6;';
-        echo 'transition: all 0.3s ease;';
-        echo '}';
-
-        echo '#' . $this->id . ' .app-cms-detail:hover {';
-        //echo 'box-shadow: 0 0 15px var(--font-color-8);';
-        echo 'box-shadow: 0 0 15px #dae0e6;';
-        echo '}';
-
-        echo '</style>';
-    }
-
-
-    private function js()
-    {
+        $wwwUrl = \Be\Be::getProperty('App.Cms')->getWwwUrl();
         if (strpos($this->page->article->description, '<pre') !== false && strpos($this->page->article->description, '<code') !== false) {
-            $wwwUrl = \Be\Be::getProperty('App.Cms')->getWwwUrl();
             ?>
             <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/lib/highlight.js/11.5.1/default.min.css">
             <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/lib/highlight.js/11.5.1/styles/atom-one-light.css">
@@ -107,6 +121,19 @@ class Template extends Section
             <script src="<?php echo $wwwUrl; ?>/js/article/detail.code.js"></script>
             <?php
         }
+
+        if (strpos($this->page->article->description, '<img ') !== false) {
+            ?>
+            <link rel="stylesheet" href="<?php echo $wwwUrl; ?>/lib/lightbox/2.11.3/css/lightbox.min.css">
+            <script src="<?php echo $wwwUrl; ?>/lib/lightbox/2.11.3/js/lightbox.min.js"></script>
+            <script>
+                lightbox.option({
+                    albumLabel: "%1 / %2"
+                })
+            </script>
+            <?php
+        }
     }
+
 }
 

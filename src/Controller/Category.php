@@ -34,19 +34,7 @@ class Category
             $response->set('metaKeywords', $category->seo_keywords);
             $response->set('pageTitle', $category->name);
 
-            $page = $request->get('page', 1);
-            $result = Be::getService('App.Cms.Article')->search('', [
-                'categoryId' => $id,
-                'orderBy' => ['is_on_top', 'publish_time'],
-                'orderByDir' => ['desc', 'desc'],
-                'page' => $page,
-            ]);
-            $response->set('result', $result);
-
-            $paginationUrl = beUrl('Cms.Category.articles', ['id' => $id]);
-            $response->set('paginationUrl', $paginationUrl);
-
-            $response->display('App.Cms.Article.articles');
+            $response->display();
 
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
