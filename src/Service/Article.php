@@ -186,12 +186,17 @@ class Article
             }
 
             $cache->set($counterKey, $counter);
-        } else {
-            $cacheKey = 'Cms:search:' . md5(serialize($params));
-            $results = $cache->get($cacheKey);
-            if ($results !== false) {
-                return $results;
-            }
+        }
+
+        $cacheKey = 'Cms:search';
+        if ($keywords !== '') {
+            $cacheKey .= ':' . $keywords;
+        }
+        $cacheKey .= ':' . md5(serialize($params));
+
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
         }
 
         $query = [
@@ -485,7 +490,7 @@ class Article
         }
 
         $cache = Be::getCache();
-        $cacheKey = 'Cms:getTopArticles:' . $n . ':' . $orderBy. ':' . $orderByDir;
+        $cacheKey = 'Cms:getTopArticles:' . $n . ':' . $orderBy . ':' . $orderByDir;
         $results = $cache->get($cacheKey);
         if ($results !== false) {
             return $results;

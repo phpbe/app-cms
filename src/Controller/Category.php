@@ -28,6 +28,7 @@ class Category
             }
 
             $category = Be::getService('App.Cms.Category')->getCategory($id);
+            $response->set('category', $category);
 
             $response->set('title', $category->seo_title);
             $response->set('metaDescription', $category->seo_description);

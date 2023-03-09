@@ -16,19 +16,16 @@ class Template extends Section
             return;
         }
 
-        $request = Be::getRequest();
-        if ($request->getRoute() !== 'Cms.Category.articles') {
+        if ($this->route !== 'Cms.Category.articles') {
             return;
         }
 
-        $categoryId = $request->get('id');
-
-        $articles = Be::getService('App.Cms.Article')->getCategoryHottestArticles($categoryId, $this->config->quantity);
+        $articles = Be::getService('App.Cms.Article')->getCategoryHottestArticles($this->page->category->id, $this->config->quantity);
         if (count($articles) === 0) {
             return;
         }
 
-        echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-category-hottest', $articles);
+        echo Be::getService('App.Cms.Section')->makeSideArticlesSection($this, 'app-cms-category-hottest', $articles);
     }
 }
 
