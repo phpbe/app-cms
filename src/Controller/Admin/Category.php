@@ -179,7 +179,7 @@ class Category extends Auth
 
             'detail' => [
                 'title' => '文章分类详情',
-                'theme' => 'CmsBlank',
+                'theme' => 'Blank',
                 'form' => [
                     'items' => [
                         [
