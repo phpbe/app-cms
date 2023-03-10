@@ -228,7 +228,26 @@ class Article
             $query['body']['query']['bool']['should'] = [
                 [
                     'match' => [
-                        'title' => $keywords
+                        'title' => [
+                            'query' => $keywords,
+                            'boost' => 2,
+                        ]
+                    ],
+                ],
+                [
+                    'match' => [
+                        'summary' => [
+                            'query' => $keywords,
+                            'boost' => 1,
+                        ]
+                    ],
+                ],
+                [
+                    'match' => [
+                        'description' => [
+                            'query' => $keywords,
+                            'boost' => 1,
+                        ]
                     ],
                 ],
             ];
@@ -263,19 +282,8 @@ class Article
 
         if (isset($params['tag']) && $params['tag']) {
             $query['body']['query']['bool']['filter'][] = [
-                'nested' => [
-                    'path' => 'tags',
-                    'query' => [
-                        'bool' => [
-                            'filter' => [
-                                [
-                                    'term' => [
-                                        'tags.tag' => $params['tag'],
-                                    ],
-                                ],
-                            ]
-                        ],
-                    ],
+                'term' => [
+                    'tags' => $params['tag'],
                 ]
             ];
         }
