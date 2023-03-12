@@ -36,9 +36,11 @@ class Template extends Section
         echo 'background-color: var(--major-color);';
         echo 'padding: .1rem .5rem;';
         echo 'border-radius: .3rem;';
+        echo 'overflow:hidden;';
         echo 'white-space:nowrap;';
         echo 'word-break:keep-all;';
         echo '}';
+
 
         echo '#' . $this->id . ' .app-cms-side-top-tags .tag:hover {';
         echo 'color: #fff;';
