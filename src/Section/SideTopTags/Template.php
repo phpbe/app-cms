@@ -35,8 +35,9 @@ class Template extends Section
         echo 'color: #fff;';
         echo 'background-color: var(--major-color);';
         echo 'padding: .1rem .5rem;';
-        echo 'margin-right: .25rem;';
         echo 'border-radius: .3rem;';
+        echo 'white-space:nowrap;';
+        echo 'word-break:keep-all;';
         echo '}';
 
         echo '#' . $this->id . ' .app-cms-side-top-tags .tag:hover {';
@@ -75,7 +76,7 @@ class Template extends Section
             <?php
             echo '<div class="be-mt-100 be-lh-175">';
             foreach ($topTags as $topTag) {
-                echo '<a class="tag" href="'. beUrl('Cms.Article.tag', ['tag' => $topTag]) .'">' . $topTag . '</a>';
+                echo '<a class="tag" href="'. beUrl('Cms.Article.tag', ['tag' => $topTag]) .'">' . $topTag . '</a> ';
             }
             echo '</div>';
 
