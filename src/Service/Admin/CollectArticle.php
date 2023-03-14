@@ -79,7 +79,7 @@ class CollectArticle
                         ->delete();
 
                     // 删除商品款式
-                    Be::getTable('cms_article__tag')
+                    Be::getTable('cms_article_tag')
                         ->where('article_id', $articleId)
                         ->delete();
 
