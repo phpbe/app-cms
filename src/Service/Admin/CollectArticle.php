@@ -74,7 +74,7 @@ class CollectArticle
                 if ($tupleArticle->is_enable === -1) { // 未曾发布，直接物理删除
 
                     // 删除文章分类
-                    Be::getTable('cms_article_category_id')
+                    Be::getTable('cms_article_category')
                         ->where('article_id', $articleId)
                         ->delete();
 
