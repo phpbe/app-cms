@@ -426,7 +426,7 @@ class CollectArticle extends Auth
             }
 
             if (count($articleIds) > 0) {
-                Be::getService('App.Cms.CollectArticle')->delete($articleIds);
+                Be::getService('App.Cms.Admin.CollectArticle')->delete($articleIds);
             }
 
             $response->set('success', true);
