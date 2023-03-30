@@ -655,7 +655,7 @@ class Category extends Auth
 
             Be::getService('App.Cms.Admin.Category')->addArticle($categoryId, $articleIds);
             $response->set('success', true);
-            $response->set('message', '编辑文章分类成功！');
+            $response->set('message', '添加分类下文章成功！');
             $response->set('callback', 'parent.closeDrawerAndReload();');
             $response->json();
         } catch (\Throwable $t) {
@@ -694,7 +694,7 @@ class Category extends Auth
 
             Be::getService('App.Cms.Admin.Category')->deleteArticle($categoryId, $articleIds);
             $response->set('success', true);
-            $response->set('message', '编辑文章分类成功！');
+            $response->set('message', '删除分类下文章成功！');
             $response->json();
         } catch (\Throwable $t) {
             $response->set('success', false);

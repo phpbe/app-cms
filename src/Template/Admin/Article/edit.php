@@ -320,11 +320,11 @@
                         <div class="be-mt-100">
                             作者：
                         </div>
-                        <el-form-item class="be-mt-50" prop="author">
+                        <div class="be-mt-50">
                             <el-form-item prop="author">
                                 <el-input v-model="formData.author" size="medium"></el-input>
                             </el-form-item>
-                        </el-form-item>
+                        </div>
                         <?php
                         $formData['author'] = ($this->article ? $this->article->author : \Be\Be::getAdminUser()->name);
                         ?>
@@ -332,11 +332,11 @@
                         <div class="be-mt-100">
                             发布时间：
                         </div>
-                        <el-form-item class="be-mt-50" prop="publish_time">
+                        <div class="be-mt-50">
                             <el-form-item prop="publish_time">
                                 <el-date-picker type="datetime" v-model="formData.publish_time" size="medium" value-format="yyyy-MM-dd HH:mm:ss" placeholder="选择发布时间"></el-date-picker>
                             </el-form-item>
-                        </el-form-item>
+                        </div>
                         <?php
                         $formData['publish_time'] = ($this->article ? $this->article->publish_time : date('Y-m-d H:i:s'));
                         ?>

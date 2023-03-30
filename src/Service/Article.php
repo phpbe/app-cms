@@ -502,18 +502,19 @@ class Article
      * @param int $n
      * @param string $orderBy
      * @param string $orderByDir
+     * @param array $params
      * @return array
      * @throws \Be\Runtime\RuntimeException
      */
-    public function getTopArticles(int $n, string $orderBy, string $orderByDir = 'desc'): array
+    public function getTopArticles(int $n, string $orderBy, string $orderByDir = 'desc', array $params = []): array
     {
         $configEs = Be::getConfig('App.Cms.Es');
         if (!$configEs->enable) {
-            return $this->getTopArticlesFromDb($n, $orderBy, $orderByDir);
+            return $this->getTopArticlesFromDb($n, $orderBy, $orderByDir, $params);
         }
 
         $cache = Be::getCache();
-        $cacheKey = 'Cms:getTopArticles:' . $n . ':' . $orderBy . ':' . $orderByDir;
+        $cacheKey = 'Cms:getTopArticles:' . $n . ':' . $orderBy . ':' . $orderByDir . ':' . serialize($params);
         $results = $cache->get($cacheKey);
         if ($results !== false) {
             return $results;
@@ -571,13 +572,14 @@ class Article
      * @param int $n
      * @param string $orderBy
      * @param string $orderByDir
+     * @param array $params
      * @return array
      * @throws \Be\Runtime\RuntimeException
      */
-    public function getTopArticlesFromDb(int $n, string $orderBy, string $orderByDir = 'desc'): array
+    public function getTopArticlesFromDb(int $n, string $orderBy, string $orderByDir = 'desc', array $params = []): array
     {
         $cache = Be::getCache();
-        $cacheKey = 'Cms:getTopArticlesFromDb:' . $n . ':' . $orderBy . ':' . $orderByDir;
+        $cacheKey = 'Cms:getTopArticlesFromDb:' . $n . ':' . $orderBy . ':' . $orderByDir . ':' . serialize($params);
         $result = $cache->get($cacheKey);
         if ($result !== false) {
             return $result;
