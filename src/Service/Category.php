@@ -9,6 +9,35 @@ class Category
 {
 
     /**
+     * 获取分类列表
+     *
+     * @param int $n 数量
+     * @return array
+     */
+    public function getCategories(int $n = 0): array
+    {
+        $cache = Be::getCache();
+
+        $key = 'Cms:Categories';
+        $categories = $cache->get($key);
+
+        if (!$categories) {
+            $table =  Be::getTable('cms_category');
+            $table->where('is_delete', 0);
+            $table->where('is_enable', 1);
+            $table->orderBy('ordering', 'ASC');
+            $categories = $table->getObjects();
+            $cache->set($key, $categories, 600);
+        }
+
+        if ($n > 0 && $n < count($categories)) {
+            ;$categories = array_slice($categories, 0, $n);
+        }
+
+        return $categories;
+    }
+
+    /**
      * 获取页面伪静态页网址
      *
      * @param array $params
