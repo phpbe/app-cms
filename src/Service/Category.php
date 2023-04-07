@@ -24,7 +24,6 @@ class Category
         if (!$categories) {
             $table =  Be::getTable('cms_category');
             $table->where('is_delete', 0);
-            $table->where('is_enable', 1);
             $table->orderBy('ordering', 'ASC');
             $categories = $table->getObjects();
             $cache->set($key, $categories, 600);
