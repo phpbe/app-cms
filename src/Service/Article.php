@@ -156,11 +156,13 @@ class Article
      */
     public function search(string $keywords, array $params = []): array
     {
-        $configArticle = Be::getConfig('App.Cms.Article');
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return $this->searchFromDb($keywords, $params);
         }
+
+        $configArticle = Be::getConfig('App.Cms.Article');
 
         $cache = Be::getCache();
         $es = Be::getEs();
@@ -508,8 +510,9 @@ class Article
      */
     public function getTopArticles(int $n, string $orderBy, string $orderByDir = 'desc', array $params = []): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return $this->getTopArticlesFromDb($n, $orderBy, $orderByDir, $params);
         }
 
@@ -628,8 +631,9 @@ class Article
      */
     public function getTopSearchArticles(int $n = 10): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return [];
         }
 
@@ -701,8 +705,9 @@ class Article
      */
     public function getSimilarArticles(string $articleId, string $articleTitle, int $n = 12): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return $this->getSimilarArticlesFromDb($articleId, $articleTitle, $n);
         }
 
@@ -808,8 +813,9 @@ class Article
      */
     public function getGuessYouLikeArticles(int $n = 40, string $excludeArticleId = null): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return [];
         }
 
@@ -909,8 +915,9 @@ class Article
      */
     public function getCategoryTopArticles(string $categoryId, int $n, string $orderBy, string $orderByDir = 'desc'): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return $this->getCategoryTopArticlesFromDb($categoryId, $n, $orderBy, $orderByDir);
         }
 
@@ -1045,8 +1052,9 @@ class Article
      */
     public function getCategoryTopSearchArticles(string $categoryId, int $n = 10): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return [];
         }
 
@@ -1153,8 +1161,9 @@ class Article
      */
     public function getTopSearchKeywords(int $n = 6): array
     {
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return [];
         }
 

@@ -21,8 +21,9 @@ class TaskArticle
     {
         if (count($articles) === 0) return;
 
+        $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
-        if (!$configEs->enable) {
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
             return;
         }
 
