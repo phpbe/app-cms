@@ -26,7 +26,9 @@ class Category
             $table->where('is_delete', 0);
             $table->orderBy('ordering', 'ASC');
             $categories = $table->getObjects();
-            $cache->set($key, $categories, 600);
+
+            $configCache = Be::getConfig('App.Cms.Cache');
+            $cache->set($key, $categories, $configCache->categories);
         }
 
         if ($n > 0 && $n < count($categories)) {
@@ -65,7 +67,18 @@ class Category
         $key = 'Cms:Category:' . $categoryId;
         $category = $cache->get($key);
         if (!$category) {
-            throw new ServiceException('分类不存在！');
+            try {
+                $category = $this->getCategoryFromDb($categoryId);
+            } catch (\Throwable $t) {
+                $category = '-1';
+            }
+
+            $configCache = Be::getConfig('App.Cms.Cache');
+            $cache->set($key, $category, $configCache->category);
+        }
+
+        if ($category === '-1') {
+            throw new ServiceException(beLang('App.Cms', 'CATEGORY.NOT_EXIST'));
         }
 
         return $category;
@@ -77,13 +90,13 @@ class Category
      * @param string $pageId 页面ID
      * @return object 分类对象
      */
-    public function getPageFromDb(string $categoryId): object
+    public function getCategoryFromDb(string $categoryId): object
     {
-        $tupleCategory = Be::getTuple('cms_page');
+        $tupleCategory = Be::getTuple('cms_category');
         try {
             $tupleCategory->load($categoryId);
         } catch (\Throwable $t) {
-            throw new ServiceException('分类不存在！');
+            throw new ServiceException(beLang('App.Cms', 'CATEGORY.NOT_EXIST'));
         }
 
         return $tupleCategory->toObject();

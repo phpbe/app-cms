@@ -8,6 +8,16 @@ class Cache
 {
 
     /**
+     * @BeConfigItem("分类列表", driver="FormItemInputNumberInt")
+     */
+    public int $categories = 600;
+
+    /**
+     * @BeConfigItem("分类", driver="FormItemInputNumberInt")
+     */
+    public int $category = 600;
+
+    /**
      * @BeConfigItem("文章详情", driver="FormItemInputNumberInt")
      */
     public int $article = 600;
