@@ -5,7 +5,7 @@ use Be\Be;
 use Be\Task\TaskInterval;
 
 /**
- * @BeTask("自定义页面增量同步到Cache", schedule="* * * * *")
+ * @BeTask("自定义页面增量同步到Cache", schedule="30 * * * *")
  */
 class PageSyncCache extends TaskInterval
 {

@@ -7,7 +7,7 @@ use Be\Task\TaskInterval;
 /**
  * 间隔一段时间晨，定时执行 文章同步到ES和Cache
  *
- * @BeTask("文章境量同步到ES和Cache", schedule="* * * * *")
+ * @BeTask("文章境量同步到ES和Cache", schedule="20 * * * *")
  */
 class ArticleSyncEsAndCache extends TaskInterval
 {

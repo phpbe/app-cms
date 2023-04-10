@@ -5,7 +5,7 @@ use Be\Be;
 use Be\Task\TaskInterval;
 
 /**
- * @BeTask("文章分类增量同步到Cache", schedule="* * * * *")
+ * @BeTask("文章分类增量同步到Cache", schedule="10 * * * *")
  */
 class CategorySyncCache extends TaskInterval
 {
