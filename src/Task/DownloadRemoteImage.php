@@ -40,6 +40,9 @@ class DownloadRemoteImage extends TaskInterval
 
         foreach ($articles as $article) {
             $service->downloadRemoteImages($article);
+
+            $this->taskLog->update_time = date('Y-m-d h:i:s');
+            $this->updateTaskLog();
         }
 
         $this->breakpoint = $d2;
