@@ -15,6 +15,9 @@ class DownloadRemoteImage extends TaskInterval
     // 时间间隔：1天
     protected $step = 86400;
 
+    // 超时时间
+    protected $timeout = 600;
+
     public function execute()
     {
         if (!$this->breakpoint) {
