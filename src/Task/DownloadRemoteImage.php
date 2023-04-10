@@ -16,7 +16,7 @@ class DownloadRemoteImage extends TaskInterval
     protected $step = 86400;
 
     // 超时时间
-    protected $timeout = 600;
+    protected $timeout = 1800;
 
     public function execute()
     {
