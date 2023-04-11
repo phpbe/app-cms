@@ -5,7 +5,7 @@ use Be\Be;
 use Be\Task\TaskInterval;
 
 /**
- * @BeTask("自动下载远程图片", timeout="3600", schedule="40 2,8,14,20 * * *")
+ * @BeTask("自动下载远程图片", timeout="1800", schedule="40 * * * *")
  */
 class DownloadRemoteImage extends TaskInterval
 {
