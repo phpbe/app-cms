@@ -30,9 +30,6 @@ class DownloadRemoteImage extends Task
 
             $service->downloadRemoteImages($article);
 
-            $this->taskLog->update_time = date('Y-m-d H:i:s');
-            $this->updateTaskLog();
-
             $t1 = time();
         } while($t1 - $t0 < $timeout);
     }
