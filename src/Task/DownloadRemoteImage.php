@@ -14,7 +14,7 @@ class DownloadRemoteImage extends Task
 
     public function execute()
     {
-        $timeout = $this->timeout;
+        $timeout = $this->task->timeout;
         if ($timeout <= 0) {
             $timeout = 60;
         }
