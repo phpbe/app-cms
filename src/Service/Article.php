@@ -56,35 +56,50 @@ class Article
             throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
         }
 
-        $article->url_custom = (int)$article->url_custom;
-        $article->seo_title_custom = (int)$article->seo_title_custom;
-        $article->seo_description_custom = (int)$article->seo_description_custom;
-        $article->ordering = (int)$article->ordering;
-        $article->is_push_home = (int)$article->is_push_home;
-        $article->is_on_top = (int)$article->is_on_top;
         $article->is_enable = (int)$article->is_enable;
         $article->is_delete = (int)$article->is_delete;
-
-        $sql = 'SELECT category_id FROM cms_article_category WHERE article_id = ?';
-        $category_ids = $db->getValues($sql, [$articleId]);
-        if (count($category_ids) > 0) {
-            $article->category_ids = $category_ids;
-
-            $sql = 'SELECT * FROM cms_category WHERE id IN (?)';
-            $categories = $db->getObjects($sql, ['\'' . implode('\',\'', $category_ids) . '\'']);
-            foreach ($categories as $category) {
-                $category->ordering = (int)$category->ordering;
-            }
-            $article->categories = $categories;
-        } else {
-            $article->category_ids = [];
-            $article->categories = [];
+        if ($article->is_enable !== 1 || $article->is_delete !== 0) {
+            throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
         }
+
+        $categories = [];
+        $sql = 'SELECT category_id FROM cms_article_category WHERE article_id = ?';
+        $categoryIds = $db->getValues($sql, [$articleId]);
+        if (count($categoryIds) > 0) {
+            $sql = 'SELECT id, `name` FROM cms_category WHERE is_delete=0 AND id IN (\'' . implode('\',\'', $categoryIds) . '\') ORDER BY ordering ASC';
+            $categories = $db->getObjects($sql);
+        }
+        $article->categories = $categories;
+        $article->category_ids = array_column($categories, 'id');
 
         $sql = 'SELECT tag FROM cms_article_tag WHERE article_id = ?';
         $article->tags = $db->getValues($sql, [$articleId]);
 
-        return $article;
+        $newArticle = new \stdClass();
+        $newArticle->id = $article->id;
+        $newArticle->image = $article->image;
+        $newArticle->title = $article->title;
+        $newArticle->summary = $article->summary;
+        $newArticle->description = $article->description;
+        $newArticle->url = $article->url;
+        //$newArticle->url_custom = (int)$article->url_custom;
+        $newArticle->author = $article->author;
+        $newArticle->publish_time = $article->publish_time;
+        $newArticle->seo_title = $article->seo_title;
+        //$newArticle->seo_title_custom = (int)$article->seo_title_custom;
+        $newArticle->seo_description = $article->seo_description;
+        //$newArticle->seo_description_custom = (int)$article->seo_description_custom;
+        $newArticle->seo_keywords = $article->seo_keywords;
+        //$newArticle->ordering = (int)$article->ordering;
+        $newArticle->hits = $article->hits;
+        //$newArticle->is_push_home = (int)$article->is_push_home;
+        // $newArticle->is_on_top = (int)$article->is_on_top;
+
+        $newArticle->categories = $article->categories;
+        $newArticle->category_ids = $article->category_ids;
+        $newArticle->tags = $article->tags;
+
+        return $newArticle;
     }
 
     /**
@@ -204,22 +219,6 @@ class Article
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
-                'query' => [
-                    'bool' => [
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                        ]
-                    ]
-                ]
             ]
         ];
 
@@ -227,6 +226,15 @@ class Article
             $query['body']['min_score'] = 0;
         } else {
             $query['body']['min_score'] = 0.01;
+
+            if (!isset($query['body']['query'])) {
+                $query['body']['query']= [];
+            }
+
+            if (!isset($query['body']['query']['bool'])) {
+                $query['body']['query']['bool'] = [];
+            }
+
             $query['body']['query']['bool']['should'] = [
                 [
                     'match' => [
@@ -256,6 +264,19 @@ class Article
         }
 
         if (isset($params['isPushHome']) && in_array($params['isPushHome'], [0, 1])) {
+
+            if (!isset($query['body']['query'])) {
+                $query['body']['query']= [];
+            }
+
+            if (!isset($query['body']['query']['bool'])) {
+                $query['body']['query']['bool'] = [];
+            }
+
+            if (!isset($query['body']['query']['bool']['filter'])) {
+                $query['body']['query']['bool']['filter'] = [];
+            }
+
             $query['body']['query']['bool']['filter'][] = [
                 'term' => [
                     'is_push_home' => (bool)$params['isPushHome'],
@@ -264,6 +285,19 @@ class Article
         }
 
         if (isset($params['categoryId']) && $params['categoryId']) {
+
+            if (!isset($query['body']['query'])) {
+                $query['body']['query']= [];
+            }
+
+            if (!isset($query['body']['query']['bool'])) {
+                $query['body']['query']['bool'] = [];
+            }
+
+            if (!isset($query['body']['query']['bool']['filter'])) {
+                $query['body']['query']['bool']['filter'] = [];
+            }
+
             $query['body']['query']['bool']['filter'][] = [
                 'nested' => [
                     'path' => 'categories',
@@ -283,6 +317,19 @@ class Article
         }
 
         if (isset($params['tag']) && $params['tag']) {
+
+            if (!isset($query['body']['query'])) {
+                $query['body']['query']= [];
+            }
+
+            if (!isset($query['body']['query']['bool'])) {
+                $query['body']['query']['bool'] = [];
+            }
+
+            if (!isset($query['body']['query']['bool']['filter'])) {
+                $query['body']['query']['bool']['filter'] = [];
+            }
+
             $query['body']['query']['bool']['filter'][] = [
                 'term' => [
                     'tags' => $params['tag'],
@@ -527,22 +574,6 @@ class Article
             'index' => $configEs->indexArticle,
             'body' => [
                 'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                        ]
-                    ]
-                ],
                 'sort' => [
                     $orderBy => [
                         'order' => $orderByDir
@@ -658,18 +689,6 @@ class Article
                                 'title' => implode(', ', $keywords)
                             ]
                         ],
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                        ]
                     ]
                 ]
             ]
@@ -730,18 +749,6 @@ class Article
                                 'title' => $articleTitle
                             ]
                         ],
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                        ]
                     ]
                 ]
             ]
@@ -856,18 +863,6 @@ class Article
                                 'title' => implode(', ', $keywords)
                             ]
                         ],
-                        'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
-                        ]
                     ]
                 ]
             ]
@@ -931,16 +926,6 @@ class Article
                 'query' => [
                     'bool' => [
                         'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
                             [
                                 'nested' => [
                                     'path' => 'categories',
@@ -1078,16 +1063,6 @@ class Article
                             ],
                         ],
                         'filter' => [
-                            [
-                                'term' => [
-                                    'is_enable' => true,
-                                ],
-                            ],
-                            [
-                                'term' => [
-                                    'is_delete' => false,
-                                ],
-                            ],
                             [
                                 'nested' => [
                                     'path' => 'categories',

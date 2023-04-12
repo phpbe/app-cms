@@ -33,16 +33,10 @@ class TaskArticle
         $batch = [];
         foreach ($articles as $article) {
 
-            $article->is_push_home = (int)$article->is_push_home;
-            $article->is_on_top = (int)$article->is_on_top;
-            $article->is_enable = (int)$article->is_enable;
-
             // 采集的文章，不处理
-            if ($article->is_enable === -1) {
+            if ($article->is_enable === '-1') {
                 continue;
             }
-
-            $article->is_delete = (int)$article->is_delete;
 
             $batch[] = [
                 'index' => [
@@ -51,7 +45,7 @@ class TaskArticle
                 ]
             ];
 
-            if ($article->is_delete === 1) {
+            if ($article->is_delete !== '0' || $article->is_enable !== '1') {
                 $batch[] = [
                     'id' => $article->id,
                     'is_delete' => true
@@ -62,7 +56,7 @@ class TaskArticle
                 $sql = 'SELECT category_id FROM cms_article_category WHERE article_id = ?';
                 $categoryIds = $db->getValues($sql, [$article->id]);
                 if (count($categoryIds) > 0) {
-                    $sql = 'SELECT id, `name` FROM cms_category WHERE id IN (\'' . implode('\',\'', $categoryIds) . '\')';
+                    $sql = 'SELECT id, `name` FROM cms_category WHERE is_delete=0 AND id IN (\'' . implode('\',\'', $categoryIds) . '\') ORDER BY ordering ASC';
                     $categories = $db->getObjects($sql);
                 }
 
@@ -80,12 +74,12 @@ class TaskArticle
                     'publish_time' => $article->publish_time,
                     'ordering' => (int)$article->ordering,
                     'hits' => (int)$article->hits,
-                    'is_push_home' => $article->is_push_home === 1,
-                    'is_on_top' => $article->is_on_top === 1,
-                    'is_enable' => $article->is_enable === 1,
-                    'is_delete' => $article->is_delete === 1,
-                    'create_time' => $article->create_time,
-                    'update_time' => $article->update_time,
+                    'is_push_home' => $article->is_push_home === '1',
+                    'is_on_top' => $article->is_on_top === '1',
+                    //'is_enable' => $article->is_enable === '1',
+                    //'is_delete' => $article->is_delete === '1',
+                    //'create_time' => $article->create_time,
+                    //'update_time' => $article->update_time,
                     'categories' => $categories,
                     'tags' => $tags,
                 ];
@@ -121,55 +115,60 @@ class TaskArticle
         $keyValues = [];
         foreach ($articles as $article) {
 
-            $article->is_push_home = (int)$article->is_push_home;
-            $article->is_on_top = (int)$article->is_on_top;
-            $article->is_enable = (int)$article->is_enable;
-
             // 采集的商品，不处理
-            if ($article->is_enable === -1) {
+            if ($article->is_enable === '-1') {
                 continue;
             }
 
             $key = 'Cms:Article:' . $article->id;
 
-            $article->is_delete = (int)$article->is_delete;
-
-            if ($article->is_delete === 1) {
+            if ($article->is_delete !== '0' || $article->is_enable !== '1') {
                 $cache->delete($key);
             } else {
-
-                $article->url_custom = (int)$article->url_custom;
-                $article->seo_title_custom = (int)$article->seo_title_custom;
-                $article->seo_description_custom = (int)$article->seo_description_custom;
-                $article->ordering = (int)$article->ordering;
-
+                $categories = [];
                 $sql = 'SELECT category_id FROM cms_article_category WHERE article_id = ?';
-                $category_ids = $db->getValues($sql, [$article->id]);
-                if (count($category_ids) > 0) {
-                    $article->category_ids = $category_ids;
-
-                    $sql = 'SELECT * FROM cms_category WHERE id IN (?)';
-                    $categories = $db->getObjects($sql, ['\'' . implode('\',\'', $category_ids) . '\'']);
-                    foreach ($categories as $category) {
-                        $category->ordering = (int)$category->ordering;
-                    }
-                    $article->categories = $categories;
-                } else {
-                    $article->category_ids = [];
-                    $article->categories = [];
+                $categoryIds = $db->getValues($sql, [$article->id]);
+                if (count($categoryIds) > 0) {
+                    $sql = 'SELECT id, `name` FROM cms_category WHERE is_delete=0 AND id IN (\'' . implode('\',\'', $categoryIds) . '\') ORDER BY ordering ASC';
+                    $categories = $db->getObjects($sql);
                 }
+                $article->categories = $categories;
+                $article->category_ids = array_column($categories, 'id');
 
                 $sql = 'SELECT tag FROM cms_article_tag WHERE article_id = ?';
                 $article->tags = $db->getValues($sql, [$article->id]);
 
-                $keyValues[$key] = $article;
+                $newArticle = new \stdClass();
+                $newArticle->id = $article->id;
+                $newArticle->image = $article->image;
+                $newArticle->title = $article->title;
+                $newArticle->summary = $article->summary;
+                $newArticle->description = $article->description;
+                $newArticle->url = $article->url;
+                //$newArticle->url_custom = (int)$article->url_custom;
+                $newArticle->author = $article->author;
+                $newArticle->publish_time = $article->publish_time;
+                $newArticle->seo_title = $article->seo_title;
+                //$newArticle->seo_title_custom = (int)$article->seo_title_custom;
+                $newArticle->seo_description = $article->seo_description;
+                //$newArticle->seo_description_custom = (int)$article->seo_description_custom;
+                $newArticle->seo_keywords = $article->seo_keywords;
+                //$newArticle->ordering = (int)$article->ordering;
+                $newArticle->hits = $article->hits;
+                //$newArticle->is_push_home = (int)$article->is_push_home;
+               // $newArticle->is_on_top = (int)$article->is_on_top;
+
+                $newArticle->categories = $article->categories;
+                $newArticle->category_ids = $article->category_ids;
+                $newArticle->tags = $article->tags;
+
+                $keyValues[$key] = $newArticle;
             }
         }
 
         if (count($keyValues) > 0) {
             $cache->setMany($keyValues);
         }
-
     }
 
     /**
@@ -186,6 +185,10 @@ class TaskArticle
         $hasChange = false;
         $updateObj = new \stdClass();
         $updateObj->id = $article->id;
+        $updateObj->download_remote_image = 2;
+        $updateObj->update_time = date('Y-m-d H:i:s');
+        Be::getDb()->update('cms_article', $updateObj, 'id');
+
 
         $article->image = trim($article->image);
         if ($article->image !== '') {
@@ -249,7 +252,7 @@ class TaskArticle
         }
 
         if ($hasChange) {
-            $updateObj->download_remote_image = 2;
+            $updateObj->download_remote_image = 10;
             $updateObj->update_time = date('Y-m-d H:i:s');
             Be::getDb()->update('cms_article', $updateObj, 'id');
         }

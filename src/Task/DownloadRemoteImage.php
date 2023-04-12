@@ -2,50 +2,39 @@
 namespace Be\App\Cms\Task;
 
 use Be\Be;
-use Be\Task\TaskInterval;
+use Be\Task\Task;
 
 /**
  * @BeTask("自动下载远程图片", timeout="1800", schedule="40 * * * *")
  */
-class DownloadRemoteImage extends TaskInterval
+class DownloadRemoteImage extends Task
 {
 
     protected $parallel = false;
 
-    // 时间间隔：1天
-    protected $step = 86400;
-
     public function execute()
     {
-        if (!$this->breakpoint) {
-            $this->breakpoint = date('Y-m-d h:i:s', time() - $this->step);
+        $timeout = $this->timeout;
+        if ($timeout <= 0) {
+            $timeout = 60;
         }
-
-        $t0 = time();
-        $t1 = strtotime($this->breakpoint);
-        $t2 = $t1 + $this->step;
-
-        if ($t1 >= $t0) return;
-        if ($t2 > $t0) {
-            $t2 = $t0;
-        }
-
-        $d1 = date('Y-m-d H:i:s', $t1 - 60);
-        $d2 = date('Y-m-d H:i:s', $t2);
 
         $service = Be::getService('App.Cms.Admin.TaskArticle');
-        $db = Be::getDb();
-        $sql = 'SELECT * FROM cms_article WHERE update_time >= ? AND update_time <= ? AND download_remote_image = 1';
-        $articles = $db->getYieldObjects($sql, [$d1, $d2]);
+        $t0 = time();
+        do {
+            $sql = 'SELECT * FROM cms_article WHERE download_remote_image = 1';
+            $article = Be::getDb()->getObject($sql);
+            if (!$article) {
+                break;
+            }
 
-        foreach ($articles as $article) {
             $service->downloadRemoteImages($article);
 
-            $this->taskLog->update_time = date('Y-m-d h:i:s');
+            $this->taskLog->update_time = date('Y-m-d H:i:s');
             $this->updateTaskLog();
-        }
 
-        $this->breakpoint = $d2;
+            $t1 = time();
+        } while($t1 - $t0 < $timeout);
     }
 
 

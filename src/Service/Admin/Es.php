@@ -125,6 +125,7 @@ class Es
                             'is_on_top' => [
                                 'type' => 'boolean'
                             ],
+                            /*
                             'is_enable' => [
                                 'type' => 'boolean'
                             ],
@@ -139,6 +140,7 @@ class Es
                                 'type' => 'date',
                                 'format' => 'yyyy-MM-dd HH:mm:ss',
                             ],
+                            */
                             'categories' => [
                                 'type' => 'nested',
                                 'properties' => [
