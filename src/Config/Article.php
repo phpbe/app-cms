@@ -70,5 +70,10 @@ class Article
      */
     public int $searchHistory = 1000;
 
+    /**
+     * @BeConfigItem("图像默认宽高比", driver = "FormItemInput")
+     */
+    public string $imageAspectRatio = '4/3';
+
 }
 
