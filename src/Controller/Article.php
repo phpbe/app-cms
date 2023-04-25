@@ -12,12 +12,12 @@ class Article
 {
 
     /**
-     * 热门文章
+     * 最新文章
      *
-     * @BeMenu("热门文章")
-     * @BeRoute("/article/hottest")
+     * @BeMenu("最新文章")
+     * @BeRoute("/article/latest")
      */
-    public function hottest()
+    public function latest()
     {
         $request = Be::getRequest();
         $response = Be::getResponse();
@@ -34,12 +34,12 @@ class Article
     }
 
     /**
-     * 最新文章
+     * 热门文章
      *
-     * @BeMenu("最新文章")
-     * @BeRoute("/article/latest")
+     * @BeMenu("热门文章")
+     * @BeRoute("/article/hottest")
      */
-    public function latest()
+    public function hottest()
     {
         $request = Be::getRequest();
         $response = Be::getResponse();
@@ -112,6 +112,49 @@ class Article
         $response->set('metaDescription', $pageConfig->metaDescription ?: '');
         $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
         $response->set('pageTitle', $title);
+        $response->display();
+    }
+
+    /**
+     * 热搜文章
+     *
+     * @BeMenu("热搜文章")
+     * @BeRoute("/article/hot-search")
+     */
+    public function hotSearch()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
+
+        $response->set('title', $pageConfig->title ?: '');
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
+
+        $response->display();
+    }
+
+    /**
+     * 猜你喜欢
+     * @BeMenu("猜你喜欢")
+     * @BeRoute("/article/guess-you-like")
+     */
+    public function guessYouLike()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $pageConfig = $response->getPageConfig();
+        $response->set('pageConfig', $pageConfig);
+
+        $response->set('title', $pageConfig->title ?: '');
+        $response->set('metaDescription', $pageConfig->metaDescription ?: '');
+        $response->set('metaKeywords', $pageConfig->metaKeywords ?: '');
+        $response->set('pageTitle', $pageConfig->pageTitle ?: ($pageConfig->title ?: ''));
+
         $response->display();
     }
 

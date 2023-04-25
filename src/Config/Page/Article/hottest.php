@@ -14,25 +14,25 @@ class hottest
 
     public array $centerSections = [
         [
-            'name' => 'App.Cms.Hottest',
+            'name' => 'App.Cms.Article.Hottest',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.SearchForm',
+            'name' => 'App.Cms.Article.SearchFormSide',
         ],
         [
-            'name' => 'App.Cms.SideLatest',
+            'name' => 'App.Cms.Article.LatestTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideTopSearch',
+            'name' => 'App.Cms.Article.HotSearchTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideGuessYouLike',
+            'name' => 'App.Cms.Article.GuessYouLikeTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideTopTags',
+            'name' => 'App.Cms.Article.TagTopNSide',
         ],
     ];
 

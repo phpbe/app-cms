@@ -12,37 +12,37 @@ class detail
 
     public array $centerSections = [
         [
-            'name' => 'App.Cms.Detail',
+            'name' => 'App.Cms.Article.Detail.Main',
         ],
         [
-            'name' => 'App.Cms.Comments',
+            'name' => 'App.Cms.Article.Detail.Comments',
         ],
         [
-            'name' => 'App.Cms.CommentForm',
+            'name' => 'App.Cms.Article.Detail.CommentForm',
         ],
         [
-            'name' => 'App.Cms.Similar',
+            'name' => 'App.Cms.Article.Detail.Similar',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.SearchForm',
+            'name' => 'App.Cms.Article.SearchFormSide',
         ],
         [
-            'name' => 'App.Cms.SideHottest',
+            'name' => 'App.Cms.Article.LatestTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideLatest',
+            'name' => 'App.Cms.Article.HottestTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideTopSearch',
+            'name' => 'App.Cms.Article.HotSearchTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideGuessYouLike',
+            'name' => 'App.Cms.Article.GuessYouLikeTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideTopTags',
+            'name' => 'App.Cms.Article.TagTopNSide',
         ],
     ];
 

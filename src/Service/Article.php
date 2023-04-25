@@ -17,19 +17,24 @@ class Article
      */
     public function getArticle(string $articleId): object
     {
-        $cache = Be::getCache();
+        $key = 'App:Cms:Article:' . $articleId;
+        if (Be::hasContext($key)) {
+            $article = Be::getContext($key);
+        } else {
+            $cache = Be::getCache();
+            $article = $cache->get($key);
+            if ($article === false) {
+                try {
+                    $article = $this->getArticleFromDb($articleId);
+                } catch (\Throwable $t) {
+                    $article = '-1';
+                }
 
-        $key = 'Cms:Article:' . $articleId;
-        $article = $cache->get($key);
-        if ($article === false) {
-            try {
-                $article = $this->getArticleFromDb($articleId);
-            } catch (\Throwable $t) {
-                $article = '-1';
+                $configCache = Be::getConfig('App.Cms.Cache');
+                $cache->set($key, $article, $configCache->article);
             }
 
-            $configCache = Be::getConfig('App.Cms.Cache');
-            $cache->set($key, $article, $configCache->article);
+            Be::setContext($key, $article);
         }
 
         if ($article === '-1') {
@@ -103,6 +108,79 @@ class Article
     }
 
     /**
+     * 从缓存获取多个文章数据
+     *
+     * @param array $articleIds 多个商品ID
+     * @param bool $throwException 不存在的文章是否抛出异常
+     * @return array
+     */
+    public function getArticles(array $articleIds = [], bool $throwException = true): array
+    {
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache = Be::getCache();
+
+        $keys = [];
+        foreach ($articleIds as $articleId) {
+            $keys[] = 'App:Cms:Article:' . $articleId;
+        }
+
+        $articles = $cache->getMany($keys);
+
+        $noArticles = true;
+        foreach ($articles as $article) {
+            if ($article) {
+                $noArticles = false;
+            }
+        }
+
+        // 缓存中没有任何商品，全部从数据库中读取并缓存
+        if ($noArticles) {
+
+            $newArticles = [];
+            foreach ($articleIds as $articleId) {
+
+                $key = 'App:Cms:Article:' . $articleId;
+                try {
+                    $article = $this->getArticleFromDb($articleId);
+                } catch (\Throwable $t) {
+                    $article = '-1';
+                }
+
+                $cache->set($key, $article, $configCache->article);
+
+                if ($article === '-1') {
+                    if ($throwException) {
+                        throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
+                    } else {
+                        continue;
+                    }
+                }
+
+                $newArticles[] = $article;
+            }
+
+        } else {
+
+            $newArticles = [];
+            $i = 0;
+            foreach ($articles as $article) {
+                if ($article === false || $article === '-1') {
+                    if ($throwException) {
+                        throw new ServiceException(beLang('App.Cms', 'ARTICLE.NOT_EXIST'));
+                    } else {
+                        continue;
+                    }
+                }
+
+                $newArticles[] = $article;
+                $i++;
+            }
+        }
+
+        return $newArticles;
+    }
+
+    /**
      * 查看文章并更新点击
      *
      * @param string $articleId 文章ID
@@ -117,7 +195,7 @@ class Article
 
         $article = $this->getArticle($articleId);
 
-        $historyKey = 'Cms:Article:History:' . $my->id;
+        $historyKey = 'App:Cms:Article:History:' . $my->id;
         $history = $cache->get($historyKey);
 
         if (!$history || !is_array($history)) {
@@ -136,7 +214,7 @@ class Article
 
         // 点击量 使用缓存 存放
         $hits = (int)$article->hits;
-        $hitsKey = 'Cms:Article:hits:' . $articleId;
+        $hitsKey = 'App:Cms:Article:hits:' . $articleId;
         $cacheHits = $cache->get($hitsKey);
         if ($cacheHits !== false) {
             if (is_numeric($cacheHits)) {
@@ -185,7 +263,7 @@ class Article
         $keywords = trim($keywords);
         if ($keywords !== '') {
             // 将本用户搜索的关键词写入ES search_history
-            $counterKey = 'Cms:Article:SearchHistory';
+            $counterKey = 'App:Cms:Article:Article:searchHistory';
             $counter = (int)$cache->get($counterKey);
             $query = [
                 'index' => $configEs->indexArticleSearchHistory,
@@ -205,7 +283,7 @@ class Article
             $cache->set($counterKey, $counter);
         }
 
-        $cacheKey = 'Cms:search';
+        $cacheKey = 'App:Cms:Article:search';
         if ($keywords !== '') {
             $cacheKey .= ':' . $keywords;
         }
@@ -228,7 +306,7 @@ class Article
             $query['body']['min_score'] = 0.01;
 
             if (!isset($query['body']['query'])) {
-                $query['body']['query']= [];
+                $query['body']['query'] = [];
             }
 
             if (!isset($query['body']['query']['bool'])) {
@@ -266,7 +344,7 @@ class Article
         if (isset($params['isPushHome']) && in_array($params['isPushHome'], [0, 1])) {
 
             if (!isset($query['body']['query'])) {
-                $query['body']['query']= [];
+                $query['body']['query'] = [];
             }
 
             if (!isset($query['body']['query']['bool'])) {
@@ -287,7 +365,7 @@ class Article
         if (isset($params['categoryId']) && $params['categoryId']) {
 
             if (!isset($query['body']['query'])) {
-                $query['body']['query']= [];
+                $query['body']['query'] = [];
             }
 
             if (!isset($query['body']['query']['bool'])) {
@@ -319,7 +397,7 @@ class Article
         if (isset($params['tag']) && $params['tag']) {
 
             if (!isset($query['body']['query'])) {
-                $query['body']['query']= [];
+                $query['body']['query'] = [];
             }
 
             if (!isset($query['body']['query']['bool'])) {
@@ -404,7 +482,14 @@ class Article
 
         $rows = [];
         foreach ($results['hits']['hits'] as $x) {
-            $rows[] = $this->formatEsArticle($x['_source']);
+            $article = (object)$x['_source'];
+            try {
+                $article->absolute_url = beUrl('Cms.Article.detail', ['id' => $article->id]);
+            } catch (\Throwable $t) {
+                continue;
+            }
+
+            $rows[] = $this->formatEsArticle($article);
         }
 
         $result = [
@@ -430,7 +515,7 @@ class Article
     public function searchFromDb(string $keywords, array $params = []): array
     {
         $cache = Be::getCache();
-        $cacheKey = 'Cms:searchFromDb';
+        $cacheKey = 'App:Cms:Article:searchFromDb';
         if ($keywords !== '') {
             $cacheKey .= ':' . $keywords;
         }
@@ -458,9 +543,9 @@ class Article
         $db = Be::getDb();
         if (isset($params['categoryId']) && $params['categoryId']) {
             $sql = 'SELECT article_id FROM cms_article_category WHERE category_id = ?';
-            $productIds = $db->getValues($sql, [$params['categoryId']]);
-            if (count($productIds) > 0) {
-                $tableArticle->where('id', 'IN', $productIds);
+            $articleIds = $db->getValues($sql, [$params['categoryId']]);
+            if (count($articleIds) > 0) {
+                $tableArticle->where('id', 'IN', $articleIds);
             } else {
                 $tableArticle->where('id', '');
             }
@@ -468,9 +553,9 @@ class Article
 
         if (isset($params['tag']) && $params['tag']) {
             $sql = 'SELECT article_id FROM cms_article_tag WHERE tag = ?';
-            $productIds = $db->getValues($sql, [$params['tag']]);
-            if (count($productIds) > 0) {
-                $tableArticle->where('id', 'IN', $productIds);
+            $articleIds = $db->getValues($sql, [$params['tag']]);
+            if (count($articleIds) > 0) {
+                $tableArticle->where('id', 'IN', $articleIds);
             } else {
                 $tableArticle->where('id', '');
             }
@@ -530,7 +615,9 @@ class Article
 
         $tableArticle->offset(($page - 1) * $pageSize);
 
-        $rows = $tableArticle->getObjects();
+        $articleIds = $tableArticle->getValues('id');
+
+        $rows = $this->getArticles($articleIds, false);
 
         $result = [
             'total' => $total,
@@ -543,171 +630,6 @@ class Article
         $cache->set($cacheKey, $result, $configCache->articles);
 
         return $result;
-    }
-
-    /**
-     * 获取按指定排序的前N个文章
-     *
-     * @param int $n
-     * @param string $orderBy
-     * @param string $orderByDir
-     * @param array $params
-     * @return array
-     * @throws \Be\Runtime\RuntimeException
-     */
-    public function getTopArticles(int $n, string $orderBy, string $orderByDir = 'desc', array $params = []): array
-    {
-        $configSystemEs = Be::getConfig('App.System.Es');
-        $configEs = Be::getConfig('App.Cms.Es');
-        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
-            return $this->getTopArticlesFromDb($n, $orderBy, $orderByDir, $params);
-        }
-
-        $cache = Be::getCache();
-        $cacheKey = 'Cms:TopArticles:' . $n . ':' . $orderBy . ':' . $orderByDir . ':' . serialize($params);
-        $results = $cache->get($cacheKey);
-        if ($results !== false) {
-            return $results;
-        }
-
-        $query = [
-            'index' => $configEs->indexArticle,
-            'body' => [
-                'size' => $n,
-                'sort' => [
-                    $orderBy => [
-                        'order' => $orderByDir
-                    ]
-                ]
-            ]
-        ];
-
-        $es = Be::getEs();
-        $results = $es->search($query);
-
-        $return = [];
-        if (isset($results['hits']['hits'])) {
-            foreach ($results['hits']['hits'] as $x) {
-                $return[] = $this->formatEsArticle($x['_source']);
-            }
-        }
-
-        $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $return, $configCache->articles);
-
-        return $return;
-    }
-
-    /**
-     * 获取按指定排序的前N个文章
-     *
-     * @param int $n
-     * @param string $orderBy
-     * @param string $orderByDir
-     * @param array $params
-     * @return array
-     * @throws \Be\Runtime\RuntimeException
-     */
-    public function getTopArticlesFromDb(int $n, string $orderBy, string $orderByDir = 'desc', array $params = []): array
-    {
-        $cache = Be::getCache();
-        $cacheKey = 'Cms:TopArticlesFromDb:' . $n . ':' . $orderBy . ':' . $orderByDir . ':' . serialize($params);
-        $result = $cache->get($cacheKey);
-        if ($result !== false) {
-            return $result;
-        }
-
-        $result = Be::getTable('cms_article')
-            ->where('is_enable', 1)
-            ->where('is_delete', 0)
-            ->orderBy($orderBy, $orderByDir)
-            ->limit($n)
-            ->getObjects();
-
-        $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $result, $configCache->articles);
-
-        return $result;
-    }
-
-    /**
-     * 最新文章
-     *
-     * @param int $n 结果数量
-     * @return array
-     */
-    public function getLatestArticles(int $n = 10): array
-    {
-        return $this->getTopArticles($n, 'publish_time', 'desc');
-    }
-
-    /**
-     * 热门文章
-     *
-     * @param int $n 结果数量
-     * @return array
-     */
-    public function getHottestArticles(int $n = 10): array
-    {
-        return $this->getTopArticles($n, 'hits', 'desc');
-    }
-
-    /**
-     * 热门搜索
-     *
-     * @param int $n 结果数量
-     * @return array
-     */
-    public function getTopSearchArticles(int $n = 10): array
-    {
-        $configSystemEs = Be::getConfig('App.System.Es');
-        $configEs = Be::getConfig('App.Cms.Es');
-        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
-            return [];
-        }
-
-        $keywords = $this->getTopSearchKeywords(5);
-        if (!$keywords) {
-            return [];
-        }
-
-        $cache = Be::getCache();
-        $cacheKey = 'Cms:TopSearchArticles:' . $n;
-        $results = $cache->get($cacheKey);
-        if ($results !== false) {
-            return $results;
-        }
-
-        $query = [
-            'index' => $configEs->indexArticle,
-            'body' => [
-                'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'must' => [
-                            'match' => [
-                                'title' => implode(', ', $keywords)
-                            ]
-                        ],
-                    ]
-                ]
-            ]
-        ];
-
-        $es = Be::getEs();
-        $results = $es->search($query);
-
-        $return = [];
-        if (isset($results['hits']['hits'])) {
-            foreach ($results['hits']['hits'] as $x) {
-                $return[] = $this->formatEsArticle($x['_source']);
-            }
-        }
-
-        $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $return, $configCache->articles);
-
-        return $return;
     }
 
     /**
@@ -727,7 +649,7 @@ class Article
         }
 
         $cache = Be::getCache();
-        $cacheKey = 'Cms:SimilarArticles:' . $articleId . ':' . $n;
+        $cacheKey = 'App:Cms:Article:SimilarArticles:' . $articleId . ':' . $n;
         $results = $cache->get($cacheKey);
         if ($results !== false) {
             return $results;
@@ -757,19 +679,22 @@ class Article
         $es = Be::getEs();
         $results = $es->search($query);
 
-        if (!isset($results['hits']['hits'])) {
-            return [];
-        }
-
-        $result = [];
+        $return = [];
         foreach ($results['hits']['hits'] as $x) {
-            $result[] = $this->formatEsArticle($x['_source']);
+            $article = (object)$x['_source'];
+            try {
+                $article->absolute_url = beUrl('Cms.Article.detail', ['id' => $article->id]);
+            } catch (\Throwable $t) {
+                continue;
+            }
+
+            $return[] = $this->formatEsArticle($article);
         }
 
         $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $result, $configCache->articles);
+        $cache->set($cacheKey, $return, $configCache->articles);
 
-        return $result;
+        return $return;
     }
 
     /**
@@ -783,7 +708,7 @@ class Article
     public function getSimilarArticlesFromDb(string $articleId, string $articleTitle, int $n = 12): array
     {
         $cache = Be::getCache();
-        $cacheKey = 'Cms:getSimilarArticlesFromDb:' . $articleId . ':' . $n;
+        $cacheKey = 'App:Cms:Article:SimilarArticlesFromDb:' . $articleId . ':' . $n;
         $results = $cache->get($cacheKey);
         if ($results !== false) {
             return $results;
@@ -799,7 +724,10 @@ class Article
         }
 
         $tableArticle->limit($n);
-        $result = $tableArticle->getObjects();
+
+        $articleIds = $tableArticle->getValues('id');
+
+        $result = $this->getArticles($articleIds, false);
 
         $configCache = Be::getConfig('App.Cms.Cache');
         $cache->set($cacheKey, $result, $configCache->articles);
@@ -808,143 +736,48 @@ class Article
     }
 
     /**
-     * 狙你喜欢文章
+     * 获取按指定排序的前N个文章
      *
-     * @param int $n 结果数量
-     * @param string $excludeArticleId 排除拽定的文章
-     * @return array
+     * @param array $params 查询参数
      */
-    public function getGuessYouLikeArticles(int $n = 40, string $excludeArticleId = null): array
+    public function getTopNArticles(array $params = []): array
     {
         $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
         if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
-            return [];
-        }
-
-        $my = Be::getUser();
-        $es = Be::getEs();
-        $cache = Be::getCache();
-
-        $historyKey = 'Cms:Article:History:' . $my->id;
-        $history = $cache->get($historyKey);
-
-        $keywords = [];
-        if ($history && is_array($history) && count($history) > 0) {
-            $keywords = $history;
-        }
-
-        if (!$keywords) {
-            $keywords = $this->getTopSearchKeywords(10);
-        }
-
-        if (!$keywords) {
-            return [];
+            return $this->getTopArticlesFromDb($params);
         }
 
         $cache = Be::getCache();
-        $cacheKey = 'Cms:getGuessYouLikeArticles:' . md5(serialize($keywords)) . ':' . $n;
-        if ($excludeArticleId !== null) {
-            $cacheKey .= ':' . $excludeArticleId;
-        }
+        $cacheKey = 'App:Cms:Article:TopArticles:' . md5(serialize($params));
         $results = $cache->get($cacheKey);
         if ($results !== false) {
             return $results;
         }
 
-        $query = [
-            'index' => $configEs->indexArticle,
-            'body' => [
-                'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'must' => [
-                            'match' => [
-                                'title' => implode(', ', $keywords)
-                            ]
-                        ],
-                    ]
-                ]
-            ]
-        ];
 
-        if ($excludeArticleId !== null) {
-            $query['body']['query']['bool']['must_not'] = [
-                'term' => [
-                    '_id' => $excludeArticleId
-                ]
-            ];
+        $orderBy = $params['orderBy'];
+
+        $orderByDir = 'desc';
+        if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
+            $orderByDir = $params['orderByDir'];
         }
 
-        $results = $es->search($query);
-
-        if (!isset($results['hits']['hits'])) {
-            return [];
+        // 分页
+        if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
+            $pageSize = $params['pageSize'];
+        } else {
+            $pageSize = 12;
         }
 
-        $result = [];
-        foreach ($results['hits']['hits'] as $x) {
-            $result[] = $this->formatEsArticle($x['_source']);
-        }
-
-        $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $result, $configCache->articles);
-
-        return $result;
-    }
-
-
-    /**
-     * 获取指定分类按指定排序的前N个文章
-     *
-     * @param string $categoryId 分类ID
-     * @param int $n
-     * @param string $orderBy
-     * @param string $orderByDir
-     * @return array
-     * @throws \Be\Runtime\RuntimeException
-     */
-    public function getCategoryTopArticles(string $categoryId, int $n, string $orderBy, string $orderByDir = 'desc'): array
-    {
-        $configSystemEs = Be::getConfig('App.System.Es');
-        $configEs = Be::getConfig('App.Cms.Es');
-        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
-            return $this->getCategoryTopArticlesFromDb($categoryId, $n, $orderBy, $orderByDir);
-        }
-
-        $cache = Be::getCache();
-        $cacheKey = 'Cms:getCategoryTopArticles:' . $categoryId . ':' . $n . ':' . $orderBy . ':' . $orderByDir;
-        $results = $cache->get($cacheKey);
-        if ($results !== false) {
-            return $results;
+        if ($pageSize > 200) {
+            $pageSize = 200;
         }
 
         $query = [
             'index' => $configEs->indexArticle,
             'body' => [
-                'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'filter' => [
-                            [
-                                'nested' => [
-                                    'path' => 'categories',
-                                    'query' => [
-                                        'bool' => [
-                                            'filter' => [
-                                                [
-                                                    'term' => [
-                                                        'categories.id' => $categoryId,
-                                                    ],
-                                                ],
-                                            ]
-                                        ],
-                                    ],
-                                ],
-                            ]
-                        ]
-                    ]
-                ],
+                'size' => $pageSize,
                 'sort' => [
                     $orderBy => [
                         'order' => $orderByDir
@@ -956,143 +789,16 @@ class Article
         $es = Be::getEs();
         $results = $es->search($query);
 
-        if (!isset($results['hits']['hits'])) {
-            return [];
-        }
-
-        $result = [];
-        foreach ($results['hits']['hits'] as $x) {
-            $result[] = $this->formatEsArticle($x['_source']);
-        }
-
-        $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $result, $configCache->articles);
-
-        return $result;
-    }
-
-    /**
-     * 获取指定分类按指定排序的前N个文章
-     *
-     * @param string $categoryId 分类ID
-     * @param int $n
-     * @param string $orderBy
-     * @param string $orderByDir
-     * @return array
-     * @throws \Be\Runtime\RuntimeException
-     */
-    public function getCategoryTopArticlesFromDb(string $categoryId, int $n, string $orderBy, string $orderByDir = 'desc'): array
-    {
-        $cache = Be::getCache();
-        $cacheKey = 'Cms:getCategoryTopArticlesFromDb:' . $categoryId . ':' . $n . ':' . $orderBy . ':' . $orderByDir;
-        $results = $cache->get($cacheKey);
-        if ($results !== false) {
-            return $results;
-        }
-
-        $tableArticle = Be::getTable('cms_article');
-
-        $tableArticle->where('is_enable', 1)
-            ->where('is_delete', 0)
-            ->orderBy($orderBy, $orderByDir)
-            ->limit($n);
-
-        $productIds = Be::getTable('cms_article_category')->where('category_id', $categoryId)->getValues('article_id');
-        if (count($productIds) > 0) {
-            $tableArticle->where('id', 'IN', $productIds);
-        } else {
-            $tableArticle->where('id', '');
-        }
-
-        $result = $tableArticle->getObjects();
-
-        $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $result, $configCache->articles);
-
-        return $result;
-    }
-
-    /**
-     * 指定分类下的热门文章
-     *
-     * @param string $categoryId 分类ID
-     * @param int $n 结果数量
-     * @return array
-     */
-    public function getCategoryHottestArticles(string $categoryId, int $n = 10): array
-    {
-        return $this->getCategoryTopArticles($categoryId, $n, 'hits', 'desc');
-    }
-
-    /**
-     * 指定分类下的热门文章
-     *
-     * @param string $categoryId 分类ID
-     * @param int $n 结果数量
-     * @return array
-     */
-    public function getCategoryTopSearchArticles(string $categoryId, int $n = 10): array
-    {
-        $configSystemEs = Be::getConfig('App.System.Es');
-        $configEs = Be::getConfig('App.Cms.Es');
-        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
-            return [];
-        }
-
-        $keywords = $this->getTopSearchKeywords(10);
-        if (!$keywords) {
-            return [];
-        }
-
-        $cache = Be::getCache();
-        $cacheKey = 'Cms:getCategoryTopSearchArticles:' . $categoryId . ':' . $n;
-        $results = $cache->get($cacheKey);
-        if ($results !== false) {
-            return $results;
-        }
-
-        $query = [
-            'index' => $configEs->indexArticle,
-            'body' => [
-                'size' => $n,
-                'query' => [
-                    'bool' => [
-                        'must' => [
-                            'match' => [
-                                'title' => implode(', ', $keywords)
-                            ],
-                        ],
-                        'filter' => [
-                            [
-                                'nested' => [
-                                    'path' => 'categories',
-                                    'query' => [
-                                        'bool' => [
-                                            'filter' => [
-                                                [
-                                                    'term' => [
-                                                        'categories.id' => $categoryId,
-                                                    ],
-                                                ],
-                                            ]
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ]
-                ]
-            ]
-        ];
-
-        $es = Be::getEs();
-        $results = $es->search($query);
-
         $return = [];
-        if (isset($results['hits']['hits'])) {
-            foreach ($results['hits']['hits'] as $x) {
-                $return[] = $this->formatEsArticle($x['_source']);
+        foreach ($results['hits']['hits'] as $x) {
+            $article = (object)$x['_source'];
+            try {
+                $article->absolute_url = beUrl('Cms.Article.detail', ['id' => $article->id]);
+            } catch (\Throwable $t) {
+                continue;
             }
+
+            $return[] = $this->formatEsArticle($article);
         }
 
         $configCache = Be::getConfig('App.Cms.Cache');
@@ -1102,15 +808,463 @@ class Article
     }
 
     /**
+     * 获取按指定排序的前N个文章
+     *
+     * @param array $params
+     * @return array
+     */
+    public function getTopArticlesFromDb(array $params = []): array
+    {
+        $cache = Be::getCache();
+        $cacheKey = 'App:Cms:Article:TopArticlesFromDb:' . md5(serialize($params));
+        $result = $cache->get($cacheKey);
+        if ($result !== false) {
+            return $result;
+        }
+
+        $orderBy = $params['orderBy'];
+
+        $orderByDir = 'desc';
+        if (isset($params['orderByDir']) && in_array($params['orderByDir'], ['asc', 'desc'])) {
+            $orderByDir = $params['orderByDir'];
+        }
+
+        // 分页
+        if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
+            $pageSize = $params['pageSize'];
+        } else {
+            $pageSize = 12;
+        }
+
+        if ($pageSize > 200) {
+            $pageSize = 200;
+        }
+
+        $articleIds = Be::getTable('cms_article')
+            ->where('is_enable', 1)
+            ->where('is_delete', 0)
+            ->orderBy($orderBy, $orderByDir)
+            ->limit($pageSize)
+            ->getValues('id');
+
+        $result = $this->getArticles($articleIds, false);
+
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $result, $configCache->articles);
+
+        return $result;
+    }
+
+    /**
+     * 最新文章
+     *
+     * @param int $n 结果数量
+     * @return array
+     */
+    public function getLatestTopNArticles(int $n = 10): array
+    {
+        return $this->getTopNArticles([
+            'orderBy' => 'publish_time',
+            'orderByDir' => 'desc',
+            'pageSize' => $n,
+        ]);
+    }
+
+    /**
+     * 热门文章
+     *
+     * @param int $n 结果数量
+     * @return array
+     */
+    public function getHottestTopNArticles(int $n = 10): array
+    {
+        return $this->getTopNArticles([
+            'orderBy' => 'hits',
+            'orderByDir' => 'desc',
+            'pageSize' => $n,
+        ]);
+    }
+
+    /**
+     * 指下究类的最新文章
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n 结果数量
+     * @return array
+     */
+    public function getCategoryLatestTopNArticles(string $categoryId, int $n = 10): array
+    {
+        return $this->getTopNArticles([
+            'categoryId' => $categoryId,
+            'orderBy' => 'publish_time',
+            'orderByDir' => 'desc',
+            'pageSize' => $n,
+        ]);
+    }
+
+    /**
+     * 指下究类的热门文章
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n 结果数量
+     * @return array
+     */
+    public function getCategoryHottestTopNArticles(string $categoryId, int $n = 10): array
+    {
+        return $this->getTopNArticles([
+            'categoryId' => $categoryId,
+            'orderBy' => 'hits',
+            'orderByDir' => 'desc',
+            'pageSize' => $n,
+        ]);
+    }
+
+
+    /**
+     * 热搜文章
+     *
+     * @param array $params 查询参数
+     * @return array
+     */
+    public function getHotSearchArticles(array $params = []): array
+    {
+        // 分页
+        if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
+            $pageSize = $params['pageSize'];
+        } else {
+            $pageSize = 12;
+        }
+
+        if ($pageSize > 200) {
+            $pageSize = 200;
+        }
+
+        if (isset($params['page']) && is_numeric($params['page']) && $params['page'] > 0) {
+            $page = $params['page'];
+        } else {
+            $page = 1;
+        }
+
+        $configSystemEs = Be::getConfig('App.System.Es');
+        $configEs = Be::getConfig('App.Cms.Es');
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
+            return [
+                'total' => 0,
+                'pageSize' => $pageSize,
+                'page' => $page,
+                'rows' => [],
+            ];
+        }
+
+        $keywords = $this->getHotSearchKeywords(5);
+        if (!$keywords) {
+            return [
+                'total' => 0,
+                'pageSize' => $pageSize,
+                'page' => $page,
+                'rows' => [],
+            ];
+        }
+
+        $cache = Be::getCache();
+        $cacheKey = 'App:Cms:Article:HotSearchArticles:' . md5(serialize($params));
+        $results = $cache->get($cacheKey);
+        if ($results !== false) {
+            return $results;
+        }
+
+        $query = [
+            'index' => $configEs->indexArticle,
+            'body' => [
+                'size' => $pageSize,
+                'from' => ($page - 1) * $pageSize,
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            'match' => [
+                                'title' => implode(', ', $keywords)
+                            ]
+                        ],
+                    ]
+                ]
+            ]
+        ];
+
+        if (isset($params['categoryId']) && $params['categoryId'] !== '') {
+            $query['body']['query']['bool']['filter'] = [
+                [
+                    'nested' => [
+                        'path' => 'categories',
+                        'query' => [
+                            'bool' => [
+                                'filter' => [
+                                    [
+                                        'term' => [
+                                            'categories.id' => $params['categoryId'],
+                                        ],
+                                    ],
+                                ]
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+        }
+        $es = Be::getEs();
+        $results = $es->search($query);
+
+        $total = 0;
+        if (isset($results['hits']['total']['value'])) {
+            $total = $results['hits']['total']['value'];
+        }
+
+        $rows = [];
+        foreach ($results['hits']['hits'] as $x) {
+            $article = (object)$x['_source'];
+            try {
+                $article->absolute_url = beUrl('Cms.Article.detail', ['id' => $article->id]);
+            } catch (\Throwable $t) {
+                continue;
+            }
+
+            $rows[] = $this->formatEsArticle($article);
+        }
+
+        $return = [
+            'total' => $total,
+            'pageSize' => $pageSize,
+            'page' => $page,
+            'rows' => $rows,
+        ];
+
+        $configCache = Be::getConfig('App.Cms.Cache');
+        $cache->set($cacheKey, $return, $configCache->articles);
+
+        return $return;
+    }
+
+    /**
+     * 热搜文章
+     *
+     * @param array $params 查询参数
+     * @return array
+     */
+
+    /**
+     * 热搜文章
+     *
+     * @param int $n Top N 数量
+     * @return array
+     */
+    public function getHotSearchTopNArticles(int $n = 10): array
+    {
+        $results = $this->getHotSearchArticles([
+            'pageSize' => $n,
+        ]);
+
+        return $results['rows'];
+    }
+
+    /**
+     * 指定分类下的热搜文章
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n Top N 数量
+     * @return array
+     */
+    public function getCategoryHotSearchTopNArticles(string $categoryId, int $n = 10): array
+    {
+        $results = $this->getHotSearchArticles([
+            'categoryId' => $categoryId,
+            'pageSize' => $n,
+        ]);
+
+        return $results['rows'];
+    }
+
+
+    /**
+     * 猜你喜欢
+     *
+     * @param array $params 查询参数
+     * @return array
+     */
+    public function getGuessYouLikeArticles(array $params = []): array
+    {
+        // 分页
+        if (isset($params['pageSize']) && is_numeric($params['pageSize']) && $params['pageSize'] > 0) {
+            $pageSize = $params['pageSize'];
+        } else {
+            $pageSize = 12;
+        }
+
+        if ($pageSize > 200) {
+            $pageSize = 200;
+        }
+
+        if (isset($params['page']) && is_numeric($params['page']) && $params['page'] > 0) {
+            $page = $params['page'];
+        } else {
+            $page = 1;
+        }
+
+        $configSystemEs = Be::getConfig('App.System.Es');
+        $configEs = Be::getConfig('App.Cms.Es');
+        if ($configSystemEs->enable === 0 || $configEs->enable === 0) {
+            return [
+                'total' => 0,
+                'pageSize' => $pageSize,
+                'page' => $page,
+                'rows' => [],
+            ];
+        }
+
+
+        $my = Be::getUser();
+        $es = Be::getEs();
+        $cache = Be::getCache();
+
+        $historyKey = 'App:Cms:Article:history:' . $my->id;
+        $history = $cache->get($historyKey);
+
+        $keywords = [];
+        if ($history && is_array($history) && count($history) > 0) {
+            $keywords = $history;
+        }
+
+        if (!$keywords) {
+            $keywords = $this->getHotSearchKeywords(10);
+        }
+
+        if (!$keywords) {
+            return [
+                'total' => 0,
+                'pageSize' => $pageSize,
+                'page' => $page,
+                'rows' => [],
+            ];
+        }
+
+        $query = [
+            'index' => $configEs->indexArticle,
+            'body' => [
+                'size' => $pageSize,
+                'from' => ($page - 1) * $pageSize,
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            'match' => [
+                                'title' => implode(', ', $keywords)
+                            ]
+                        ],
+                    ]
+                ]
+            ]
+        ];
+
+        if (isset($params['excludeArticleId']) && $params['excludeArticleId'] !== '') {
+            $query['body']['query']['bool']['must_not'] = [
+                'term' => [
+                    '_id' => $params['excludeArticleId']
+                ]
+            ];
+        }
+
+        if (isset($params['categoryId']) && $params['categoryId'] !== '') {
+            $query['body']['query']['bool']['filter'] = [
+                [
+                    'nested' => [
+                        'path' => 'categories',
+                        'query' => [
+                            'bool' => [
+                                'filter' => [
+                                    [
+                                        'term' => [
+                                            'categories.id' => $params['categoryId'],
+                                        ],
+                                    ],
+                                ]
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        $results = $es->search($query);
+
+        $total = 0;
+        if (isset($results['hits']['total']['value'])) {
+            $total = $results['hits']['total']['value'];
+        }
+
+        $rows = [];
+        foreach ($results['hits']['hits'] as $x) {
+            $article = (object)$x['_source'];
+            try {
+                $article->absolute_url = beUrl('Cms.Article.detail', ['id' => $article->id]);
+            } catch (\Throwable $t) {
+                continue;
+            }
+
+            $rows[] = $this->formatEsArticle($article);
+        }
+
+        $return = [
+            'total' => $total,
+            'pageSize' => $pageSize,
+            'page' => $page,
+            'rows' => $rows,
+        ];
+
+        return $return;
+    }
+
+
+    /**
+     * 猜你喜欢 Top N
+     *
+     * @param int $n Top N 数量
+     * @param string $excludeArticleId 要排除的文章ID
+     * @return array
+     */
+    public function getGuessYouLikeTopNArticles(int $n = 40, string $excludeArticleId = null): array
+    {
+        $results = $this->getGuessYouLikeArticles([
+            'pageSize' => $n,
+            'excludeArticleId' => $excludeArticleId,
+        ]);
+
+        return $results['rows'];
+    }
+
+    /**
+     * 指定分类下猜你喜欢
+     *
+     * @param string $categoryId 分类ID
+     * @param int $n Top N 数量
+     * @param string $excludeArticleId 要排除的文章ID
+     * @return array
+     */
+    public function getCategoryGuessYouLikeTopNArticles(string $categoryId, int $n = 40, string $excludeArticleId = null): array
+    {
+        $results = $this->getGuessYouLikeArticles([
+            'categoryId' => $categoryId,
+            'pageSize' => $n,
+            'excludeArticleId' => $excludeArticleId,
+        ]);
+
+        return $results['rows'];
+    }
+
+    /**
      * 格式化ES查询出来的文章
      *
-     * @param array $rows
+     * @param object $article
      * @return object
      */
-    private function formatEsArticle(array $row): object
+    private function formatEsArticle(object $article): object
     {
-        $article = (object)$row;
-
         $categories = [];
         if (is_array($article->categories) && count($article->categories) > 0) {
             foreach ($article->categories as $category) {
@@ -1128,7 +1282,7 @@ class Article
      * @param int $n
      * @return array
      */
-    public function getTopSearchKeywords(int $n = 6): array
+    public function getHotSearchKeywords(int $n = 6): array
     {
         $configSystemEs = Be::getConfig('App.System.Es');
         $configEs = Be::getConfig('App.Cms.Es');
@@ -1137,7 +1291,7 @@ class Article
         }
 
         $cache = Be::getCache();
-        $cacheKey = 'Cms:TopSearchKeywords';
+        $cacheKey = 'App:Cms:Article:HotSearchKeywords';
         $topSearchKeywords = $cache->get($cacheKey);
         if ($topSearchKeywords) {
             return $topSearchKeywords;
@@ -1172,7 +1326,7 @@ class Article
         }
 
         $configCache = Be::getConfig('App.Cms.Cache');
-        $cache->set($cacheKey, $hotKeywords, $configCache->topKeywords);
+        $cache->set($cacheKey, $hotKeywords, $configCache->hotKeywords);
 
         return $hotKeywords;
     }
@@ -1205,7 +1359,7 @@ class Article
     {
         $cache = Be::getCache();
 
-        $key = 'Cms:TopTags:' . $n;
+        $key = 'App:Cms:Article:TopTags:' . $n;
         $tags = $cache->get($key);
         if ($tags === false) {
             try {

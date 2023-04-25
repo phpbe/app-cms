@@ -22,6 +22,13 @@ class Config
     public string $width = 'default';
 
     /**
+     * @BeConfigItem("背景颜色",
+     *     driver="FormItemColorPicker"
+     * )
+     */
+    public string $backgroundColor = '#fff';
+
+    /**
      * @BeConfigItem("大小",
      *     driver="FormItemSelect",
      *     keyValues = "return ['h1' => 'H1', 'h2' => 'H2', 'h3' => 'H3', 'h4' => 'H4', 'h5' => 'H5'];"
@@ -36,13 +43,6 @@ class Config
      * )
      */
     public string $align = 'center';
-
-    /**
-     * @BeConfigItem("背景颜色",
-     *     driver="FormItemColorPicker"
-     * )
-     */
-    public string $backgroundColor = '#FFFFFF';
 
     /**
      * @BeConfigItem("内边距 （手机端）",

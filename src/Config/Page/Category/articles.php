@@ -11,13 +11,28 @@ class articles
 
     public array $centerSections = [
         [
-            'name' => 'App.Cms.CategoryArticles',
+            'name' => 'App.Cms.Category.Articles',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.CategorySideHottest',
+            'name' => 'App.Cms.Category.TopNSide',
+        ],
+        [
+            'name' => 'App.Cms.Category.LatestTopNSide',
+        ],
+        [
+            'name' => 'App.Cms.Category.HottestTopNSide',
+        ],
+        [
+            'name' => 'App.Cms.Category.HotSearchTopNSide',
+        ],
+        [
+            'name' => 'App.Cms.Category.GuessYouLikeTopNSide',
+        ],
+        [
+            'name' => 'App.Cms.Article.TagTopNSide',
         ],
     ];
 

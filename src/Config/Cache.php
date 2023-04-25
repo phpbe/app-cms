@@ -40,7 +40,7 @@ class Cache
     /**
      * @BeConfigItem("热搜关键词", driver="FormItemInputNumberInt")
      */
-    public int $topKeywords = 600;
+    public int $hotKeywords = 600;
 
 }
 

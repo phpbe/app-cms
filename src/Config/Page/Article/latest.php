@@ -14,25 +14,25 @@ class latest
 
     public array $centerSections = [
         [
-            'name' => 'App.Cms.Latest',
+            'name' => 'App.Cms.Article.Latest',
         ],
     ];
 
     public array $eastSections = [
         [
-            'name' => 'App.Cms.SearchForm',
+            'name' => 'App.Cms.Article.SearchFormSide',
         ],
         [
-            'name' => 'App.Cms.SideHottest',
+            'name' => 'App.Cms.Article.HottestTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideTopSearch',
+            'name' => 'App.Cms.Article.HotSearchTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideGuessYouLike',
+            'name' => 'App.Cms.Article.GuessYouLikeTopNSide',
         ],
         [
-            'name' => 'App.Cms.SideTopTags',
+            'name' => 'App.Cms.Article.TagTopNSide',
         ],
     ];
 
