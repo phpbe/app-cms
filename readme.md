@@ -43,11 +43,17 @@
 * 2011 - 猜你喜欢文章TopN - Article.GuessYouLikeTopN
 * 2012 - 猜你喜欢文章TopN边栏 - Article.GuessYouLikeTopNSide
 * 
-* 2013 - 搜索结果 - Product.Search
+* 2013 - 搜索结果 - Article.Search
 * 2014 - 搜索表单边栏 - Article.SearchFormSide
 * 
-* 2015 - 标签检索结果 - Product.Tag
+* 2015 - 标签检索结果 - Article.Tag
 * 2016 - 标签TopN边栏 - Article.TagsTopNSide
+*
+* 2100 - 文章详情-主体 - Article.Detail.Main
+* 2101 - 文章详情-评论 - Article.Detail.Comments
+* 2102 - 文章详情-评论表单 - Article.Detail.CommentForm
+* 2103 - 文章详情-类似文章 - Article.Detail.Similar
+* 
 
 
 

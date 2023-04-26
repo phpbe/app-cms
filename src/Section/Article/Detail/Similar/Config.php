@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Article\Detail\Similar;
 
 /**
- * @BeConfig("类似文章", icon="bi-stickies")
+ * @BeConfig("文章详情-类似文章  icon="bi-clipboard", ordering="2103")
  */
 class Config
 {

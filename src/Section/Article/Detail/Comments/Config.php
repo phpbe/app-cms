@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Article\Detail\Comments;
 
 /**
- * @BeConfig("文章评论", icon="bi-chat-left-text")
+ * @BeConfig("文章详情-评论  icon="bi-chat-left-text", ordering="2101")
  */
 class Config
 {

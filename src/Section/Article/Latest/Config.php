@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Article\Latest;
 
 /**
- * @BeConfig("最新文章列表", icon="bi-file-plus-fill", ordering="2001")
+ * @BeConfig("最新文章列表", icon="bi-clipboard-plus-fill", ordering="2001")
  */
 class Config
 {

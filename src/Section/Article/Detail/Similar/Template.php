@@ -10,6 +10,8 @@ class Template extends Section
 
     public array $positions = ['middle', 'west', 'center', 'east'];
 
+    public array $routes = ['Cms.Article.detail'];
+
     public function display()
     {
         if ($this->config->enable === 0) {

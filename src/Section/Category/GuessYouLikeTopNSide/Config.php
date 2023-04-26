@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Category\GuessYouLikeTopNSide;
 
 /**
- * @BeConfig("分类猜你喜欢文章TopN边栏", icon="bi-file-heart", ordering="3007")
+ * @BeConfig("分类猜你喜欢文章TopN边栏", icon="bi-clipboard-heart", ordering="3007")
  */
 class Config
 {

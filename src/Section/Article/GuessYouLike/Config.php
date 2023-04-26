@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Article\GuessYouLike;
 
 /**
- * @BeConfig("猜你喜欢文章列表", icon="bi-file-heart-fill", ordering="2010")
+ * @BeConfig("猜你喜欢文章列表", icon="bi-clipboard-heart-fill", ordering="2010")
  */
 class Config
 {

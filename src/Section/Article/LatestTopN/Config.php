@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Article\LatestTopN;
 
 /**
- * @BeConfig("最新文章TopN",, icon="bi-file-plus", ordering="2002")
+ * @BeConfig("最新文章TopN",, icon="bi-clipboard-plus", ordering="2002")
  */
 class Config
 {

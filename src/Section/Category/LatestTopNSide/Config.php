@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Category\LatestTopNSide;
 
 /**
- * @BeConfig("分类最新文章TopN边栏", icon="bi-file-plus", ordering="3004")
+ * @BeConfig("分类最新文章TopN边栏", icon="bi-clipboard-plus", ordering="3004")
  */
 class Config
 {
