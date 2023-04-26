@@ -786,6 +786,31 @@ class Article
             ]
         ];
 
+        if (isset($params['categoryId']) && $params['categoryId'] !== '') {
+            $query['body']['query'] = [
+                'bool' => [
+                    'filter' => [
+                        [
+                            'nested' => [
+                                'path' => 'categories',
+                                'query' => [
+                                    'bool' => [
+                                        'filter' => [
+                                            [
+                                                'term' => [
+                                                    'categories.id' => $params['categoryId'],
+                                                ],
+                                            ],
+                                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+        }
+
         $es = Be::getEs();
         $results = $es->search($query);
 
@@ -840,10 +865,20 @@ class Article
             $pageSize = 200;
         }
 
-        $articleIds = Be::getTable('cms_article')
-            ->where('is_enable', 1)
-            ->where('is_delete', 0)
-            ->orderBy($orderBy, $orderByDir)
+        $tableArticle = Be::getTable('cms_article')->where('is_enable', 1)->where('is_delete', 0);
+
+        if (isset($params['categoryId']) && $params['categoryId']) {
+            $db = Be::getDb();
+            $sql = 'SELECT article_id FROM cms_article_category WHERE category_id = ?';
+            $articleIds = $db->getValues($sql, [$params['categoryId']]);
+            if (count($articleIds) > 0) {
+                $tableArticle->where('id', 'IN', $articleIds);
+            } else {
+                $tableArticle->where('id', '');
+            }
+        }
+
+        $articleIds = $tableArticle->orderBy($orderBy, $orderByDir)
             ->limit($pageSize)
             ->getValues('id');
 
