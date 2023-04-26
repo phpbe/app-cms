@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Home;
 
 /**
- * @BeConfig("首页文章列表", icon="bi-home", ordering="1001")
+ * @BeConfig("首页文章列表", icon="bi-house", ordering="1001")
  */
 class Config
 {

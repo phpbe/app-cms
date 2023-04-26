@@ -2,7 +2,7 @@
 namespace Be\App\Cms\Section\Article\SearchFormSide;
 
 /**
- * @BeConfig("搜索结果", icon="bi-search", ordering="2014")
+ * @BeConfig("搜索表单边栏", icon="bi-search", ordering="2014")
  */
 class Config
 {

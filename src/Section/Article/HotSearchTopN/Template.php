@@ -8,9 +8,8 @@ use Be\Theme\Section;
 class Template extends Section
 {
 
-    public array $positions = ['middle', 'west', 'center', 'east'];
+    public array $positions = ['middle', 'center'];
 
-    
     public function display()
     {
         if ($this->config->enable === 0) {
