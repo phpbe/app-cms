@@ -8,7 +8,7 @@ use Be\Theme\Section;
 class Template extends Section
 {
 
-    public array $positions = ['middle', 'west', 'center', 'east'];
+    public array $positions = [ 'west', 'east'];
 
 
     private function css()
@@ -63,30 +63,23 @@ class Template extends Section
 
         $this->css();
 
-        ?>
-        <div class="app-cms-side-top-tags">
-            <?php
-            if (isset($this->config->title) && $this->config->title !== '') {
-                echo $this->page->tag0('be-section-title', true);
-                echo $this->config->title;
-                echo $this->page->tag1('be-section-title', true);
-            }
+        echo '<div class="app-cms-side-top-tags">';
 
-            echo $this->page->tag0('be-section-content', true);
-            ?>
+        if (isset($this->config->title) && $this->config->title !== '') {
+            echo $this->page->tag0('be-section-title', true);
+            echo $this->config->title;
+            echo $this->page->tag1('be-section-title', true);
+        }
 
-            <?php
-            echo '<div class="be-mt-100 be-lh-175">';
-            foreach ($topTags as $topTag) {
-                echo '<a class="tag" href="'. beUrl('Cms.Article.tag', ['tag' => $topTag]) .'">' . $topTag . '</a> ';
-            }
-            echo '</div>';
+        echo $this->page->tag0('be-section-content', true);
+        echo '<div class="be-mt-100 be-lh-175">';
+        foreach ($topTags as $topTag) {
+            echo '<a class="tag" href="'. beUrl('Cms.Article.tag', ['tag' => $topTag]) .'">' . $topTag . '</a> ';
+        }
+        echo '</div>';
+        echo $this->page->tag1('be-section-content', true);
 
-
-            echo $this->page->tag1('be-section-content', true);
-            ?>
-        </div>
-        <?php
+        echo '</div>';
     }
 
 }

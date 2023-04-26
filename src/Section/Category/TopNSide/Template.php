@@ -52,11 +52,12 @@ class Template extends Section
         echo '<div class="app-cms-category-top-n-side">';
 
         if (isset($this->config->title) && $this->config->title !== '') {
-            echo $this->page->tag0('be-section-title', true);
+            echo $this->page->tag0('be-section-title');
             echo $this->config->title;
-            echo $this->page->tag1('be-section-title', true);
+            echo $this->page->tag1('be-section-title');
         }
 
+        echo $this->page->tag0('be-section-content');
         echo '<ul>';
         foreach ($categories as $category) {
             echo '<li>';
@@ -64,6 +65,7 @@ class Template extends Section
             echo '</li>';
         }
         echo '</ul>';
+        echo $this->page->tag1('be-section-content');
 
         echo '</div>';
     }
