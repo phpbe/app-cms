@@ -20,7 +20,7 @@ class TaskCategory
         $cache = Be::getCache();
         $keyValues = [];
         foreach ($categories as $category) {
-            $key = 'Cms:Category:' . $category->id;
+            $key = 'App:Cms:Category:' . $category->id;
 
             $category->is_delete = (int)$category->is_delete;
 

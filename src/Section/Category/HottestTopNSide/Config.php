@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Category\HottestTopNSide;
 
 /**
- * @BeConfig("分类热门文章TopN边栏", icon="bi-search-heart", ordering="3005")
+ * @BeConfig("分类热门文章TopN边栏", icon="bi-clipboard-heart", ordering="3005")
  */
 class Config
 {

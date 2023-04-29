@@ -19,7 +19,7 @@ class TaskPage
         $cache = Be::getCache();
         $keyValues = [];
         foreach ($pages as $page) {
-            $key = 'Cms:Page:' . $page->id;
+            $key = 'App:Cms:Page:' . $page->id;
             $page->is_delete = (int)$page->is_delete;
 
             if ($page->is_delete === 1) {

@@ -120,7 +120,7 @@ class TaskArticle
                 continue;
             }
 
-            $key = 'Cms:Article:' . $article->id;
+            $key = 'App:Cms:Article:' . $article->id;
 
             if ($article->is_delete !== '0' || $article->is_enable !== '1') {
                 $cache->delete($key);

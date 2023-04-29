@@ -24,7 +24,7 @@ class Page
 
         $cache = Be::getCache();
 
-        $key = 'Cms:Page:' . $params['id'];
+        $key = 'App:Cms:Page:' . $params['id'];
         $page = $cache->get($key);
         if (!$page) {
             $tuplePage = Be::getTuple('cms_page');
@@ -59,7 +59,7 @@ class Page
 
         $cache = Be::getCache();
 
-        $key = 'Cms:Page:' . $pageId;
+        $key = 'App:Cms:Page:' . $pageId;
         $page = $cache->get($key);
         if (!$page) {
             $tuplePage = Be::getTuple('cms_page');

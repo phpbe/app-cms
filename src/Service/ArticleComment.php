@@ -20,7 +20,7 @@ class ArticleComment
         $configArticle = Be::getConfig('App.Cms.Article');
         if ($configArticle->commentsCacheExpire > 0) {
             $cache = Be::getCache();
-            $cacheKey = 'Cms:Article:Comments:' . $articleId . ':' . md5(serialize($params));
+            $cacheKey = 'App:Cms:Article:Comments:' . $articleId . ':' . md5(serialize($params));
             $comments = $cache->get($cacheKey);
             if ($comments !== false) {
                 return $comments;

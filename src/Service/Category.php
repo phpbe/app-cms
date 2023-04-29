@@ -18,7 +18,7 @@ class Category
     {
         $cache = Be::getCache();
 
-        $key = 'Cms:Categories';
+        $key = 'App:Cms:Categories';
         $categories = $cache->get($key);
 
         if (!$categories) {
@@ -64,7 +64,7 @@ class Category
     public function getCategory(string $categoryId): object
     {
         $cache = Be::getCache();
-        $key = 'Cms:Category:' . $categoryId;
+        $key = 'App:Cms:Category:' . $categoryId;
         $category = $cache->get($key);
         if (!$category) {
             try {
