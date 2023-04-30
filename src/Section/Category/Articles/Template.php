@@ -20,6 +20,9 @@ class Template extends Section
 
         $request = Be::getRequest();
         $page = $request->get('page', 1);
+        if ($page > $this->config->maxPages) {
+            $page = $this->config->maxPages;
+        }
         $params = [
             'categoryId' => $this->page->category->id,
             'orderBy' => ['is_on_top', 'publish_time'],
