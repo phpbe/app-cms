@@ -38,18 +38,16 @@ class TaskArticle
                 continue;
             }
 
-            $batch[] = [
-                'index' => [
-                    '_index' => $configEs->indexArticle,
-                    '_id' => $article->id,
-                ]
-            ];
-
             if ($article->is_delete !== '0' || $article->is_enable !== '1') {
-                $batch[] = [
-                    'id' => $article->id,
-                    'is_delete' => true
+                $params = [
+                    'body' => [
+                        'index' => $configEs->indexArticle,
+                        'id' => $article->id,
+                    ]
                 ];
+
+                $es->delete($params);
+
             } else {
 
                 $categories = [];
@@ -62,6 +60,14 @@ class TaskArticle
 
                 $sql = 'SELECT tag FROM cms_article_tag WHERE article_id = ?';
                 $tags = $db->getValues($sql, [$article->id]);
+
+
+                $batch[] = [
+                    'index' => [
+                        '_index' => $configEs->indexArticle,
+                        '_id' => $article->id,
+                    ]
+                ];
 
                 $batch[] = [
                     'id' => $article->id,
@@ -86,18 +92,20 @@ class TaskArticle
             }
         }
 
-        $response = $es->bulk(['body' => $batch]);
-        if ($response['errors'] > 0) {
-            $reason = '';
-            if (isset($response['items']) && count($response['items']) > 0) {
-                foreach ($response['items'] as $item) {
-                    if (isset($item['index']['error']['reason'])) {
-                        $reason = $item['index']['error']['reason'];
-                        break;
+        if (count($batch) > 0) {
+            $response = $es->bulk(['body' => $batch]);
+            if ($response['errors'] > 0) {
+                $reason = '';
+                if (isset($response['items']) && count($response['items']) > 0) {
+                    foreach ($response['items'] as $item) {
+                        if (isset($item['index']['error']['reason'])) {
+                            $reason = $item['index']['error']['reason'];
+                            break;
+                        }
                     }
                 }
+                throw new ServiceException('文章全量量同步到ES出错：' . $reason);
             }
-            throw new ServiceException('文章全量量同步到ES出错：' . $reason);
         }
     }
 
