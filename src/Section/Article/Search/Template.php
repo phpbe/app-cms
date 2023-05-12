@@ -19,9 +19,9 @@ class Template extends Section
         $request = Be::getRequest();
         $response = Be::getResponse();
 
-        $keyword = $request->get('keyword', '');
-        $keyword = trim($keyword);
-        if ($keyword === '') {
+        $keywords = $request->get('keywords', '');
+        $keywords = trim($keywords);
+        if ($keywords === '') {
             $response->error(beLang('App.Cms', 'ARTICLE.SEARCH_KEYWORDS_IS_MISSING'));
             return;
         }
@@ -38,7 +38,7 @@ class Template extends Section
             $params['pageSize'] = $this->config->pageSize;
         }
 
-        $result = Be::getService('App.Cms.Article')->search($keyword, $params);
+        $result = Be::getService('App.Cms.Article')->search($keywords, $params);
 
         echo Be::getService('App.Cms.Section')->makePagedArticlesSection($this, 'app-cms-article-search', $result);
     }

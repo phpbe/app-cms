@@ -44,7 +44,7 @@ class Template extends Section
         <div class="app-cms-article-search-form-side">
             <form action="<?php echo beUrl('Cms.Article.search'); ?>" method="get">
                 <div class="be-row">
-                    <div class="be-col"><input type="text" name="keyword" class="be-input" placeholder="<?php echo beLang('App.Cms', 'ARTICLE.ENTRY_SEARCH_KEYWORDS'); ?>"></div>
+                    <div class="be-col"><input type="text" name="keywords" class="be-input" placeholder="<?php echo beLang('App.Cms', 'ARTICLE.ENTRY_SEARCH_KEYWORDS'); ?>"></div>
                     <div class="be-col-auto"><input type="submit" class="be-btn be-btn-major be-lh-175" value="<?php echo beLang('App.Cms', 'ARTICLE.SEARCH'); ?>"></div>
                 </div>
             </form>
@@ -55,7 +55,7 @@ class Template extends Section
                 if (count($topKeywords) > 0) {
                     echo '<div class="be-mt-100 be-lh-175">' . beLang('App.Cms', 'ARTICLE.TOP_SEARCH') . ': ';
                     foreach ($topKeywords as $topKeyword) {
-                        echo '<a href="'. beUrl('Cms.Article.search', ['keyword' => $topKeyword]) .'">' . $topKeyword . '</a> &nbsp;';
+                        echo '<a href="'. beUrl('Cms.Article.search', ['keywords' => $topKeyword]) .'">' . $topKeyword . '</a> &nbsp;';
                     }
                     echo '</div>';
                 }

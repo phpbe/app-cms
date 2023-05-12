@@ -66,9 +66,9 @@ class Article
         $request = Be::getRequest();
         $response = Be::getResponse();
 
-        $keyword = $request->get('keyword', '');
-        $keyword = trim($keyword);
-        if ($keyword === '') {
+        $keywords = $request->get('keywords', '');
+        $keywords = trim($keywords);
+        if ($keywords === '') {
             $response->error(beLang('App.Cms', 'ARTICLE.SEARCH_KEYWORDS_IS_MISSING'));
             return;
         }
@@ -76,7 +76,7 @@ class Article
         $pageConfig = $response->getPageConfig();
         $response->set('pageConfig', $pageConfig);
 
-        $title = beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $keyword);
+        $title = beLang('App.Cms', 'ARTICLE.SEARCH_X_RESULT', $keywords);
 
         $response->set('title', $title);
         $response->set('metaDescription', $pageConfig->metaDescription ?: '');
