@@ -21,10 +21,13 @@ class Template extends Section
 
         $keywords = $request->get('keywords', '');
         $keywords = trim($keywords);
+
+        /*
         if ($keywords === '') {
             $response->error(beLang('App.Cms', 'ARTICLE.SEARCH_KEYWORDS_IS_MISSING'));
             return;
         }
+        */
 
         $page = $request->get('page', 1);
         if ($page > $this->config->maxPages) {

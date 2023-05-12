@@ -68,10 +68,13 @@ class Article
 
         $keywords = $request->get('keywords', '');
         $keywords = trim($keywords);
+
+        /*
         if ($keywords === '') {
             $response->error(beLang('App.Cms', 'ARTICLE.SEARCH_KEYWORDS_IS_MISSING'));
             return;
         }
+        */
 
         $pageConfig = $response->getPageConfig();
         $response->set('pageConfig', $pageConfig);
