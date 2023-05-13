@@ -110,7 +110,7 @@ class TaskArticle
     }
 
     /**
-     * 文章同步到 Redis
+     * 文章同步到缓存
      *
      * @param array $articles
      */

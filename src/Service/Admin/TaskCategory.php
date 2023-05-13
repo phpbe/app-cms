@@ -9,7 +9,7 @@ class TaskCategory
 {
 
     /**
-     * 分类同步到 Redis
+     * 分类同步到缓存
      *
      * @param array $categories
      */

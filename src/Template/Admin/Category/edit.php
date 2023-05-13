@@ -141,7 +141,7 @@
         <el-drawer
                 :visible.sync="drawerSeo"
                 title="搜索引擎优化"
-                size="40%"
+                size="60%"
                 :wrapper-closable="false"
                 :destroy-on-close="true">
 

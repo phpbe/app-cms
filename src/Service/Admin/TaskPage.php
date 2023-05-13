@@ -8,7 +8,7 @@ class TaskPage
 {
 
     /**
-     * 页面同步到 Redis
+     * 页面同步到缓存
      *
      * @param array $pages 页面列表
      */
