@@ -15,7 +15,7 @@ CREATE TABLE `cms_article` (
 `seo_keywords` varchar(60) NOT NULL DEFAULT '' COMMENT 'SEO关键词',
 `ordering` int(11) NOT NULL DEFAULT '0' COMMENT '排序',
 `hits` int(11) NOT NULL DEFAULT '0' COMMENT '点击量 ',
-`download_remote_image` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否下载远程图片（0-不下载/1-下载/2-已下载完成/-1-下载失败）',
+`download_remote_image` TINYINT(4) NOT NULL DEFAULT '0' COMMENT '是否下载远程图片（0-不下载/1-下载/2-下载中/10-下载完成） ',
 `collect_article_id` varchar(36) NOT NULL DEFAULT '' COMMENT '采集的文章ID',
 `is_push_home` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否推送到首页',
 `is_on_top` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否置项',
