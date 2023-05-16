@@ -1370,7 +1370,7 @@ class Article
      * 获取文章伪静态页网址
      *
      * @param array $params
-     * @return string
+     * @return array
      * @throws ServiceException
      */
     public function getArticleUrl(array $params = []): array
