@@ -132,6 +132,9 @@ class Category extends Auth
                             'sortable' => true,
                         ],
                     ],
+
+                    'exclude' => ['description'],
+
                     'operation' => [
                         'label' => '操作',
                         'width' => '180',

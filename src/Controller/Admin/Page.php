@@ -109,6 +109,9 @@ class Page extends Auth
                             'sortable' => true,
                         ],
                     ],
+
+                    'exclude' => ['config'],
+
                     'operation' => [
                         'label' => '操作',
                         'width' => '180',

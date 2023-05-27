@@ -292,6 +292,9 @@ class Article extends Auth
                             'sortable' => true,
                         ],
                     ],
+
+                    'exclude' => ['summary', 'description'],
+
                     'operation' => [
                         'label' => '操作',
                         'width' => '180',
