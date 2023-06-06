@@ -27,12 +27,9 @@ class Template extends Section
             'categoryId' => $this->page->category->id,
             'orderBy' => ['is_on_top', 'publish_time'],
             'orderByDir' => ['desc', 'desc'],
+            'pageSize' => $this->config->pageSize,
             'page' => $page,
         ];
-
-        if ($this->config->pageSize > 0) {
-            $params['pageSize'] = $this->config->pageSize;
-        }
 
         $result = Be::getService('App.Cms.Article')->search('', $params);
 

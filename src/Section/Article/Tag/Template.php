@@ -32,12 +32,9 @@ class Template extends Section
         }
         $params = [
             'tag' => $tag,
+            'pageSize' => $this->config->pageSize,
             'page' => $page,
         ];
-
-        if ($this->config->pageSize > 0) {
-            $params['pageSize'] = $this->config->pageSize;
-        }
 
         $result = Be::getService('App.Cms.Article')->search('', $params);
 
