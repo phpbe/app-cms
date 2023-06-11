@@ -13,7 +13,7 @@ class DownloadRemoteImage
      *     driver="FormItemInput"
      * )
      */
-    public string $rootPath = '/cms/article/auto-download/';
+    public string $rootPath = '/cms/article/download/';
 
     /**
      * @BeConfigItem("文件夹命名",,
