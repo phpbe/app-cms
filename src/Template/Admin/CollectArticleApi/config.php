@@ -20,19 +20,32 @@
 
 
             <div class="be-row be-lh-250  be-mt-50 be-bb be-pb-50">
-                <div class="be-col-auto">接收器网址：</div>
+                <div class="be-col-auto">接收网址（Form表单）：</div>
                 <div class="be-col-auto be-px-100">
                     <el-tag>
-                        <?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token]); ?>
+                        <?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token, 'format' => 'form']); ?>
                     </el-tag>
                 </div>
 
                 <div class="be-col-auto">
-                    <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl">复制</el-link>
+                    <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('form')">复制</el-link>
                 </div>
             </div>
 
-            <div class="be-lh-250 be-mt-50">接收POST数据字段说明：</div>
+            <div class="be-row be-lh-250  be-mt-50 be-bb be-pb-50">
+                <div class="be-col-auto">接收网址（Json数据）：</div>
+                <div class="be-col-auto be-px-100">
+                    <el-tag>
+                        <?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token, 'format' => 'json']); ?>
+                    </el-tag>
+                </div>
+
+                <div class="be-col-auto">
+                    <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('json')">复制</el-link>
+                </div>
+            </div>
+
+            <div class="be-lh-250 be-mt-50">接收数据（Form表单或Json数据）：</div>
             <div class="be-mt-50">
 
                 <el-table
@@ -132,10 +145,14 @@
                         _this.$message.error(error);
                     });
                 },
-                copyUrl: function () {
+                copyUrl: function (type) {
                     let _this = this;
                     let input = document.createElement('input');
-                    input.value = "<?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token]); ?>";
+                    if (type === "form") {
+                        input.value = "<?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token, 'format' => 'form']); ?>";
+                    } else {
+                        input.value = "<?php echo beUrl('Cms.Api.CollectArticle', ['token' => $this->config->token, 'format' => 'json']); ?>";
+                    }
                     document.body.appendChild(input);
                     input.select();
                     try {

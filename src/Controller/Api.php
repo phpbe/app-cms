@@ -24,6 +24,9 @@ class Api
         $db = Be::getDb();
         $db->startTransaction();
         try {
+
+            $format = $request->get('format', 'form');
+
             $configCollectArticleApi = Be::getConfig('App.Cms.CollectArticleApi');
             if ($configCollectArticleApi->enable === 0) {
                 throw new ControllerException('采集接口未启用！');
@@ -34,7 +37,12 @@ class Api
                 throw new ControllerException('密钥错误！');
             }
 
-            $title = $request->post('title', '');
+            if ($format === 'form') {
+                $title = $request->post('title', '');
+            } else {
+                $title = $request->json('title', '');
+            }
+
             if ($title === '') {
                 $categoryKeyValues = Be::getService('App.Cms.Admin.Category')->getCategoryKeyValues();
                 $response->set('categories', $categoryKeyValues);
@@ -42,7 +50,11 @@ class Api
                 return;
             }
 
-            $uniqueKey = $request->post('unique_key', '');
+            if ($format === 'form') {
+                $uniqueKey = $request->post('unique_key', '');
+            } else {
+                $uniqueKey = $request->json('unique_key', '');
+            }
 
             $data = [];
 
@@ -92,31 +104,59 @@ class Api
 
             $data['collect_article_id'] = $tupleCollectArticle->id;
 
-            $data['image'] = $request->post('image', '');
+            if ($format === 'form') {
+                $data['image'] = $request->post('image', '');
+            } else {
+                $data['image'] = $request->json('image', '');
+            }
 
             $data['title'] = $title;
             if (mb_strlen($data['title']) > 200) {
                 throw new ServiceException('采集的文章标题（title）不得超过200个字符！');
             }
 
-            $data['summary'] = $request->post('summary', '');
+            if ($format === 'form') {
+                $data['summary'] = $request->post('summary', '');
+            } else {
+                $data['summary'] = $request->json('summary', '');
+            }
+
             if ($data['summary'] && mb_strlen($data['summary']) > 500) {
                 throw new ServiceException('摘要（summary）不得超过500个字符！');
             }
 
-            $data['description'] = $request->post('description', '', 'html');
+            if ($format === 'form') {
+                $data['description'] = $request->post('description', '', 'html');
+            } else {
+                $data['description'] = $request->json('description', '', 'html');
+            }
 
-            $data['author'] = $request->post('author', '');
+            if ($format === 'form') {
+                $data['author'] = $request->post('author', '');
+            } else {
+                $data['author'] = $request->json('author', '');
+            }
+
             if ($data['author'] && mb_strlen($data['author']) > 50) {
                 throw new ServiceException('作者（author）不得超过50个字符！');
             }
 
-            $data['publish_time'] = $request->post('publish_time', '');
+            if ($format === 'form') {
+                $data['publish_time'] = $request->post('publish_time', '');
+            } else {
+                $data['publish_time'] = $request->json('publish_time', '');
+            }
+
             if (!strtotime($data['publish_time'])) {
                 $data['publish_time'] = date('Y-m-d H:i:s');
             }
 
-            $tags = $request->post('tags', '');
+            if ($format === 'form') {
+                $tags = $request->post('tags', '');
+            } else {
+                $tags = $request->json('tags', '');
+            }
+
             if ($tags) {
                 $tags = explode('|', $tags);
                 $tagsData = [];
