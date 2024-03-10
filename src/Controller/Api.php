@@ -21,11 +21,11 @@ class Api
         $request = Be::getRequest();
         $response = Be::getResponse();
 
+        $format = $request->get('format', 'form');
+
         $db = Be::getDb();
         $db->startTransaction();
         try {
-
-            $format = $request->get('format', 'form');
 
             $configCollectArticleApi = Be::getConfig('App.Cms.CollectArticleApi');
             if ($configCollectArticleApi->enable === 0) {
@@ -183,11 +183,25 @@ class Api
 
             $db->commit();
 
-            $response->end('[OK] 数据已接收！');
+
+            if ($format === 'form') {
+                $response->end('[OK] 数据已接收！');
+            } else {
+                $response->set('success', true);
+                $response->set('message', '[OK] 数据已接收！');
+                $response->json();
+            }
         } catch (\Throwable $t) {
             $db->rollback();
 
-            $response->end('[ERROR] ' . $t->getMessage());
+            if ($format === 'form') {
+                $response->end('[ERROR] ' . $t->getMessage());
+            } else {
+                $response->set('success', false);
+                $response->set('message', '[ERROR] ' . $t->getMessage());
+                $response->json();
+            }
+
         }
 
     }
