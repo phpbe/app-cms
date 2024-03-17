@@ -32,7 +32,7 @@ class Config
 
     /**
      * @BeConfigItem("描述",
-     *     driver = "FormItemTextarea"
+     *     driver = "FormItemTextArea"
      * )
      */
     public string $description = '';

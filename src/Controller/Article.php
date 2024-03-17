@@ -164,7 +164,7 @@ class Article
     /**
      * 文章明细
      *
-     * @BeMenu("指定一篇文章", picker="return \Be\Be::getService('App.Cms.Admin.Article')->getArticleMenuPicker()")
+     * @BeMenu("文章详情", picker="return \Be\Be::getService('App.Cms.Admin.Article')->getArticleMenuPicker()")
      * @BeRoute("\Be\Be::getService('App.Cms.Article')->getArticleUrl($params)")
      */
     public function detail()
