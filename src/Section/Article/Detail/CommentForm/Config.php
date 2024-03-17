@@ -3,7 +3,7 @@
 namespace Be\App\Cms\Section\Article\Detail\CommentForm;
 
 /**
- * @BeConfig("文章详情-评论表单  icon="bi-chat-left-text", ordering="2102")
+ * @BeConfig("文章详情-评论表单", icon="bi-chat-left-text", ordering="2102")
  */
 class Config
 {

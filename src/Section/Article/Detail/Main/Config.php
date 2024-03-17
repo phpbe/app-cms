@@ -2,7 +2,7 @@
 namespace Be\App\Cms\Section\Article\Detail\Main;
 
 /**
- * @BeConfig("文章详情-主体",  icon="bi-clipboard-fill", ordering="2100")
+ * @BeConfig("文章详情-主体", icon="bi-clipboard-fill", ordering="2100")
  */
 class Config
 {
