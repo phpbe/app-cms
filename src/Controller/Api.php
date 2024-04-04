@@ -152,15 +152,60 @@ class Api
             }
 
             if ($format === 'form') {
+                $categories = $request->post('categories', '');
+            } else {
+                $categories = $request->json('categories', '');
+            }
+
+            if ($categories && is_string($categories)) {
+                $categories = explode('|', $categories);
+                $categoryIds = [];
+
+                $serviceCategory = Be::getService('App.Cms.Admin.Category');
+                foreach ($categories as $categoryName) {
+                    $categoryName = trim($categoryName);
+                    if (!$categoryName || strlen($categoryName) > 120) {
+                        continue;
+                    }
+
+                    $tupleCategory = Be::getTuple('cms_category');
+                    try {
+                        $tupleCategory->loadBy([
+                            'name' => $categoryName,
+                            'is_delete' => 0
+                        ]);
+                    } catch (\Throwable $t) {
+                    }
+
+                    if (!$tupleCategory->isLoaded()) {
+                        // 创建分类
+                        $tupleCategory = $serviceCategory->edit([
+                            'name' => $categoryName
+                        ]);
+                    }
+
+                    $categoryIds[] = $tupleCategory->id;
+                }
+                $data['category_ids'] = $categoryIds;
+            } else {
+                $data['category_ids'] = [];
+            }
+
+            if ($format === 'form') {
                 $tags = $request->post('tags', '');
             } else {
                 $tags = $request->json('tags', '');
             }
 
-            if ($tags) {
+            if ($tags && is_string($tags)) {
                 $tags = explode('|', $tags);
                 $tagsData = [];
                 foreach ($tags as $tag) {
+                    $tag = trim($tag);
+                    if (!$tag || strlen($tag) > 60) {
+                        continue;
+                    }
+
                     $tagsData[] = [
                         'id' => '',
                         'tag' => $tag,

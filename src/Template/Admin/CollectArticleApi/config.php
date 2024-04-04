@@ -112,6 +112,16 @@
                         "description" : "描述"
                     },
                     {
+                        "name" : "categories",
+                        "required" : 0,
+                        "description" : "分类，多个分类用 \"|\" 分隔开，单个分类名称120个字符以内，分类不存在时将自动创建"
+                    },
+                    {
+                        "name" : "tags",
+                        "required" : 0,
+                        "description" : "标签，多个标签用 \"|\" 分隔开，单个标签60个字符以内"
+                    },
+                    {
                         "name" : "author",
                         "required" : 0,
                         "description" : "作者，50个字符以内"
